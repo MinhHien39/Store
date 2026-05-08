@@ -6,7 +6,7 @@ import { Plus, Search, Pencil, Trash2, Loader2, PackageSearch, Package, X, Uploa
 import { t } from "@/core/localized";
 import { useLanguage } from "@/provider/LanguageProvider";
 import { AdminProductsVM } from "./AdminProductsVM";
-import { formatVnd } from "@/core/utils/currency";
+import { formatVnd, getImageUrl } from "@/core/utils/currency";
 
 const AdminProductsPage: React.FC = () => {
     useLanguage();
@@ -101,8 +101,8 @@ const AdminProductsPage: React.FC = () => {
                                     <tr key={p.id}>
                                         <td>
                                             <div className="admin-product-cell">
-                                                {p.main_image_url ? (
-                                                    <img src={p.main_image_url} alt="" className="admin-product-cell__img" />
+                                                {getImageUrl(p.main_image_url) ? (
+                                                    <img src={getImageUrl(p.main_image_url)} alt="" className="admin-product-cell__img" />
                                                 ) : (
                                                     <span className="admin-product-cell__placeholder">
                                                         <Package size={18} />
@@ -217,14 +217,22 @@ const AdminProductsPage: React.FC = () => {
                                     <div className="admin-form__row admin-form__row--3">
                                         <div className="admin-form__group">
                                             <label className="label">{t.admin.product.label_price()} <span className="admin-form__required">*</span></label>
-                                            <input type="number" value={form.price} onChange={(e) => action.setFormField('price', e.target.value)}
-                                                className={`input${formErrors.price ? " admin-form__input--error" : ""}`} />
+                                            <div className="admin-form__price-wrap">
+                                                <input type="text" inputMode="numeric" value={form.price} onChange={(e) => action.setFormField('price', e.target.value)}
+                                                    placeholder="0"
+                                                    className={`input admin-form__price-input${formErrors.price ? " admin-form__input--error" : ""}`} />
+                                                <span className="admin-form__price-suffix">₫</span>
+                                            </div>
                                             {formErrors.price && <p className="admin-form__error">{formErrors.price}</p>}
                                         </div>
                                         <div className="admin-form__group">
                                             <label className="label">{t.admin.product.label_sale_price()}</label>
-                                            <input type="number" value={form.sale_price} onChange={(e) => action.setFormField('sale_price', e.target.value)}
-                                                className={`input${formErrors.sale_price ? " admin-form__input--error" : ""}`} />
+                                            <div className="admin-form__price-wrap">
+                                                <input type="text" inputMode="numeric" value={form.sale_price} onChange={(e) => action.setFormField('sale_price', e.target.value)}
+                                                    placeholder="0"
+                                                    className={`input admin-form__price-input${formErrors.sale_price ? " admin-form__input--error" : ""}`} />
+                                                <span className="admin-form__price-suffix">₫</span>
+                                            </div>
                                             {formErrors.sale_price && <p className="admin-form__error">{formErrors.sale_price}</p>}
                                         </div>
                                         <div className="admin-form__group">
@@ -274,7 +282,10 @@ const AdminProductsPage: React.FC = () => {
                                     <div className="admin-form__sub-images">
                                         {subImages.map((img, idx) => (
                                             <div key={img.id} className="admin-form__sub-image">
-                                                <img src={img.image_url} alt={`Sub ${idx + 1}`} />
+                                                {getImageUrl(img.image_url)
+                                                    ? <img src={getImageUrl(img.image_url)} alt={`Sub ${idx + 1}`} />
+                                                    : <span className="admin-form__sub-image-placeholder"><Package size={20} /></span>
+                                                }
                                                 <div className="admin-form__sub-image-actions">
                                                     {idx > 0 && (
                                                         <button type="button" onClick={() => action.moveSubImage(idx, idx - 1)}

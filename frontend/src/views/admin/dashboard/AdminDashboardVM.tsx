@@ -2,12 +2,13 @@ import { useEffect } from "react";
 import { useAppContext } from '@/provider/AppContextProvider';
 import { BaseViewModelFunc, BaseConfig, BaseAction, useBaseViewModel } from '@/core/base/BaseViewModel';
 import { ApiResultType } from '@/core/api';
-import type { DashboardSummary } from "@/data/repository/DashboardRepository";
+import type { DashboardSummary, DashboardChart } from "@/data/repository/DashboardRepository";
 import type { Category } from "@/data/models/Category";
 import type { Brand } from "@/data/models/Brand";
 
 interface Config extends BaseConfig {
     summary: DashboardSummary | null;
+    chart: DashboardChart | null;
     categories: Category[];
     brands: Brand[];
     isLoading: boolean;
@@ -22,6 +23,7 @@ export const AdminDashboardVM: BaseViewModelFunc<Config, Action> = () => {
         AdminDashboardVM.name,
         {
             summary: null,
+            chart: null,
             categories: [],
             brands: [],
             isLoading: true,
@@ -30,14 +32,16 @@ export const AdminDashboardVM: BaseViewModelFunc<Config, Action> = () => {
 
     const loadAll = async () => {
         action.setNewConfig({ isLoading: true });
-        const [summaryRes, catRes, brandRes] = await Promise.all([
+        const [summaryRes, chartRes, catRes, brandRes] = await Promise.all([
             dashboardRepository.getSummary(),
+            dashboardRepository.getChart(7),
             categoryRepository.getList(),
             brandRepository.getList(),
         ]);
         const updates: Partial<Config> = { isLoading: false };
         if (summaryRes.type === ApiResultType.Success) updates.summary = summaryRes.data;
         else globalUI.handleApiError(summaryRes.error);
+        if (chartRes.type === ApiResultType.Success) updates.chart = chartRes.data;
         if (catRes.type === ApiResultType.Success) updates.categories = catRes.data;
         if (brandRes.type === ApiResultType.Success) updates.brands = brandRes.data;
         action.setNewConfig(updates);

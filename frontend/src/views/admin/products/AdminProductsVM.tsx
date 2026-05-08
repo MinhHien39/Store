@@ -6,6 +6,7 @@ import type { Product, ProductImage } from "@/data/models/Product";
 import type { Category } from "@/data/models/Category";
 import type { Brand } from "@/data/models/Brand";
 import { t } from '@/core/localized';
+import { formatPriceInput, parsePriceInput } from '@/core/utils/currency';
 
 interface ProductFormData {
     category_id: string;
@@ -76,6 +77,9 @@ interface Action extends BaseAction<Config> {
 export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
     const { productRepository, categoryRepository, brandRepository } = useAppContext();
     const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+    const pendingMainImageFileRef = useRef<File | null>(null);
+    const pendingSubFilesRef = useRef<File[]>([]);
+    const pendingSubIdSetRef = useRef<Set<number>>(new Set());
 
     const { config, action, appNavigation, globalUI } = useBaseViewModel<Config>(
         AdminProductsVM.name,
@@ -124,6 +128,9 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
     };
 
     const openCreate = async () => {
+        pendingMainImageFileRef.current = null;
+        pendingSubFilesRef.current = [];
+        pendingSubIdSetRef.current = new Set();
         action.setNewConfig({
             editItem: null,
             form: { ...emptyForm },
@@ -138,6 +145,9 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
     };
 
     const openEdit = async (product: Product) => {
+        pendingMainImageFileRef.current = null;
+        pendingSubFilesRef.current = [];
+        pendingSubIdSetRef.current = new Set();
         action.setNewConfig({
             editItem: product,
             form: {
@@ -146,8 +156,8 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
                 name: product.name,
                 short_description: product.short_description,
                 description: product.description,
-                price: String(product.price),
-                sale_price: product.sale_price ? String(product.sale_price) : '',
+                price: formatPriceInput(String(product.price)),
+                sale_price: product.sale_price ? formatPriceInput(String(product.sale_price)) : '',
                 main_image_url: product.main_image_url,
                 display_order: String(product.display_order),
             },
@@ -169,8 +179,8 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
                     name: p.name,
                     short_description: p.short_description,
                     description: p.description,
-                    price: String(p.price),
-                    sale_price: p.sale_price ? String(p.sale_price) : '',
+                    price: formatPriceInput(String(p.price)),
+                    sale_price: p.sale_price ? formatPriceInput(String(p.sale_price)) : '',
                     main_image_url: p.main_image_url,
                     display_order: String(p.display_order),
                 },
@@ -188,7 +198,8 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
     };
 
     const setFormField = (name: string, value: string) => {
-        config.form = { ...config.form, [name]: value };
+        const formatted = (name === 'price' || name === 'sale_price') ? formatPriceInput(value) : value;
+        config.form = { ...config.form, [name]: formatted };
         if (config.formErrors[name]) {
             const errs = { ...config.formErrors };
             delete errs[name];
@@ -198,30 +209,47 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
     };
 
     const setMainImagePreview = (url: string) => {
+        // URL typed manually — clear any pending file
+        pendingMainImageFileRef.current = null;
         config.mainImagePreview = url;
         config.form = { ...config.form, main_image_url: url };
         action.setNewConfig(config);
     };
 
     const handleMainImageUpload = (file: File) => {
-        const url = URL.createObjectURL(file);
-        config.mainImagePreview = url;
-        config.form = { ...config.form, main_image_url: url };
+        // Store file; upload happens in handleSave after product create/update
+        pendingMainImageFileRef.current = file;
+        config.mainImagePreview = URL.createObjectURL(file);
+        // Don't store blob URL in form — leave empty so we know upload is pending
+        config.form = { ...config.form, main_image_url: '' };
         action.setNewConfig(config);
     };
 
     const handleSubImagesUpload = (files: FileList) => {
-        const newImages: ProductImage[] = Array.from(files).map((file, idx) => ({
-            id: Date.now() + idx,
-            product_id: config.editItem?.id || 0,
-            image_url: URL.createObjectURL(file),
-            sort_order: config.subImages.length + idx + 1,
-        }));
+        const newImages: ProductImage[] = Array.from(files).map((file, idx) => {
+            const tempId = Date.now() + idx;
+            pendingSubFilesRef.current = [...pendingSubFilesRef.current, file];
+            pendingSubIdSetRef.current.add(tempId);
+            return {
+                id: tempId,
+                product_id: config.editItem?.id || 0,
+                image_url: URL.createObjectURL(file),
+                sort_order: config.subImages.length + idx + 1,
+            };
+        });
         config.subImages = [...config.subImages, ...newImages];
         action.setNewConfig(config);
     };
 
     const removeSubImage = (imageId: number) => {
+        if (pendingSubIdSetRef.current.has(imageId)) {
+            const pendingList = config.subImages.filter(img => pendingSubIdSetRef.current.has(img.id));
+            const removingIndex = pendingList.findIndex(img => img.id === imageId);
+            if (removingIndex !== -1) {
+                pendingSubFilesRef.current = pendingSubFilesRef.current.filter((_, i) => i !== removingIndex);
+            }
+            pendingSubIdSetRef.current.delete(imageId);
+        }
         config.subImages = config.subImages.filter((img) => img.id !== imageId);
         action.setNewConfig(config);
     };
@@ -284,9 +312,9 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
         if (!f.name.trim()) errs.name = t.admin.product.label_name();
         if (!f.category_id) errs.category_id = t.admin.product.select_category();
         if (!f.brand_id) errs.brand_id = t.admin.product.select_brand();
-        if (!f.price || Number(f.price) <= 0) errs.price = t.admin.product.price_placeholder();
-        if (f.sale_price && Number(f.sale_price) >= Number(f.price)) errs.sale_price = t.admin.product.sale_price_placeholder();
-        if (!f.main_image_url && !config.mainImagePreview) errs.main_image_url = t.admin.product.label_main_image();
+        if (!f.price || Number(parsePriceInput(f.price)) <= 0) errs.price = t.admin.product.price_placeholder();
+        if (f.sale_price && Number(parsePriceInput(f.sale_price)) >= Number(parsePriceInput(f.price))) errs.sale_price = t.admin.product.sale_price_placeholder();
+        if (!pendingMainImageFileRef.current && !f.main_image_url && !config.mainImagePreview) errs.main_image_url = t.admin.product.label_main_image();
         config.formErrors = errs;
         action.setNewConfig(config);
         return Object.keys(errs).length === 0;
@@ -304,9 +332,10 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
             name: f.name,
             short_description: f.short_description,
             description: f.description,
-            price: Number(f.price),
-            sale_price: f.sale_price ? Number(f.sale_price) : null,
-            main_image_url: f.main_image_url,
+            price: Number(parsePriceInput(f.price)),
+            sale_price: f.sale_price ? Number(parsePriceInput(f.sale_price)) : null,
+            // If a file is pending upload, omit main_image_url; it will be set after upload
+            main_image_url: pendingMainImageFileRef.current ? undefined : f.main_image_url,
             display_order: Number(f.display_order),
         };
 
@@ -314,16 +343,41 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
             ? await productRepository.adminUpdate(config.editItem.id, data)
             : await productRepository.adminCreate(data);
 
-        config.isSaving = false;
-        if (res.type === ApiResultType.Success) {
-            config.isModalOpen = false;
-            action.setNewConfig(config);
-            globalUI.showSuccessAlert(config.editItem ? t.admin.product.update_success() : t.admin.product.create_success());
-            await loadProducts();
-        } else {
+        if (res.type !== ApiResultType.Success) {
+            config.isSaving = false;
             globalUI.handleApiError(res.error);
             action.setNewConfig(config);
+            return;
         }
+
+        const productId = res.data.id;
+
+        // Upload main image file if pending
+        if (pendingMainImageFileRef.current) {
+            const mainRes = await productRepository.adminUploadMainImage(productId, pendingMainImageFileRef.current);
+            pendingMainImageFileRef.current = null;
+            if (mainRes.type !== ApiResultType.Success) {
+                config.isSaving = false;
+                globalUI.handleApiError(mainRes.error);
+                action.setNewConfig(config);
+                return;
+            }
+        }
+
+        // Upload pending sub-images if any
+        if (pendingSubFilesRef.current.length > 0) {
+            const formData = new FormData();
+            pendingSubFilesRef.current.forEach((file) => formData.append('files', file));
+            await productRepository.adminUploadImages(productId, formData);
+            pendingSubFilesRef.current = [];
+            pendingSubIdSetRef.current.clear();
+        }
+
+        config.isSaving = false;
+        config.isModalOpen = false;
+        action.setNewConfig(config);
+        globalUI.showSuccessAlert(config.editItem ? t.admin.product.update_success() : t.admin.product.create_success());
+        await loadProducts();
     };
 
     const handleSearchChange = (value: string) => {

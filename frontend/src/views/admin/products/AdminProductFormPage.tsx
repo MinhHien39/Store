@@ -3,6 +3,7 @@
 import React from "react";
 import AdminLayout from "@/component/layout/AdminLayout";
 import { ArrowLeft, Upload, X, Loader2, GripVertical } from "lucide-react";
+import { getImageUrl } from "@/core/utils/currency";
 import { t } from "@/core/localized";
 import { useLanguage } from "@/provider/LanguageProvider";
 import { AdminProductFormVM } from "./AdminProductFormVM";
@@ -96,16 +97,24 @@ const AdminProductFormPage: React.FC = () => {
                         <div className="admin-form__row admin-form__row--3">
                             <div className="admin-form__group">
                                 <label htmlFor="price" className="label">{t.admin.product.label_price()} <span className="admin-form__required">*</span></label>
-                                <input id="price" name="price" type="number" value={form.price} onChange={(e) => action.setFormField(e.target.name, e.target.value)}
-                                    className={`input${errors.price ? " admin-form__input--error" : ""}`}
-                                />
+                                <div className="admin-form__price-wrap">
+                                    <input id="price" name="price" type="text" inputMode="numeric" value={form.price} onChange={(e) => action.setFormField(e.target.name, e.target.value)}
+                                        placeholder="0"
+                                        className={`input admin-form__price-input${errors.price ? " admin-form__input--error" : ""}`}
+                                    />
+                                    <span className="admin-form__price-suffix">₫</span>
+                                </div>
                                 {errors.price && <p className="admin-form__error">{errors.price}</p>}
                             </div>
                             <div className="admin-form__group">
                                 <label htmlFor="sale_price" className="label">{t.admin.product.label_sale_price()}</label>
-                                <input id="sale_price" name="sale_price" type="number" value={form.sale_price} onChange={(e) => action.setFormField(e.target.name, e.target.value)}
-                                    className={`input${errors.sale_price ? " admin-form__input--error" : ""}`}
-                                />
+                                <div className="admin-form__price-wrap">
+                                    <input id="sale_price" name="sale_price" type="text" inputMode="numeric" value={form.sale_price} onChange={(e) => action.setFormField(e.target.name, e.target.value)}
+                                        placeholder="0"
+                                        className={`input admin-form__price-input${errors.sale_price ? " admin-form__input--error" : ""}`}
+                                    />
+                                    <span className="admin-form__price-suffix">₫</span>
+                                </div>
                                 {errors.sale_price && <p className="admin-form__error">{errors.sale_price}</p>}
                             </div>
                             <div className="admin-form__group">
@@ -156,7 +165,7 @@ const AdminProductFormPage: React.FC = () => {
                         <div className="admin-form__sub-images">
                             {subImages.map((img, idx) => (
                                 <div key={img.id} className="admin-form__sub-image">
-                                    <img src={img.image_url} alt={`Sub ${idx + 1}`} />
+                                    <img src={getImageUrl(img.image_url)} alt={`Sub ${idx + 1}`} />
                                     <div className="admin-form__sub-image-actions">
                                         {idx > 0 && (
                                             <button type="button" onClick={() => action.moveSubImage(idx, idx - 1)} className="admin-form__sub-image-btn admin-form__sub-image-btn--move" aria-label={t.common.edit()}>

@@ -42,6 +42,7 @@ export interface ProductRepository {
     adminDelete(id: number): Promise<ApiResult<{ id: number }>>;
     adminImportCsv(formData: FormData): Promise<ApiResult<ProductCsvImportResult>>;
     adminUploadImages(productId: number, formData: FormData): Promise<ApiResult<any>>;
+    adminUploadMainImage(productId: number, file: File): Promise<ApiResult<{ main_image_url: string }>>;
     adminDeleteImage(imageId: number): Promise<ApiResult<{ id: number }>>;
 }
 
@@ -97,6 +98,14 @@ export class ProductRepositoryImpl extends BaseRepository implements ProductRepo
     adminUploadImages(productId: number, formData: FormData): Promise<ApiResult<any>> {
         return this.safeCall(() =>
             this.apiService.postFormData<any>(`/api/v1/admin/products/${productId}/images`, formData)
+        );
+    }
+
+    adminUploadMainImage(productId: number, file: File): Promise<ApiResult<{ main_image_url: string }>> {
+        const fd = new FormData();
+        fd.append('file', file);
+        return this.safeCall(() =>
+            this.apiService.postFormData<{ main_image_url: string }>(`/api/v1/admin/products/${productId}/main-image`, fd)
         );
     }
 

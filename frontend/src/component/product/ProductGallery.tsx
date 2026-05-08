@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback } from "react";
 import { ChevronLeft, ChevronRight, ImageOff, Package } from "lucide-react";
+import { getImageUrl } from "@/core/utils/currency";
 import type { ProductImage } from "@/data/models/Product";
 import styles from "./ProductGallery.module.css";
 
@@ -12,9 +13,15 @@ interface ProductGalleryProps {
 }
 
 const ProductGallery: React.FC<ProductGalleryProps> = ({ mainImage, images, productName }) => {
-    const allImages = images.length > 0
-        ? [...images].sort((a, b) => a.sort_order - b.sort_order).map((img) => img.image_url)
-        : mainImage ? [mainImage] : [];
+    // Always show mainImage first, then additional images (dedup by URL)
+    const mainResolved = mainImage ? getImageUrl(mainImage) : null;
+    const additionalResolved = [...images]
+        .sort((a, b) => a.sort_order - b.sort_order)
+        .map((img) => getImageUrl(img.image_url))
+        .filter((url) => url !== mainResolved);
+    const allImages = mainResolved
+        ? [mainResolved, ...additionalResolved]
+        : additionalResolved;
 
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [imgErrors, setImgErrors] = useState<Set<number>>(new Set());

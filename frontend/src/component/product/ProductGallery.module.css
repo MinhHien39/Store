@@ -132,7 +132,24 @@
     display: flex;
     gap: 10px;
     overflow-x: auto;
-    padding-bottom: 4px;
+    padding-bottom: 6px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #CBD5E1 transparent;
+}
+
+.thumbnails::-webkit-scrollbar {
+    height: 4px;
+}
+
+.thumbnails::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.thumbnails::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 999px;
 }
 
 .thumbnailButton {
@@ -140,11 +157,13 @@
     width: 74px;
     height: 74px;
     overflow: hidden;
-    border: 1px solid #E2E8F0;
-    border-radius: 8px;
+    border: 2px solid #E2E8F0;
+    border-radius: 10px;
     background-color: #FFFFFF;
-    opacity: 0.66;
+    opacity: 0.72;
+    scroll-snap-align: start;
     transition: border-color 160ms ease, opacity 160ms ease, box-shadow 160ms ease;
+    cursor: pointer;
 }
 
 .thumbnailButton:hover,

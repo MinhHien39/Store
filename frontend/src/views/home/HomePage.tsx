@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { t } from "@/core/localized";
 import { useLanguage } from "@/provider/LanguageProvider";
-import { formatVnd } from "@/core/utils/currency";
+import { formatVnd, getImageUrl } from "@/core/utils/currency";
 import { getCategoryIcon } from "@/core/utils/categoryIcon";
 import { HomeVM } from "./HomeVM";
 import "./styles.css";
@@ -91,7 +91,7 @@ const HomePage: React.FC = () => {
                                         <div className="home-hero__featured-image">
                                             {heroProduct?.main_image_url ? (
                                                 <img
-                                                    src={heroProduct.main_image_url}
+                                                    src={getImageUrl(heroProduct.main_image_url)}
                                                     alt={heroProduct.name}
                                                     className="home-hero__featured-img"
                                                 />
@@ -138,7 +138,7 @@ const HomePage: React.FC = () => {
                             <div className="home-hero__side-grid">
                                 {heroSideProducts.map((product) => (
                                     <Link key={product.id} to={`${AppRoutePath.PRODUCTS}/${product.id}`} className="home-hero__side-card">
-                                        <img src={product.main_image_url} alt={product.name} className="home-hero__side-img" />
+                                        <img src={getImageUrl(product.main_image_url)} alt={product.name} className="home-hero__side-img" />
                                         <div className="home-hero__side-info">
                                             <p className="home-hero__side-name">{product.name}</p>
                                             <p className="home-hero__side-brand">{product.brand_name}</p>

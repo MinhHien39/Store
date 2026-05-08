@@ -32,6 +32,16 @@ async def create_product_images(
     return SuccessResponse(data=service.create(product_id, files))
 
 
+@router.post("/admin/products/{product_id}/main-image", dependencies=[RequireAdminDep])
+async def upload_main_image(
+    product_id: int,
+    file: UploadFile = File(...),
+    service: ProductImageService = Depends(get_product_image_write_service),
+):
+    url = service.upload_main_image(product_id, file)
+    return SuccessResponse(data={"main_image_url": url})
+
+
 @router.put("/admin/product-images/{image_id}", dependencies=[RequireAdminDep])
 async def update_product_image(
     image_id: int,

@@ -25,7 +25,7 @@ interface Action extends BaseAction<Config> {}
 export const HomeVM: BaseViewModelFunc<Config, Action> = () => {
     const { productRepository, categoryRepository, brandRepository } = useAppContext();
 
-    const { config, action, globalUI } = useBaseViewModel<Config>(
+    const { config, action } = useBaseViewModel<Config>(
         HomeVM.name,
         {
             categories: [],

@@ -23,6 +23,8 @@ export interface UserRepository {
 
     doLogout(): Promise<ApiResult<void>>;
 
+    doAdminLogout(): Promise<ApiResult<void>>;
+
     doGetInfo(): Promise<ApiResult<User>>;
 
     doResetPassword(request: PasswordRequest): Promise<ApiResult<Record<string, any>>>;
@@ -109,8 +111,15 @@ class UserRepositoryImpl extends BaseRepository implements UserRepository {
         return this.safeCall(() => this.apiService.post(path, body, transformCallback));
     }
 
+    doAdminLogout(): Promise<ApiResult<void>> {
+        const path = "/api/v1/admin/auth/logout";
+        const body = {};
+        const transformCallback = (): void => { };
+        return this.safeCall(() => this.apiService.post(path, body, transformCallback));
+    }
+
     doGetInfo(): Promise<ApiResult<User>> {
-        const path = "/api/v1/auth/info";
+        const path = "/api/v1/auth/me";
         const body = {};
         const transformCallback = (data: Record<string, any>): User => {
             return new User().fromJson(data);

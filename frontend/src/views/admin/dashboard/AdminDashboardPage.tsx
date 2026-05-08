@@ -16,7 +16,7 @@ const formatCurrency = (value: number) =>
 const AdminDashboardPage: React.FC = () => {
     useLanguage();
     const { config } = AdminDashboardVM();
-    const { summary, categories, brands, isLoading } = config;
+    const { summary, chart, categories, brands, isLoading } = config;
 
     if (isLoading) {
         return (
@@ -134,6 +134,51 @@ const AdminDashboardPage: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Orders chart — last 7 days */}
+            {chart && chart.days.length > 0 && (() => {
+                const maxOrders = Math.max(...chart.days.map(d => d.orders), 1);
+                const maxRevenue = Math.max(...chart.days.map(d => d.revenue), 1);
+                const BAR_W = 24;
+                const GAP = 16;
+                const H = 120;
+                const totalW = chart.days.length * (BAR_W * 2 + GAP + 8);
+                return (
+                    <div className="dash-chart">
+                        <div className="dash-panel__header">
+                            <h3 className="dash-panel__title">{t.admin.dashboard.chart_title ? t.admin.dashboard.chart_title() : "7 ngày gần nhất"}</h3>
+                        </div>
+                        <div className="dash-chart__legend">
+                            <span className="dash-chart__dot dash-chart__dot--orders" />{t.admin.dashboard.total_orders()}
+                            <span className="dash-chart__dot dash-chart__dot--revenue" style={{ marginLeft: 16 }} />{t.admin.dashboard.revenue()}
+                        </div>
+                        <div className="dash-chart__scroll">
+                            <svg width={totalW} height={H + 36} style={{ display: "block" }}>
+                                {chart.days.map((day, i) => {
+                                    const x = i * (BAR_W * 2 + GAP + 8);
+                                    const orderH = Math.round((day.orders / maxOrders) * H);
+                                    const revH = Math.round((day.revenue / maxRevenue) * H);
+                                    const label = day.date.slice(5); // MM-DD
+                                    return (
+                                        <g key={day.date}>
+                                            {/* orders bar */}
+                                            <rect x={x} y={H - orderH} width={BAR_W} height={orderH} rx={4} fill="var(--color-primary, #3b82f6)" opacity={0.85} />
+                                            {/* revenue bar */}
+                                            <rect x={x + BAR_W + 4} y={H - revH} width={BAR_W} height={revH} rx={4} fill="#10b981" opacity={0.75} />
+                                            {/* label */}
+                                            <text x={x + BAR_W} y={H + 18} textAnchor="middle" fontSize={11} fill="#94a3b8">{label}</text>
+                                            {/* orders value */}
+                                            {day.orders > 0 && (
+                                                <text x={x + BAR_W / 2} y={H - orderH - 4} textAnchor="middle" fontSize={10} fill="#3b82f6">{day.orders}</text>
+                                            )}
+                                        </g>
+                                    );
+                                })}
+                            </svg>
+                        </div>
+                    </div>
+                );
+            })()}
         </AdminLayout>
     );
 };

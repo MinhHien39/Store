@@ -20,7 +20,7 @@ const CartPage: React.FC = () => {
         <StoreLayout>
             <div className="container-page cart-page">
                 <h1 className="cart-title">
-                    {t.store.cart.title()} <span className="cart-title__count">({t.store.cart.items_count({ count: items.length })})</span>
+                    {t.store.cart.title()}
                 </h1>
 
                 {items.length === 0 ? (
@@ -95,11 +95,6 @@ const CartPage: React.FC = () => {
                             <Link to={AppRoutePath.CHECKOUT} className="cart-checkout-btn">
                                 {t.store.cart.checkout()}
                             </Link>
-                            <div className="cart-payment-badges">
-                                {["Visa", "MC", "COD", "MoMo"].map((m) => (
-                                    <span key={m} className="cart-payment-badge">{m}</span>
-                                ))}
-                            </div>
                         </div>
                     </div>
                 )}

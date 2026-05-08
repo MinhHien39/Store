@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { Package } from "lucide-react";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import type { Product } from "@/data/models/Product";
-import { formatVnd } from "@/core/utils/currency";
+import { formatVnd, getImageUrl } from "@/core/utils/currency";
 import styles from "./CatalogProductCard.module.css";
 
 interface CatalogProductCardProps {
@@ -31,7 +31,7 @@ const CatalogProductCard: React.FC<CatalogProductCardProps> = ({ product }) => {
             <div className={styles.imageFrame}>
                 {hasImage ? (
                     <img
-                        src={product.main_image_url}
+                        src={getImageUrl(product.main_image_url)}
                         alt={product.name}
                         className={styles.image}
                         loading="lazy"

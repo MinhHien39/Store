@@ -8,6 +8,7 @@ import { SideBarProps } from '@/component';
 import { useAppNavigation } from '@/application/AppNavigation';
 import { AppRoutePath } from '@/application/AppRoutePath';
 import { UserRole } from '@/data';
+import { useAppContext } from '@/provider/AppContextProvider';
 
 interface Config extends BaseConfig {
     sideBarProps?: SideBarProps;
@@ -19,6 +20,7 @@ interface Action extends BaseAction<Config> {
 export const AdminHomeVM: BaseViewModelFunc<Config, Action> = () => {
 
     const useAppnavigation = useAppNavigation();
+    const { userRepository } = useAppContext();
 
     const { config, action, globalUI } = useBaseViewModel<Config>(
         AdminHomeVM.name,
@@ -28,10 +30,10 @@ export const AdminHomeVM: BaseViewModelFunc<Config, Action> = () => {
     );
 
     const onLogout = async () => {
-        // TODO call api
         globalUI.showDialog({
             content: t.confirm.logout(),
-            onAgree: () => {
+            onAgree: async () => {
+                await userRepository.doAdminLogout();
                 globalUI.showSuccessAlert(t.message.logoutSuccess());
                 useAppnavigation.toLogin(UserRole.ADMIN);
             },

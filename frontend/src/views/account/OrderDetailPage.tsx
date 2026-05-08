@@ -7,6 +7,7 @@ import { OrderStatus } from "@/data/models/Order";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
+import { getImageUrl } from "@/core/utils/currency";
 import dayjs from "dayjs";
 
 const OrderDetailPage: React.FC = () => {
@@ -76,7 +77,7 @@ const OrderDetailPage: React.FC = () => {
                                 <div key={item.id} className="flex items-center gap-4 py-4">
                                     {item.product_image && (
                                         <img
-                                            src={item.product_image}
+                                            src={getImageUrl(item.product_image)}
                                             alt=""
                                             className="w-16 h-16 object-cover rounded-lg bg-slate-100"
                                         />

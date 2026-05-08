@@ -87,6 +87,34 @@ class ProductImageService(BaseService):
 
         return ProductImageCreateResponse(product_id=product_id, image_urls=urls)
 
+    def upload_main_image(self, product_id: int, file: UploadFile) -> str:
+        """Upload a file, save to disk, update product.main_image_url, return the URL."""
+        product = self.db.exec(
+            select(Product).where(Product.id == product_id, Product.is_deleted == False)
+        ).first()
+        if not product:
+            raise DataNotFoundException(message="Product not found")
+
+        ext = Path(file.filename or "image.jpg").suffix.lower()
+        if ext not in ALLOWED_EXTENSIONS:
+            raise DefaultException(message=f"File type {ext} is not allowed")
+
+        content = file.file.read()
+        if len(content) > MAX_FILE_SIZE:
+            raise DefaultException(message="File size exceeds 10MB limit")
+
+        upload_dir = Path("/backend/uploads/products") / str(product_id)
+        upload_dir.mkdir(parents=True, exist_ok=True)
+
+        filename = f"{uuid.uuid4().hex}{ext}"
+        url = f"/uploads/products/{product_id}/{filename}"
+        (upload_dir / filename).write_bytes(content)
+
+        product.main_image_url = url
+        self.db.add(product)
+
+        return url
+
     def update(self, image_id: int, payload: ProductImageUpdateRequest) -> ProductImageItem:
         image = self.db.exec(
             select(ProductImage).where(ProductImage.id == image_id, ProductImage.is_deleted == False)

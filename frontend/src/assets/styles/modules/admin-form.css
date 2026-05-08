@@ -82,6 +82,28 @@
     border-color: #dc2626 !important;
 }
 
+/* ── Price input with suffix ── */
+.admin-form__price-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.admin-form__price-input {
+    padding-right: 2rem !important;
+    width: 100%;
+}
+
+.admin-form__price-suffix {
+    position: absolute;
+    right: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-gray-400);
+    pointer-events: none;
+    user-select: none;
+}
+
 /* ── Image upload area ── */
 .admin-form__image-preview {
     position: relative;

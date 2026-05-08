@@ -2,7 +2,7 @@
 
 // src/provider/AuthProvider.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import User, { UserRole } from '@/data/models/User';
+import User from '@/data/models/User';
 import Token from '@/data/models/Token';
 import { AppLocalStorage } from '@/core/store';
 import { LogUtils } from '@/core/utils';
@@ -20,7 +20,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
-    const { userRepository, memberRepository } = useAppContext();
+    const { userRepository } = useAppContext();
 
     const appLocalStorage = AppLocalStorage.getInstance();
 
@@ -49,11 +49,7 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({ childre
             // Token exists, attempt to fetch user info to validate token and get user data
             let result: ApiResult<User>;
 
-            if (appLocalStorage.getRoleIdFromUrl() === UserRole.MEMBER) {
-                result = await memberRepository.doGetInfo();
-            } else {
-                result = await userRepository.doGetInfo();
-            }
+            result = await userRepository.doGetInfo();
 
             switch (result.type) {
                 case ApiResultType.Success:
