@@ -5,12 +5,14 @@ import AdminLayout from "@/component/layout/AdminLayout";
 import { Plus, Pencil, Trash2, Loader2, X, FolderTree } from "lucide-react";
 import { t } from "@/core/localized";
 import { useLanguage } from "@/provider/LanguageProvider";
+import { CATEGORY_ICON_OPTIONS, getCategoryIcon } from "@/core/utils/categoryIcon";
 import { AdminCategoriesVM } from "./AdminCategoriesVM";
 
 const AdminCategoriesPage: React.FC = () => {
     useLanguage();
     const { config, action } = AdminCategoriesVM();
-    const { categories, isLoading, isModalOpen, editItem, deleteId, isDeleting, isSaving, formName, formDesc, formError } = config;
+    const { categories, isLoading, isModalOpen, editItem, deleteId, isDeleting, isSaving, formName, formDesc, formIcon, formError } = config;
+    const SelectedIcon = getCategoryIcon(formIcon);
 
     return (
         <AdminLayout>
@@ -37,22 +39,30 @@ const AdminCategoriesPage: React.FC = () => {
                 </div>
             ) : (
                 <div className="list-card">
-                    {categories.map((cat) => (
-                        <div key={cat.id} className="list-card-row">
-                            <div>
-                                <p className="admin-list__name">{cat.name}</p>
-                                {cat.description && <p className="admin-list__desc">{cat.description}</p>}
+                    {categories.map((cat) => {
+                        const Icon = getCategoryIcon(cat.icon);
+                        return (
+                            <div key={cat.id} className="list-card-row">
+                                <div className="flex items-center gap-3">
+                                    <span className="icon-btn" aria-hidden="true">
+                                        <Icon size={17} />
+                                    </span>
+                                    <div>
+                                        <p className="admin-list__name">{cat.name}</p>
+                                        {cat.description && <p className="admin-list__desc">{cat.description}</p>}
+                                    </div>
+                                </div>
+                                <div className="admin-list__actions">
+                                    <button onClick={() => action.openEdit(cat)} className="icon-btn" aria-label={t.common.edit()}>
+                                        <Pencil size={16} />
+                                    </button>
+                                    <button onClick={() => action.setDeleteId(cat.id)} className="icon-btn icon-btn-danger" aria-label={t.common.delete()}>
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
                             </div>
-                            <div className="admin-list__actions">
-                                <button onClick={() => action.openEdit(cat)} className="icon-btn" aria-label={t.common.edit()}>
-                                    <Pencil size={16} />
-                                </button>
-                                <button onClick={() => action.setDeleteId(cat.id)} className="icon-btn icon-btn-danger" aria-label={t.common.delete()}>
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
 
@@ -75,6 +85,22 @@ const AdminCategoriesPage: React.FC = () => {
                                 <label className="label">{t.admin.category.label_desc()}</label>
                                 <textarea value={formDesc} onChange={(e) => action.setFormDesc(e.target.value)} rows={3}
                                     className="textarea" />
+                            </div>
+                            <div className="admin-form__group">
+                                <label className="label">Icon</label>
+                                <div className="flex items-center gap-2">
+                                    <select value={formIcon} onChange={(e) => action.setFormIcon(e.target.value)}
+                                        className="select flex-1">
+                                        {CATEGORY_ICON_OPTIONS.map((option) => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <span className="icon-btn" aria-hidden="true">
+                                        <SelectedIcon size={18} />
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div className="admin-modal__actions">

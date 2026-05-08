@@ -6,23 +6,14 @@ import { AppRoutePath } from "@/application/AppRoutePath";
 import StoreLayout from "@/component/layout/StoreLayout";
 import {
     ArrowRight,
-    Camera,
-    Cable,
-    Headphones,
-    Laptop,
     Loader2,
     Package,
-    Router,
-    Smartphone,
-    TabletSmartphone,
-    Watch,
 } from "lucide-react";
 import { t } from "@/core/localized";
 import { useLanguage } from "@/provider/LanguageProvider";
+import { getCategoryIcon } from "@/core/utils/categoryIcon";
 import { CategoriesVM } from "./CategoriesVM";
 import "./styles.css";
-
-const iconMap = [Smartphone, Laptop, TabletSmartphone, Cable, Watch, Headphones, Camera, Router];
 
 const CategoriesPage: React.FC = () => {
     useLanguage();
@@ -52,7 +43,7 @@ const CategoriesPage: React.FC = () => {
                 ) : (
                     <div className="categories-grid">
                         {categories.map((category, index) => {
-                            const Icon = iconMap[index % iconMap.length];
+                            const Icon = getCategoryIcon(category.icon, index);
                             return (
                                 <Link
                                     key={category.id}

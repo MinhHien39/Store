@@ -9,29 +9,20 @@ import {
     ArrowRight,
     Award,
     BadgeCheck,
-    Camera,
-    Cable,
     ChevronRight,
-    Headphones,
-    Laptop,
     Loader2,
     Package,
-    Router,
     ShieldCheck,
-    Smartphone,
     Sparkles,
-    TabletSmartphone,
     TrendingUp,
     Truck,
-    Watch,
 } from "lucide-react";
 import { t } from "@/core/localized";
 import { useLanguage } from "@/provider/LanguageProvider";
 import { formatVnd } from "@/core/utils/currency";
+import { getCategoryIcon } from "@/core/utils/categoryIcon";
 import { HomeVM } from "./HomeVM";
 import "./styles.css";
-
-const categoryIconMap = [Smartphone, Laptop, TabletSmartphone, Cable, Watch, Headphones, Camera, Router];
 
 const HomePage: React.FC = () => {
     useLanguage();
@@ -196,7 +187,7 @@ const HomePage: React.FC = () => {
                     </div>
                     <div className="home-category-grid">
                         {categories.slice(0, 8).map((cat, index) => {
-                            const Icon = categoryIconMap[index % categoryIconMap.length];
+                            const Icon = getCategoryIcon(cat.icon, index);
                             return (
                                 <Link key={cat.id} to={`${AppRoutePath.PRODUCTS}?category_id=${cat.id}`} className="home-category-card">
                                     <div className="home-category-card__top">

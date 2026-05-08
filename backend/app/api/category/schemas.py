@@ -9,6 +9,7 @@ class CategoryItem(BaseModel):
     id: int
     name: str
     slug: str
+    icon: str | None = None
     description: str | None = None
     image_url: str | None = None
     display_order: int = 0
@@ -20,6 +21,7 @@ class CategoryItem(BaseModel):
 class CategoryRequest(BaseRequest):
     name: str = Field(min_length=1, max_length=255)
     slug: str | None = Field(default=None, min_length=1, max_length=255)
+    icon: str | None = Field(default="package", max_length=50)
     description: str | None = Field(default=None, max_length=500)
     image_url: str | None = Field(default=None, max_length=255)
     display_order: int = Field(default=0)

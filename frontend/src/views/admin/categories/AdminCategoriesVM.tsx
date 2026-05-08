@@ -4,6 +4,7 @@ import { BaseViewModelFunc, BaseConfig, BaseAction, useBaseViewModel } from '@/c
 import { ApiResultType } from '@/core/api';
 import { t } from '@/core/localized';
 import type { Category } from "@/data/models/Category";
+import { DEFAULT_CATEGORY_ICON } from "@/core/utils/categoryIcon";
 
 interface Config extends BaseConfig {
     categories: Category[];
@@ -15,6 +16,7 @@ interface Config extends BaseConfig {
     isSaving: boolean;
     formName: string;
     formDesc: string;
+    formIcon: string;
     formError: string;
 }
 
@@ -24,6 +26,7 @@ interface Action extends BaseAction<Config> {
     closeModal: () => void;
     setFormName: (v: string) => void;
     setFormDesc: (v: string) => void;
+    setFormIcon: (v: string) => void;
     handleSave: () => Promise<void>;
     setDeleteId: (id: number | null) => void;
     handleDelete: () => Promise<void>;
@@ -44,6 +47,7 @@ export const AdminCategoriesVM: BaseViewModelFunc<Config, Action> = () => {
             isSaving: false,
             formName: '',
             formDesc: '',
+            formIcon: DEFAULT_CATEGORY_ICON,
             formError: '',
         }
     );
@@ -65,6 +69,7 @@ export const AdminCategoriesVM: BaseViewModelFunc<Config, Action> = () => {
         config.editItem = null;
         config.formName = '';
         config.formDesc = '';
+        config.formIcon = DEFAULT_CATEGORY_ICON;
         config.formError = '';
         config.isModalOpen = true;
         action.setNewConfig(config);
@@ -74,6 +79,7 @@ export const AdminCategoriesVM: BaseViewModelFunc<Config, Action> = () => {
         config.editItem = cat;
         config.formName = cat.name;
         config.formDesc = cat.description;
+        config.formIcon = cat.icon || DEFAULT_CATEGORY_ICON;
         config.formError = '';
         config.isModalOpen = true;
         action.setNewConfig(config);
@@ -95,6 +101,11 @@ export const AdminCategoriesVM: BaseViewModelFunc<Config, Action> = () => {
         action.setNewConfig(config);
     };
 
+    const setFormIcon = (v: string) => {
+        config.formIcon = v;
+        action.setNewConfig(config);
+    };
+
     const handleSave = async () => {
         if (!config.formName.trim()) {
             config.formError = t.admin.common.name_required();
@@ -103,7 +114,11 @@ export const AdminCategoriesVM: BaseViewModelFunc<Config, Action> = () => {
         }
         config.isSaving = true;
         action.setNewConfig(config);
-        const data = { name: config.formName.trim(), description: config.formDesc.trim() };
+        const data = {
+            name: config.formName.trim(),
+            description: config.formDesc.trim(),
+            icon: config.formIcon,
+        };
         const res = config.editItem
             ? await categoryRepository.adminUpdate(config.editItem.id, data)
             : await categoryRepository.adminCreate(data);
@@ -155,6 +170,7 @@ export const AdminCategoriesVM: BaseViewModelFunc<Config, Action> = () => {
             closeModal,
             setFormName,
             setFormDesc,
+            setFormIcon,
             handleSave,
             setDeleteId,
             handleDelete,

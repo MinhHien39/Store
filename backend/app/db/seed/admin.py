@@ -5,7 +5,7 @@ from app.db.core import engine
 from app.db.models import Admin
 
 DEFAULT_ADMIN_EMAIL = "admin@store.com"
-DEFAULT_ADMIN_PASSWORD = "Admin123456"
+DEFAULT_ADMIN_PASSWORD = "123456"
 
 
 def seed_admin():
@@ -14,7 +14,13 @@ def seed_admin():
         admin = db.exec(stmt).first()
 
         if admin:
-            logger.info("Admin user already exists, skipping seeding.")
+            admin.password = PasswordHelper.hash_password(DEFAULT_ADMIN_PASSWORD)
+            admin.full_name = admin.full_name or "Super Admin"
+            admin.status = UserStatus.ACTIVE.to_value()
+            admin.updated_by = "seed"
+            db.add(admin)
+            db.commit()
+            logger.info("Admin user already exists, password reset successfully.")
             return
 
         admin = Admin(

@@ -49,6 +49,7 @@ class CategoryService(BaseService):
             id=category.id,
             name=category.name,
             slug=category.slug,
+            icon=category.icon,
             description=category.description,
             image_url=category.image_url,
             display_order=category.display_order,
@@ -79,6 +80,7 @@ class CategoryService(BaseService):
         category = Category(
             name=payload.name,
             slug=slug,
+            icon=payload.icon or "package",
             description=payload.description,
             image_url=payload.image_url,
             display_order=payload.display_order,
@@ -101,6 +103,7 @@ class CategoryService(BaseService):
 
         category.name = payload.name
         category.slug = slug
+        category.icon = payload.icon or "package"
         category.description = payload.description
         category.image_url = payload.image_url
         category.display_order = payload.display_order
