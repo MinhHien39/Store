@@ -81,6 +81,7 @@ services:
       - type: bind
         source: ${HOST_PROJECT_DIR:-.}/logs/backend
         target: /backend/logs
+      - backend-uploads:/backend/uploads
     mem_limit: 1536m
     memswap_limit: 1536m
     restart: always
@@ -101,6 +102,7 @@ services:
       - TZ=Asia/Ho_Chi_Minh
       - ENV=${ENV}
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - BACKEND_INTERNAL_URL=http://backend:8000
     ports:
       - ${NEXT_PUBLIC_PORT}:3000
     depends_on:
@@ -140,7 +142,9 @@ services:
         source: ${HOST_PROJECT_DIR:-.}/nginx/certs
         target: /etc/nginx/certs
         read_only: true
+      - backend-uploads:/backend/uploads:ro
 
 volumes:
   mysql-data:
   redis-data:
+  backend-uploads:
