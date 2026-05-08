@@ -24,7 +24,9 @@ class CategoryService(BaseService):
         base_slug = slug or self._slugify(name)
 
         if slug:
-            stmt = select(Category).where(Category.slug == base_slug, Category.is_deleted == False)
+            # Explicit slug: check uniqueness across ALL rows (including soft-deleted)
+            # to avoid unique constraint violations on the DB index
+            stmt = select(Category).where(Category.slug == base_slug)
             if category_id is not None:
                 stmt = stmt.where(Category.id != category_id)
             existing = self.db.exec(stmt).first()
@@ -35,7 +37,8 @@ class CategoryService(BaseService):
         candidate = base_slug
         index = 2
         while True:
-            stmt = select(Category).where(Category.slug == candidate, Category.is_deleted == False)
+            # Auto-generated slug: also check ALL rows to avoid DB unique constraint
+            stmt = select(Category).where(Category.slug == candidate)
             if category_id is not None:
                 stmt = stmt.where(Category.id != category_id)
             existing = self.db.exec(stmt).first()
