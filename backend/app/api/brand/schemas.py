@@ -19,7 +19,7 @@ class BrandItem(BaseModel):
 
 class BrandRequest(BaseRequest):
     name: str = Field(min_length=1, max_length=255)
-    slug: str = Field(min_length=1, max_length=255)
+    slug: str | None = Field(default=None, min_length=1, max_length=255)
     description: str | None = Field(default=None, max_length=500)
     logo_url: str | None = Field(default=None, max_length=255)
     display_order: int = Field(default=0)

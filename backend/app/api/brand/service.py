@@ -1,3 +1,6 @@
+import re
+import unicodedata
+
 from sqlmodel import select
 
 from app.core import BaseService, create_service, DataNotFoundException, DefaultException
@@ -7,6 +10,40 @@ from .schemas import BrandItem, BrandRequest
 
 
 class BrandService(BaseService):
+    @staticmethod
+    def _slugify(value: str) -> str:
+        normalized = unicodedata.normalize("NFKD", value.replace("đ", "d").replace("Đ", "D"))
+        slug = re.sub(
+            r"[^a-zA-Z0-9]+",
+            "-",
+            normalized.encode("ascii", "ignore").decode("ascii").lower(),
+        ).strip("-")
+        return slug or "brand"
+
+    def _resolve_slug(self, name: str, slug: str | None, brand_id: int | None = None) -> str:
+        base_slug = slug or self._slugify(name)
+
+        if slug:
+            stmt = select(Brand).where(Brand.slug == base_slug, Brand.is_deleted == False)
+            if brand_id is not None:
+                stmt = stmt.where(Brand.id != brand_id)
+            existing = self.db.exec(stmt).first()
+            if existing:
+                raise DefaultException(message="Brand slug already exists")
+            return base_slug
+
+        candidate = base_slug
+        index = 2
+        while True:
+            stmt = select(Brand).where(Brand.slug == candidate, Brand.is_deleted == False)
+            if brand_id is not None:
+                stmt = stmt.where(Brand.id != brand_id)
+            existing = self.db.exec(stmt).first()
+            if not existing:
+                return candidate
+            candidate = f"{base_slug}-{index}"
+            index += 1
+
     def _to_item(self, brand: Brand) -> BrandItem:
         return BrandItem(
             id=brand.id,
@@ -37,15 +74,11 @@ class BrandService(BaseService):
         return self._to_item(brand)
 
     def create(self, payload: BrandRequest) -> BrandItem:
-        existing = self.db.exec(
-            select(Brand).where(Brand.slug == payload.slug, Brand.is_deleted == False)
-        ).first()
-        if existing:
-            raise DefaultException(message="Brand slug already exists")
+        slug = self._resolve_slug(payload.name, payload.slug)
 
         brand = Brand(
             name=payload.name,
-            slug=payload.slug,
+            slug=slug,
             description=payload.description,
             logo_url=payload.logo_url,
             display_order=payload.display_order,
@@ -64,18 +97,10 @@ class BrandService(BaseService):
         if not brand:
             raise DataNotFoundException(message="Brand not found")
 
-        existing = self.db.exec(
-            select(Brand).where(
-                Brand.slug == payload.slug,
-                Brand.id != brand_id,
-                Brand.is_deleted == False,
-            )
-        ).first()
-        if existing:
-            raise DefaultException(message="Brand slug already exists")
+        slug = self._resolve_slug(payload.name, payload.slug, brand_id=brand_id)
 
         brand.name = payload.name
-        brand.slug = payload.slug
+        brand.slug = slug
         brand.description = payload.description
         brand.logo_url = payload.logo_url
         brand.display_order = payload.display_order

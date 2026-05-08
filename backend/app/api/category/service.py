@@ -1,3 +1,6 @@
+import re
+import unicodedata
+
 from sqlmodel import select
 
 from app.core import BaseService, create_service, DataNotFoundException, DefaultException
@@ -7,6 +10,40 @@ from .schemas import CategoryItem, CategoryRequest
 
 
 class CategoryService(BaseService):
+    @staticmethod
+    def _slugify(value: str) -> str:
+        normalized = unicodedata.normalize("NFKD", value.replace("đ", "d").replace("Đ", "D"))
+        slug = re.sub(
+            r"[^a-zA-Z0-9]+",
+            "-",
+            normalized.encode("ascii", "ignore").decode("ascii").lower(),
+        ).strip("-")
+        return slug or "category"
+
+    def _resolve_slug(self, name: str, slug: str | None, category_id: int | None = None) -> str:
+        base_slug = slug or self._slugify(name)
+
+        if slug:
+            stmt = select(Category).where(Category.slug == base_slug, Category.is_deleted == False)
+            if category_id is not None:
+                stmt = stmt.where(Category.id != category_id)
+            existing = self.db.exec(stmt).first()
+            if existing:
+                raise DefaultException(message="Category slug already exists")
+            return base_slug
+
+        candidate = base_slug
+        index = 2
+        while True:
+            stmt = select(Category).where(Category.slug == candidate, Category.is_deleted == False)
+            if category_id is not None:
+                stmt = stmt.where(Category.id != category_id)
+            existing = self.db.exec(stmt).first()
+            if not existing:
+                return candidate
+            candidate = f"{base_slug}-{index}"
+            index += 1
+
     def _to_item(self, category: Category) -> CategoryItem:
         return CategoryItem(
             id=category.id,
@@ -37,16 +74,11 @@ class CategoryService(BaseService):
         return self._to_item(category)
 
     def create(self, payload: CategoryRequest) -> CategoryItem:
-        # Check slug uniqueness
-        existing = self.db.exec(
-            select(Category).where(Category.slug == payload.slug, Category.is_deleted == False)
-        ).first()
-        if existing:
-            raise DefaultException(message="Category slug already exists")
+        slug = self._resolve_slug(payload.name, payload.slug)
 
         category = Category(
             name=payload.name,
-            slug=payload.slug,
+            slug=slug,
             description=payload.description,
             image_url=payload.image_url,
             display_order=payload.display_order,
@@ -65,19 +97,10 @@ class CategoryService(BaseService):
         if not category:
             raise DataNotFoundException(message="Category not found")
 
-        # Check slug uniqueness (exclude self)
-        existing = self.db.exec(
-            select(Category).where(
-                Category.slug == payload.slug,
-                Category.id != category_id,
-                Category.is_deleted == False,
-            )
-        ).first()
-        if existing:
-            raise DefaultException(message="Category slug already exists")
+        slug = self._resolve_slug(payload.name, payload.slug, category_id=category_id)
 
         category.name = payload.name
-        category.slug = payload.slug
+        category.slug = slug
         category.description = payload.description
         category.image_url = payload.image_url
         category.display_order = payload.display_order
