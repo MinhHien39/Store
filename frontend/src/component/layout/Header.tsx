@@ -94,7 +94,7 @@ const Header: React.FC = () => {
                 <Link
                     to={AppRoutePath.HOME}
                     className="store-header__logo"
-                    aria-label="StoreAmazon home"
+                    aria-label="Store home"
                 >
                     <span className="store-header__logo-icon">
                         <ShoppingBag size={22} />
@@ -234,7 +234,7 @@ const Header: React.FC = () => {
                     <div className="store-header__mobile-drawer motion-fade-up">
                         <div className="store-header__mobile-drawer-top">
                             <div>
-                                <p className="store-header__mobile-drawer-brand">StoreAmazon</p>
+                                <p className="store-header__mobile-drawer-brand">Store</p>
                                 <p className="store-header__mobile-drawer-desc">Clean shopping workspace</p>
                             </div>
                             <button className="icon-btn" onClick={() => setIsMobileMenuOpen(false)} aria-label={t.common.close()}>

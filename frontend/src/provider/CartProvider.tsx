@@ -22,7 +22,7 @@ interface CartContextType {
     subtotal: number;
 }
 
-const CART_STORAGE_KEY = "storeamazon_cart";
+const CART_STORAGE_KEY = "store_cart";
 
 const CartContext = createContext<CartContextType | null>(null);
 

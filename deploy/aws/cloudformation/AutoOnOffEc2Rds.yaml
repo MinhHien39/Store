@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Automated EC2 and RDS Start and Stop using Lambda and EventBridge for storeamazon-prd'
+Description: 'Automated EC2 and RDS Start and Stop using Lambda and EventBridge for store-prd'
 
 Parameters:
   Ec2InstanceIds:
@@ -10,11 +10,11 @@ Parameters:
   RdsInstanceIds:
     Type: 'CommaDelimitedList'
     Description: 'Comma-separated list of RDS instance IDs to be managed'
-    Default: 'storeamazon-prd-db-01' # RDS Instance Identifier
+    Default: 'store-prd-db-01' # RDS Instance Identifier
 
 Resources:
   # IAM Role for Lambda
-  storeamazonPrdLambdaExecutionRole:
+  storePrdLambdaExecutionRole:
     Type: 'AWS::IAM::Role'
     Properties:
       AssumeRolePolicyDocument:
@@ -44,12 +44,12 @@ Resources:
                 Resource: '*'
 
   # Lambda Function
-  storeamazonPrdEc2AndRdsControlLambda:
+  storePrdEc2AndRdsControlLambda:
     Type: 'AWS::Lambda::Function'
     Properties:
-      FunctionName: 'storeamazon-prd-ec2-and-rds-control-lambda'
+      FunctionName: 'store-prd-ec2-and-rds-control-lambda'
       Handler: 'index.lambda_handler'
-      Role: !GetAtt storeamazonPrdLambdaExecutionRole.Arn
+      Role: !GetAtt storePrdLambdaExecutionRole.Arn
       Code:
         ZipFile: |
           import boto3
@@ -100,47 +100,47 @@ Resources:
           RDS_INSTANCE_IDS: !Join [',', !Ref RdsInstanceIds]
 
   # EventBridge Rule for Starting EC2 and RDS (8AM JST, which is 23:00 UTC the previous day)
-  storeamazonPrdStartEC2AndRDSEventRule:
+  storePrdStartEC2AndRDSEventRule:
     Type: 'AWS::Events::Rule'
     Properties:
-      Name: 'storeamazon-prd-start-ec2-and-rds-event-rule'
+      Name: 'store-prd-start-ec2-and-rds-event-rule'
       ScheduleExpression: 'cron(0 23 * * ? *)' # 8AM JST = 23PM UTC
       Targets:
-        - Arn: !GetAtt storeamazonPrdEc2AndRdsControlLambda.Arn
+        - Arn: !GetAtt storePrdEc2AndRdsControlLambda.Arn
           Id: 'StartEC2AndRDSTarget'
           Input: '{"action": "start"}'
       State: 'ENABLED'
 
   # EventBridge Rule for Stopping EC2 and RDS (6PM JST, which is 9:00 UTC)
-  storeamazonPrdStopEC2AndRDSEventRule:
+  storePrdStopEC2AndRDSEventRule:
     Type: 'AWS::Events::Rule'
     Properties:
-      Name: 'storeamazon-prd-stop-ec2-and-rds-event-rule'
+      Name: 'store-prd-stop-ec2-and-rds-event-rule'
       ScheduleExpression: 'cron(0 9 * * ? *)' # 6PM JST = 9AM UTC
       Targets:
-        - Arn: !GetAtt storeamazonPrdEc2AndRdsControlLambda.Arn
+        - Arn: !GetAtt storePrdEc2AndRdsControlLambda.Arn
           Id: 'StopEC2AndRDSTarget'
           Input: '{"action": "stop"}'
       State: 'ENABLED'
 
   # Permissions for EventBridge to invoke Lambda
-  storeamazonPrdLambdaStartPermission:
+  storePrdLambdaStartPermission:
     Type: 'AWS::Lambda::Permission'
     Properties:
-      FunctionName: !GetAtt storeamazonPrdEc2AndRdsControlLambda.Arn
+      FunctionName: !GetAtt storePrdEc2AndRdsControlLambda.Arn
       Action: 'lambda:InvokeFunction'
       Principal: 'events.amazonaws.com'
-      SourceArn: !GetAtt storeamazonPrdStartEC2AndRDSEventRule.Arn
+      SourceArn: !GetAtt storePrdStartEC2AndRDSEventRule.Arn
 
-  storeamazonPrdLambdaStopPermission:
+  storePrdLambdaStopPermission:
     Type: 'AWS::Lambda::Permission'
     Properties:
-      FunctionName: !GetAtt storeamazonPrdEc2AndRdsControlLambda.Arn
+      FunctionName: !GetAtt storePrdEc2AndRdsControlLambda.Arn
       Action: 'lambda:InvokeFunction'
       Principal: 'events.amazonaws.com'
-      SourceArn: !GetAtt storeamazonPrdStopEC2AndRDSEventRule.Arn
+      SourceArn: !GetAtt storePrdStopEC2AndRDSEventRule.Arn
 
 Outputs:
   LambdaFunctionArn:
     Description: 'Lambda Function ARN'
-    Value: !GetAtt storeamazonPrdEc2AndRdsControlLambda.Arn
+    Value: !GetAtt storePrdEc2AndRdsControlLambda.Arn

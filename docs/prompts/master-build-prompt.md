@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Master Build Prompt — StoreAmazon Web Bán Hàng
+=======
+# Master Build Prompt — Store Web Bán Hàng
+>>>>>>> af30aae (First Commit)
 
 > **Mục tiêu**: Viết toàn bộ source code hoàn chỉnh cho hệ thống web bán hàng gồm Admin + User,
 > lấy 100% code mẫu và format coding từ dự án Iretoru đã đính kèm.
@@ -14,7 +18,11 @@
 npm install -g uipro-cli
 
 # Vào thư mục frontend
+<<<<<<< HEAD
 cd /Volumes/Working/StoreAmazon/frontend
+=======
+cd /Volumes/Working/Store/frontend
+>>>>>>> af30aae (First Commit)
 
 # Cài skill cho Copilot / Cursor / Claude
 uipro init --ai copilot   # GitHub Copilot
@@ -29,7 +37,11 @@ Kết quả: thư mục `.github/skills/ui-ux-pro-max/` (hoặc `.claude/skills/
 ### 0.2 Cấu trúc folder dự án (đã có, giữ nguyên)
 
 ```
+<<<<<<< HEAD
 StoreAmazon/
+=======
+Store/
+>>>>>>> af30aae (First Commit)
 ├── backend/              # FastAPI
 ├── frontend/             # Next.js 15 + Tailwind 4
 ├── database/             # MySQL
@@ -190,7 +202,11 @@ class ProductRepositoryImpl extends BaseRepository {
 
 ---
 
+<<<<<<< HEAD
 ## 2. TECH STACK (ĐỒNG BỘ VỚI STOREAMAZON HIỆN TẠI)
+=======
+## 2. TECH STACK (ĐỒNG BỘ VỚI STORE HIỆN TẠI)
+>>>>>>> af30aae (First Commit)
 
 ### Backend
 ```
@@ -730,7 +746,11 @@ from app.core import logger, PasswordHelper, UserStatus
 from app.db.core import engine
 from app.db.models import Admin
 
+<<<<<<< HEAD
 DEFAULT_ADMIN_EMAIL = "admin@storeamazon.com"
+=======
+DEFAULT_ADMIN_EMAIL = "admin@store.com"
+>>>>>>> af30aae (First Commit)
 DEFAULT_ADMIN_PASSWORD = "Admin123456"
 
 def seed_admin():
@@ -1147,7 +1167,11 @@ python3 .github/skills/ui-ux-pro-max/scripts/search.py \
   "ecommerce marketplace store" \
   --design-system \
   --persist \
+<<<<<<< HEAD
   -p "StoreAmazon"
+=======
+  -p "Store"
+>>>>>>> af30aae (First Commit)
 ```
 
 Dùng file `design-system/MASTER.md` sinh ra làm hướng dẫn màu sắc, typography.
@@ -1462,7 +1486,11 @@ def test_delete_product_admin(client: TestClient, admin_token: str):
 def test_admin_login(client: TestClient):
     # Seed admin trước
     res = client.post("/api/v1/admin/auth/login", json={
+<<<<<<< HEAD
         "email": "admin@storeamazon.com",
+=======
+        "email": "admin@store.com",
+>>>>>>> af30aae (First Commit)
         "password": "Admin123456",
     })
     assert res.json()["success"] is True
@@ -1470,7 +1498,11 @@ def test_admin_login(client: TestClient):
 
 def test_admin_login_wrong_password(client: TestClient):
     res = client.post("/api/v1/admin/auth/login", json={
+<<<<<<< HEAD
         "email": "admin@storeamazon.com", "password": "WRONG"
+=======
+        "email": "admin@store.com", "password": "WRONG"
+>>>>>>> af30aae (First Commit)
     })
     assert res.json()["success"] is False
 
@@ -1484,7 +1516,7 @@ def test_admin_me_with_token(client: TestClient, admin_token: str):
         headers={"Authorization": f"Bearer {admin_token}"}
     )
     assert res.json()["success"] is True
-    assert res.json()["data"]["email"] == "admin@storeamazon.com"
+    assert res.json()["data"]["email"] == "admin@store.com"
 ```
 
 ---
@@ -1493,13 +1525,13 @@ def test_admin_me_with_token(client: TestClient, admin_token: str):
 
 ```env
 # environment/.env.local
-APP_NAME=storeamazon
+APP_NAME=store
 ENV=local
 
 # Database
-DATABASE_URL=mysql+pymysql://appuser:apppassword@db:3306/storeamazon_local
+DATABASE_URL=mysql+pymysql://appuser:apppassword@db:3306/store_local
 DATABASE_ROOT_PASSWORD=rootpassword
-DATABASE_NAME=storeamazon_local
+DATABASE_NAME=store_local
 DATABASE_USER=appuser
 DATABASE_PASSWORD=apppassword
 DATABASE_PORT=3306
@@ -1527,7 +1559,7 @@ CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost
 EMAIL_HOST=smtp.gmail.com
 EMAIL_HOST_USER=
 EMAIL_HOST_PASSWORD=
-MAIL_FROM=noreply@storeamazon.com
+MAIL_FROM=noreply@store.com
 MAIL_PORT=587
 ```
 
@@ -1536,7 +1568,7 @@ MAIL_PORT=587
 ## 12. CHECKLIST IMPLEMENTATION
 
 ### Phase 1 — Core (phải làm trước)
-- [ ] Copy core/ layer từ Iretoru vào StoreAmazon backend (giữ nguyên 100%)
+- [ ] Copy core/ layer từ Iretoru vào Store backend (giữ nguyên 100%)
 - [ ] Tạo `UserRole.ADMIN=1`, `UserRole.STORE_USER=2`
 - [ ] Tạo models: Admin, StoreUser, Category, Brand, Product, ProductImage, Order, OrderItem
 - [ ] Alembic migration `0001_init.py`
@@ -1581,21 +1613,21 @@ cp environment/.env.local.example environment/.env.local
 docker compose --profile local -f compose.yml up --build
 
 # 3. Seed data (sau khi backend healthy)
-docker exec storeamazon-backend-local \
+docker exec store-backend-local \
   python -m app.db.seed
 
 # 4. Chạy migrations
-docker exec storeamazon-backend-local \
+docker exec store-backend-local \
   alembic upgrade head
 
 # 5. Kiểm tra
 # API docs: http://localhost:8000/docs
 # Frontend: http://localhost:3000
-# Admin login: admin@storeamazon.com / Admin123456
+# Admin login: admin@store.com / Admin123456
 # User login:  user1@gmail.com / User123456
 
 # 6. Chạy unit tests
-docker exec storeamazon-backend-local \
+docker exec store-backend-local \
   pytest tests/ -v
 ```
 
@@ -1629,5 +1661,5 @@ docker exec storeamazon-backend-local \
 6. **UI-UX Pro Max** — sau khi cài, luôn generate design system trước khi code UI:
    ```bash
    python3 .github/skills/ui-ux-pro-max/scripts/search.py \
-     "ecommerce general store" --design-system -p "StoreAmazon"
+     "ecommerce general store" --design-system -p "Store"
    ```

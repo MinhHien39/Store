@@ -4,7 +4,7 @@ from app.core import logger, PasswordHelper, UserStatus
 from app.db.core import engine
 from app.db.models import Admin
 
-DEFAULT_ADMIN_EMAIL = "admin@storeamazon.com"
+DEFAULT_ADMIN_EMAIL = "admin@store.com"
 DEFAULT_ADMIN_PASSWORD = "Admin123456"
 
 

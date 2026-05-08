@@ -533,7 +533,7 @@
       "legal_notice": "Legal Notice",
       "privacy_policy": "Privacy Policy",
       "terms": "Terms of Use",
-      "copyright": "© 2026 StoreAmazon. All rights reserved."
+      "copyright": "© 2026 Store. All rights reserved."
     }
   },
   "admin": {
@@ -552,13 +552,13 @@
       "password_label": "Password",
       "submit": "Login",
       "submitting": "Logging in...",
-      "test_credentials": "Seed login: admin@storeamazon.com / Admin123456",
+      "test_credentials": "Seed login: admin@store.com / Admin123456",
       "error_required": "Please enter email and password.",
       "error_failed": "Login failed. Please check your credentials."
     },
     "dashboard": {
       "title": "Dashboard",
-      "subtitle": "StoreAmazon inventory & management overview",
+      "subtitle": "Store inventory & management overview",
       "products_label": "Products",
       "categories_label": "Categories",
       "brands_label": "Brands",

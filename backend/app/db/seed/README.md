@@ -89,7 +89,7 @@ Successfully processed folders are **moved** to `uploaded/<env>/`.
 | Variable         | Values                    | Description                                            |
 | ---------------- | ------------------------- | ------------------------------------------------------ |
 | `ENV`            | `local` \| `dev` \| `prd` | Selects register/uploaded sub-folder and S3 env prefix |
-| `S3_BUCKET_NAME` | e.g. `cider-storeamazon`      | Target S3 bucket                                       |
+| `S3_BUCKET_NAME` | e.g. `store-bucket`     | Target S3 bucket                                       |
 | `DATABASE_URL`   | DB connection string      | Target database                                        |
 
 ### Run commands
@@ -123,7 +123,7 @@ dev/templates/4/4.png
 ### Expected log output
 
 ```
-🚀 seed_template started | env=dev | bucket=storeamazon-bucket
+🚀 seed_template started | env=dev | bucket=store-bucket
    register : .../templates/register/dev
    uploaded : .../templates/uploaded/dev
 📂 Processing folder: 4

@@ -530,7 +530,7 @@
       "legal_notice": "Thông tin pháp lý",
       "privacy_policy": "Chính sách bảo mật",
       "terms": "Điều khoản sử dụng",
-      "copyright": "© 2026 StoreAmazon. Tất cả quyền được bảo lưu."
+      "copyright": "© 2026 Store. Tất cả quyền được bảo lưu."
     }
   },
   "admin": {
@@ -549,13 +549,13 @@
       "password_label": "Mật khẩu",
       "submit": "Đăng nhập",
       "submitting": "Đang đăng nhập...",
-      "test_credentials": "Đăng nhập seed: admin@storeamazon.com / Admin123456",
+      "test_credentials": "Đăng nhập seed: admin@store.com / Admin123456",
       "error_required": "Vui lòng nhập email và mật khẩu.",
       "error_failed": "Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập."
     },
     "dashboard": {
       "title": "Bảng điều khiển",
-      "subtitle": "Tổng quan kho hàng & quản lý StoreAmazon",
+      "subtitle": "Tổng quan kho hàng & quản lý Store",
       "products_label": "Sản phẩm",
       "categories_label": "Danh mục",
       "brands_label": "Thương hiệu",

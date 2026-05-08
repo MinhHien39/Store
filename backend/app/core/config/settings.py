@@ -38,7 +38,7 @@ class Settings:
     # Redis
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/1")
     REDIS_PORT: int = int(os.getenv("REDIS_PORT", "6379"))
-    REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "Cider2026")
+    REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "")
     
     # Email Settings
     MAIL_USERNAME: str = os.getenv("EMAIL_HOST_USER", "")

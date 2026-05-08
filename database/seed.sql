@@ -1,7 +1,7 @@
 -- =============================================================
--- StoreAmazon - Seed Data
+-- Store - Seed Data
 -- Run after tables are created (after first docker-compose up)
--- Admin login: admin1@gmail.com / Cider123456
+-- Admin login: admin1@gmail.com / Store123456
 -- =============================================================
 
 SET NAMES utf8mb4;
@@ -9,7 +9,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 -- -------------------------------------------------------------
 -- ADMINS
--- password = Cider123456 (argon2id hash)
+-- password = Store123456 (argon2id hash)
 -- -------------------------------------------------------------
 INSERT IGNORE INTO admins (created_at, created_by, updated_at, updated_by, is_deleted, email, password, full_name, status)
 VALUES (

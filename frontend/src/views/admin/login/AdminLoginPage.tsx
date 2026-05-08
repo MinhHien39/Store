@@ -45,7 +45,7 @@ const AdminLoginPage: React.FC = () => {
                             <input id="email" type="email"
                                 value={config.request.emailOrUserId || ""}
                                 onChange={(e) => action.setNewConfig({ request: { ...config.request, emailOrUserId: e.target.value } as any })}
-                                placeholder="admin@storeamazon.com"
+                                placeholder="admin@store.com"
                                 className="input" autoComplete="email" />
                         </div>
 

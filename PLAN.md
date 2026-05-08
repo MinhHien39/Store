@@ -7,8 +7,8 @@ Build an e-commerce website with Admin/User role-based access.
 ## 1. Must Read First
 
 - Old backend source: `/Volumes/Working/iretoru`
-- UI/UX skill folder: `/Volumes/Working/StoreAmazon/ui-ux-pro-max-skill`
-- Main project spec file: `/Volumes/Working/StoreAmazon/docs/prompts/master-build-prompt.md`
+- UI/UX skill folder: `/Volumes/Working/Store/ui-ux-pro-max-skill`
+- Main project spec file: `/Volumes/Working/Store/docs/prompts/master-build-prompt.md`
 - Google Sheet spec: use the provided spreadsheet as the data, screen, function, and API reference.
 
 Before implementation, read the files and folders above, then follow their patterns.
@@ -133,8 +133,13 @@ Each model API group must support list, detail, create, update, and delete where
 ## 11. Frontend Direction
 
 - Use Next.js.
+<<<<<<< HEAD
 - Read and follow `/Volumes/Working/StoreAmazon/ui-ux-pro-max-skill`.
 - Follow `/Volumes/Working/StoreAmazon/docs/prompts/frontend-nextjs-iretoru-localized.md`.
+=======
+- Read and follow `/Volumes/Working/Store/ui-ux-pro-max-skill`.
+- Follow `/Volumes/Working/Store/docs/prompts/frontend-nextjs-iretoru-localized.md`.
+>>>>>>> af30aae (First Commit)
 - Keep storefront pages and admin pages clearly separated.
 - Protect admin screens with role-based route guards.
 - Avoid hard-coded visible text if the existing frontend pattern requires localization.

@@ -53,7 +53,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                             <Package size={20} />
                         </span>
                         <span>
-                            <span className="admin-sidebar__brand-name">StoreAmazon</span>
+                            <span className="admin-sidebar__brand-name">Store</span>
                             <span className="admin-sidebar__brand-sub">Admin Console</span>
                         </span>
                     </Link>
@@ -99,7 +99,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                         <Menu size={22} />
                     </button>
                     <div className="admin-topbar__info">
-                        <p className="admin-topbar__title">StoreAmazon Admin</p>
+                        <p className="admin-topbar__title">Store Admin</p>
                         <p className="admin-topbar__desc">Products, categories, brands and orders</p>
                     </div>
                     <div className="admin-topbar__lang">

@@ -2,13 +2,13 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 const DEFAULT_BASIC_AUTH_USERNAME = "admin";
-const DEFAULT_BASIC_AUTH_PASSWORD = "storeamazon";
+const DEFAULT_BASIC_AUTH_PASSWORD = "store";
 
 const unauthorizedResponse = () =>
     new NextResponse("Authentication required.", {
         status: 401,
         headers: {
-            "WWW-Authenticate": 'Basic realm="StoreAmazon Admin", charset="UTF-8"',
+            "WWW-Authenticate": 'Basic realm="Store Admin", charset="UTF-8"',
         },
     });
 

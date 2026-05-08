@@ -1,5 +1,5 @@
 #!/bin/bash
-# ssh -i /Volumes/Working/remote/cider-storeamazon.pem ec2-user@57.182.103.190
+# ssh -i /Volumes/Working/remote/store.pem ec2-user@57.182.103.190
 
 # Usage:
 #   ./prd.sh          # pull + restart backend (default)
@@ -10,7 +10,7 @@
 #   ./prd.sh nginx    # reload nginx config only
 #   ./prd.sh fe       # pull FE dist only (bind mount → nginx picks up automatically, no restart needed)
 
-PEM_FILE="/Volumes/Working/remote/cider-storeamazon.pem"
+PEM_FILE="/Volumes/Working/remote/store.pem"
 USER="ec2-user"
 HOST="57.182.103.190"
 TARGET="${1:-restart}"
@@ -19,7 +19,7 @@ ssh -i "$PEM_FILE" "$USER@$HOST" 'sudo bash -s' "$TARGET" << 'ENDSSH'
 set -e
 
 TARGET="${1:-pull}"
-REPO="/home/ec2-user/storeamazon"
+REPO="/home/ec2-user/store"
 ENV_FILE="$REPO/environment/.env.prd"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -32,7 +32,7 @@ pull() {
     echo "📥 Pulling latest code..."
     eval "$(ssh-agent -s)"
     ls ~/.ssh/
-    echo "1" | ssh-add ~/.ssh/storeamazon
+    echo "1" | ssh-add ~/.ssh/store
     git -C "$REPO" fetch -a
     git -C "$REPO" checkout main
     git -C "$REPO" pull origin main
