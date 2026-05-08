@@ -1,0 +1,209 @@
+/* ========================================
+   TEXT COMPONENTS  
+   Modern text utilities with Tailwind-inspired design
+======================================== */
+
+.base-text {
+    color: var(--color-gray-700);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family-base);
+    font-weight: var(--font-normal);
+    line-height: var(--leading-normal);
+}
+
+/* ========================================
+   TEXT VARIANTS (Badge/Tag Style)
+======================================== */
+
+/* Primary Badge */
+.base-text--contained,
+.base-badge--primary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2-5);
+    background-color: var(--color-primary-600);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-semibold);
+    line-height: 1;
+}
+
+/* Outline Badge */
+.base-text--outline,
+.base-badge--outline {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2-5);
+    background-color: transparent;
+    color: var(--color-primary-600);
+    border: 1.5px solid var(--color-primary-600);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-semibold);
+    line-height: 1;
+}
+
+/* Fill Badge (legacy support) */
+.base-text--fill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2-5);
+    background-color: var(--color-primary-50);
+    color: var(--color-primary-700);
+    border: 1px solid var(--color-primary-200);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-medium);
+}
+
+/* Ghost/Subtle Badge */
+.base-badge--ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2-5);
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-700);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-medium);
+}
+
+/* Success Badge */
+.base-badge--success {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2-5);
+    background-color: var(--color-success-600);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-semibold);
+}
+
+/* Warning Badge */
+.base-badge--warning {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2-5);
+    background-color: var(--color-warning-600);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-semibold);
+}
+
+/* Error/Danger Badge */
+.base-badge--error,
+.base-badge--danger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2-5);
+    background-color: var(--color-error-600);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-semibold);
+}
+
+/* Info Badge */
+.base-badge--info {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2-5);
+    background-color: var(--color-info-600);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-semibold);
+}
+
+/* ========================================
+   BADGE SIZES
+======================================== */
+
+.base-text--small,
+.base-badge--sm {
+    padding: var(--space-0-5) var(--space-2);
+    font-size: 0.625rem;
+}
+
+.base-badge--lg {
+    padding: var(--space-1-5) var(--space-3);
+    font-size: var(--font-size-sm);
+}
+
+/* ========================================
+   BADGE WITH DOT INDICATOR
+======================================== */
+
+.base-badge--dot::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+/* ========================================
+   REMOVABLE BADGE
+======================================== */
+
+.base-badge--removable {
+    padding-right: var(--space-1);
+}
+
+.base-badge-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--space-4);
+    height: var(--space-4);
+    margin-left: var(--space-1);
+    border-radius: var(--radius-full);
+    background-color: rgba(0, 0, 0, 0.1);
+    color: currentColor;
+    cursor: pointer;
+    transition: var(--transition-all);
+}
+
+.base-badge-close:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================
+   NOTIFICATION BADGE (COUNT)
+======================================== */
+
+.base-badge--notification {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--space-5);
+    height: var(--space-5);
+    padding: 0 var(--space-1-5);
+    background-color: var(--color-error-600);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: 0.625rem;
+    font-weight: var(--font-bold);
+    line-height: 1;
+}
+
+/* ========================================
+   LEGACY NORMAL TEXT
+======================================== */
+
+.base-text--normal {
+    background-color: transparent;
+    color: var(--color-gray-700);
+    display: inline;
+}

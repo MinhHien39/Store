@@ -1,0 +1,351 @@
+/* ========================================
+   INPUT COMPONENTS
+   Modern input styles with Tailwind-inspired design
+======================================== */
+
+/* ========================================
+   INPUT CONTAINER
+======================================== */
+.base-input-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: var(--space-1-5);
+}
+
+.base-input-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+/* ========================================
+   INPUT LABELS
+======================================== */
+.base-input-label {
+    display: block;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-bold);
+    color: var(--color-gray-700);
+    margin-bottom: var(--space-1-5);
+}
+
+.base-input-label--required {
+    color: #d63a33;
+    font-weight: var(--font-black)
+}
+
+.base-input-label--optional {
+    color: #7b8797;
+    font-weight: var(--font-black)
+}
+
+.base-input-label--required::after {
+    color: var(--color-error-600);
+}
+
+.base-input-title {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-gray-600);
+    margin-bottom: var(--space-1);
+}
+
+/* ========================================
+   BASE INPUT
+======================================== */
+.base-input-form,
+.base-input {
+    width: 100%;
+    height: var(--space-11);
+    padding: var(--space-0) var(--space-3);
+    
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-normal);
+    font-family: var(--font-family-base);
+    line-height: var(--leading-normal);
+    color: var(--color-gray-900);
+    
+    background-color: rgba(238, 242, 248, 0.562);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-lg);
+    
+    outline: none;
+    transition: var(--transition-all);
+}
+
+.base-input-form::placeholder,
+.base-input::placeholder {
+    color: var(--color-gray-400);
+}
+
+/* Focus State */
+.base-input-form:focus,
+.base-input:focus {
+    border-width: 1.5px;
+    border-color: var(--primary-color);
+    box-shadow: var(--box-shadow-input);
+    background-color: white;
+}
+
+/* Hover State */
+.base-input-form:hover:not(:disabled),
+.base-input:hover:not(:disabled) {
+    border-color: var(--color-gray-400);
+}
+
+.base-input--text-area {
+    min-height: 7.5rem;
+    padding: var(--space-2) var(--space-3);
+    resize: vertical;
+}
+
+/* ========================================
+   INPUT VARIANTS
+======================================== */
+
+/* Small Input */
+.base-input--sm {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-xs);
+}
+
+/* Large Input */
+.base-input--lg {
+    padding: var(--space-3-5) var(--space-4);
+    font-size: var(--font-size-base);
+}
+
+/* Filled Input */
+.base-input--filled {
+    background-color: var(--color-gray-100);
+    border-color: transparent;
+}
+
+.base-input--filled:focus {
+    background-color: white;
+    border-color: var(--color-primary-500);
+}
+
+/* Underlined Input */
+.base-input--underline {
+    border: none;
+    border-bottom: 2px solid var(--color-gray-300);
+    border-radius: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.base-input--underline:focus {
+    border-bottom-color: var(--color-primary-500);
+    box-shadow: none;
+}
+
+/* ========================================
+   INPUT STATES
+======================================== */
+
+/* Disabled State */
+.base-input-form--disabled,
+.base-input-form:disabled,
+.base-input:disabled {
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-500);
+    cursor: not-allowed;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Error State */
+.base-input-form--error,
+.base-input--error {
+    border-color: var(--color-error-500);
+    background-color: var(--color-error-50);
+}
+
+.base-input-form--error:focus,
+.base-input--error:focus {
+    border-color: var(--color-error-600);
+    box-shadow: 0 0 0 3px var(--color-error-100);
+}
+
+/* Success State */
+.base-input--success {
+    border-color: var(--color-success-500);
+    background-color: var(--color-success-50);
+}
+
+.base-input--success:focus {
+    border-color: var(--color-success-600);
+    box-shadow: 0 0 0 3px var(--color-success-100);
+}
+
+/* Changed/Modified State */
+.base-input-form--changed,
+.base-input--changed {
+    background-color: var(--color-warning-50);
+    border-color: var(--color-warning-400);
+}
+
+/* ========================================
+   INPUT ICONS
+======================================== */
+.base-input-left-icon {
+    position: absolute;
+    left: var(--space-3);
+    height: var(--space-5);
+    width: var(--space-5);
+    color: var(--color-gray-400);
+    pointer-events: none;
+}
+
+.base-input-wrapper--with-left-icon .base-input-form {
+    padding-left: var(--space-10);
+}
+
+.base-input-right-icon {
+    position: absolute;
+    right: var(--space-3);
+    height: var(--space-5);
+    width: var(--space-5);
+    color: var(--color-gray-400);
+    cursor: pointer;
+    transition: var(--transition-colors);
+}
+
+.base-input-right-icon:hover {
+    color: var(--color-gray-600);
+}
+
+.base-input-wrapper--with-right-icon .base-input-form {
+    padding-right: var(--space-10);
+}
+
+/* ========================================
+   INPUT MESSAGES
+======================================== */
+.base-input-error-text,
+.base-input-message--error {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-top: var(--space-1);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-medium);
+    color: var(--color-error-700);
+}
+
+.base-input-helper-text,
+.base-input-message--helper {
+    display: block;
+    margin-top: var(--space-1);
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-600);
+}
+
+.base-input-success-text,
+.base-input-message--success {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-top: var(--space-1);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-medium);
+    color: var(--color-success-700);
+}
+
+/* ========================================
+   TEXTAREA
+======================================== */
+.base-textarea {
+    min-height: 120px;
+    resize: vertical;
+    padding: var(--space-3) var(--space-3-5);
+}
+
+.base-textarea--no-resize {
+    resize: none;
+}
+
+/* ========================================
+   INPUT GROUP
+======================================== */
+.base-input-group {
+    display: flex;
+    width: 100%;
+}
+
+.base-input-group .base-input-form {
+    border-radius: 0;
+}
+
+.base-input-group .base-input-form:first-child {
+    border-top-left-radius: var(--radius-lg);
+    border-bottom-left-radius: var(--radius-lg);
+}
+
+.base-input-group .base-input-form:last-child {
+    border-top-right-radius: var(--radius-lg);
+    border-bottom-right-radius: var(--radius-lg);
+}
+
+.base-input-group-addon {
+    display: flex;
+    align-items: center;
+    padding: var(--space-2-5) var(--space-3-5);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-gray-700);
+    background-color: var(--color-gray-100);
+    border: 2px solid var(--color-gray-300);
+    white-space: nowrap;
+}
+
+.base-input-group-addon:first-child {
+    border-top-left-radius: var(--radius-lg);
+    border-bottom-left-radius: var(--radius-lg);
+    border-right: none;
+}
+
+.base-input-group-addon:last-child {
+    border-top-right-radius: var(--radius-lg);
+    border-bottom-right-radius: var(--radius-lg);
+    border-left: none;
+}
+
+/* ========================================
+   SEARCH INPUT
+======================================== */
+.base-input-search {
+    position: relative;
+}
+
+.base-input-search .base-input-form {
+    padding-left: var(--space-10);
+    padding-right: var(--space-10);
+}
+
+.base-input-search-icon {
+    position: absolute;
+    left: var(--space-3);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-gray-400);
+    pointer-events: none;
+}
+
+.base-input-search-clear {
+    position: absolute;
+    right: var(--space-3);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-gray-400);
+    cursor: pointer;
+    transition: var(--transition-colors);
+}
+
+.base-input-search-clear:hover {
+    color: var(--color-gray-600);
+}

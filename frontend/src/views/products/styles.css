@@ -1,0 +1,354 @@
+/* views/products/styles.css - ProductListPage */
+
+/* ── Page header ── */
+.products-header {
+    border-bottom: 1px solid var(--color-gray-200);
+    background: linear-gradient(180deg, #fff 60%, #f8fafc 100%);
+}
+
+.products-header__inner {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 40px 0 32px;
+}
+
+.products-header__search {
+    display: flex;
+    gap: 12px;
+}
+
+.products-header__search-wrap {
+    width: 360px;
+}
+
+/* ── Layout ── */
+.products-layout {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 28px;
+    padding: 28px 0 56px;
+}
+
+/* ── Filter sidebar ── */
+.products-filter {
+    position: sticky;
+    top: 90px;
+    align-self: start;
+}
+
+.products-filter__inner {
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+
+.products-filter__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    background: #fafbfc;
+}
+
+.products-filter__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    font-weight: 900;
+    color: #0f172a;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+}
+
+.products-filter__title svg {
+    color: var(--color-primary);
+}
+
+.products-filter__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--color-primary);
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 800;
+}
+
+.products-filter__body {
+    padding: 6px 0;
+}
+
+.products-filter__section {
+    padding: 14px 20px;
+}
+
+.products-filter__section + .products-filter__section {
+    border-top: 1px solid #f1f5f9;
+}
+
+.products-filter__section-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 10px;
+    color: #64748b;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.products-filter__section-label svg {
+    flex-shrink: 0;
+}
+
+/* Filter chip list */
+.products-filter__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.products-filter__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 32px;
+    padding: 0 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    background: #fff;
+    color: #475569;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.products-filter__chip:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.products-filter__chip--active {
+    border-color: var(--color-primary);
+    background: #fff7ed;
+    color: var(--color-primary);
+    font-weight: 700;
+    box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.08);
+}
+
+.products-filter__chip--active:hover {
+    background: #fff1e0;
+    border-color: var(--color-primary);
+}
+
+/* Sort option list (vertical) */
+.products-filter__options {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.products-filter__option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 12px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: #475569;
+    font-size: 0.84rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.13s ease;
+}
+
+.products-filter__option:hover {
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.products-filter__option--active {
+    background: #fff7ed;
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+.products-filter__option-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #cbd5e1;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+}
+
+.products-filter__option--active .products-filter__option-dot {
+    background: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+}
+
+/* Clear filter button */
+.products-filter__clear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: calc(100% - 40px);
+    margin: 6px 20px 16px;
+    padding: 10px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    color: #64748b;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.products-filter__clear:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+    color: #0f172a;
+}
+
+.products-filter__clear svg {
+    flex-shrink: 0;
+}
+
+/* Active filters pills (shown above grid) */
+.products-active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.products-active-filters__label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-right: 4px;
+}
+
+.products-active-filters__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: #fff7ed;
+    border: 1px solid rgba(249, 115, 22, 0.15);
+    color: var(--color-primary);
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.products-active-filters__pill:hover {
+    background: #ffedd5;
+    border-color: rgba(249, 115, 22, 0.3);
+}
+
+.products-active-filters__pill svg {
+    flex-shrink: 0;
+}
+
+/* ── Product grid ── */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+/* ── Loading ── */
+.products-loading {
+    display: flex;
+    min-height: 420px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background-color: #fff;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+    .products-layout {
+        grid-template-columns: 220px minmax(0, 1fr);
+        gap: 20px;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .products-filter__chips {
+        gap: 5px;
+    }
+
+    .products-filter__chip {
+        height: 30px;
+        padding: 0 10px;
+        font-size: 0.76rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .products-header__inner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 28px 0 24px;
+    }
+
+    .products-header__search-wrap {
+        width: 100%;
+    }
+
+    .products-layout {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 20px 0 40px;
+    }
+
+    .products-filter {
+        position: static;
+    }
+
+    .products-filter__chips {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+    }
+
+    .products-filter__chips::-webkit-scrollbar {
+        display: none;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+}

@@ -1,0 +1,106 @@
+# ============================================================
+# OS & Editor
+# ============================================================
+.DS_Store
+Thumbs.db
+*.suo
+*.sw?
+.vscode/
+!.vscode/extensions.json
+.idea/
+
+# ============================================================
+# Environment & Secrets  ← QUAN TRỌNG: không bao giờ push lên
+# ============================================================
+.env
+.env.*
+environment/
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# ============================================================
+# Frontend (Next.js / Node)
+# ============================================================
+frontend/node_modules/
+frontend/.next/
+frontend/dist/
+frontend/build/
+frontend/.turbo/
+frontend/.vercel/
+frontend/coverage/
+
+# ============================================================
+# Backend (Python / FastAPI)
+# ============================================================
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/**/*.pyo
+backend/.venv/
+backend/venv/
+backend/.pytest_cache/
+backend/htmlcov/
+backend/.coverage
+backend/coverage.xml
+backend/dist/
+backend/build/
+backend/*.egg-info/
+
+# Upload files (user-uploaded media)
+backend/uploads/
+
+# Seed local template files
+backend/app/db/seed/template/register/local/
+backend/app/db/seed/template/uploaded/
+
+# ============================================================
+# Database
+# ============================================================
+database/data/
+*.sql.local
+*.db
+*.sqlite
+*.sqlite3
+
+# ============================================================
+# Docker / Compose
+# ============================================================
+# Giữ lại compose.yml và compose.prd.yml nhưng bỏ override local
+compose.override.yml
+docker-compose.override.yml
+
+# ============================================================
+# Logs
+# ============================================================
+*.log
+logs/
+backend/logs/
+
+# ============================================================
+# Deployment & SSH
+# ============================================================
+deploy/ssh/*.pem
+deploy/ssh/*.key
+deploy/ssh/id_*
+deploy/aws/.env*
+
+# ============================================================
+# Screenshots / Preview images (build artefacts)
+# ============================================================
+*.png
+*.jpg
+*.jpeg
+!docs/**/*.png
+!docs/**/*.jpg
+!ui-ux-pro-max-skill/screenshots/**
+!ui-ux-pro-max-skill/preview/**
+
+# ============================================================
+# Misc
+# ============================================================
+.cache/
+tmp/
+temp/

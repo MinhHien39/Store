@@ -1,0 +1,131 @@
+/* ========================================
+   TAB COMPONENTS
+   Modern tabs with Tailwind-inspired design
+======================================== */
+
+.base-tabs {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.base-tabs-list {
+    display: flex;
+    gap: var(--space-1);
+    border-bottom: 2px solid var(--color-gray-200);
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.base-tab-button {
+    position: relative;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-gray-600);
+    background-color: transparent;
+    border: none;
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition-all);
+    user-select: none;
+}
+
+.base-tab-button::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: transparent;
+    transition: var(--transition-all);
+}
+
+.base-tab-button:hover {
+    color: var(--color-primary-600);
+    background-color: var(--color-gray-50);
+}
+
+.base-tab-button.active {
+    color: var(--color-primary-600);
+    font-weight: var(--font-semibold);
+    background-color: transparent;
+}
+
+.base-tab-button.active::after {
+    background-color: var(--color-primary-600);
+}
+
+.base-tab-button:focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+}
+
+/* Tab Content */
+.base-tab-content {
+    padding: var(--space-4);
+}
+
+.base-tab-panel {
+    display: none;
+}
+
+.base-tab-panel.active {
+    display: block;
+    animation: fadeIn 200ms ease-out;
+}
+
+/* Pill Style Tabs */
+.base-tabs--pills .base-tabs-list {
+    border-bottom: none;
+    gap: var(--space-2);
+}
+
+.base-tabs--pills .base-tab-button {
+    border-radius: var(--radius-full);
+    padding: var(--space-2) var(--space-4);
+}
+
+.base-tabs--pills .base-tab-button::after {
+    display: none;
+}
+
+.base-tabs--pills .base-tab-button.active {
+    background-color: var(--color-primary-600);
+    color: white;
+}
+
+.base-tabs--pills .base-tab-button:hover {
+    background-color: var(--color-primary-100);
+}
+
+.base-tabs--pills .base-tab-button.active:hover {
+    background-color: var(--color-primary-700);
+}
+
+/* Boxed Style Tabs */
+.base-tabs--boxed .base-tab-button {
+    border: 1px solid transparent;
+}
+
+.base-tabs--boxed .base-tab-button.active {
+    border-color: var(--color-gray-200);
+    border-bottom-color: white;
+    background-color: white;
+    margin-bottom: -2px;
+}
+
+/* Container */
+.base-tab-container {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+}
+
+.base-tab-container .base-view,
+.base-tab-container .base-page {
+    top: 0 !important;
+}

@@ -1,0 +1,146 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Automated EC2 and RDS Start and Stop using Lambda and EventBridge for storeamazon-prd'
+
+Parameters:
+  Ec2InstanceIds:
+    Type: 'CommaDelimitedList'
+    Description: 'Comma-separated list of EC2 instance IDs to be managed'
+    Default: 'i-0724d6e5362534df2' # EC2 Instance ID
+
+  RdsInstanceIds:
+    Type: 'CommaDelimitedList'
+    Description: 'Comma-separated list of RDS instance IDs to be managed'
+    Default: 'storeamazon-prd-db-01' # RDS Instance Identifier
+
+Resources:
+  # IAM Role for Lambda
+  storeamazonPrdLambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Service:
+                - 'lambda.amazonaws.com'
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: 'LambdaEC2AndRDSControlPolicy'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: 'Allow'
+                Action:
+                  - 'ec2:DescribeInstances'
+                  - 'ec2:StartInstances'
+                  - 'ec2:StopInstances'
+                  - 'rds:DescribeDBInstances'
+                  - 'rds:StartDBInstance'
+                  - 'rds:StopDBInstance'
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+
+  # Lambda Function
+  storeamazonPrdEc2AndRdsControlLambda:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: 'storeamazon-prd-ec2-and-rds-control-lambda'
+      Handler: 'index.lambda_handler'
+      Role: !GetAtt storeamazonPrdLambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          import boto3
+          import os
+
+          ec2 = boto3.client('ec2', region_name='ap-northeast-1')
+          rds = boto3.client('rds', region_name='ap-northeast-1')
+
+          def lambda_handler(event, context):
+              instance_ids = os.getenv('INSTANCE_IDS').split(',')
+              rds_instance_ids = os.getenv('RDS_INSTANCE_IDS').split(',')
+              action = event['action']
+              
+              # EC2 Control
+              response = ec2.describe_instances(InstanceIds=instance_ids)
+              current_status = []
+              for reservation in response['Reservations']:
+                  for instance in reservation['Instances']:
+                      current_status.append(f"EC2 Instance {instance['InstanceId']} is {instance['State']['Name']}")
+
+              print("Current status of EC2 instances: " + ", ".join(current_status))
+
+              if action == 'start':
+                  ec2.start_instances(InstanceIds=instance_ids)
+                  print(f"Started EC2 instances: {instance_ids}")
+              elif action == 'stop':
+                  ec2.stop_instances(InstanceIds=instance_ids)
+                  print(f"Stopped EC2 instances: {instance_ids}")
+
+              # RDS Control
+              for rds_instance_id in rds_instance_ids:
+                  response = rds.describe_db_instances(DBInstanceIdentifier=rds_instance_id)
+                  db_instance_status = response['DBInstances'][0]['DBInstanceStatus']
+                  print(f"RDS Instance {rds_instance_id} is {db_instance_status}")
+                  
+                  if action == 'start' and db_instance_status == 'stopped':
+                      rds.start_db_instance(DBInstanceIdentifier=rds_instance_id)
+                      print(f"Started RDS instance: {rds_instance_id}")
+                  elif action == 'stop' and db_instance_status == 'available':
+                      rds.stop_db_instance(DBInstanceIdentifier=rds_instance_id)
+                      print(f"Stopped RDS instance: {rds_instance_id}")
+
+      Runtime: 'python3.13'
+      Timeout: 60
+      Environment:
+        Variables:
+          INSTANCE_IDS: !Join [',', !Ref Ec2InstanceIds]
+          RDS_INSTANCE_IDS: !Join [',', !Ref RdsInstanceIds]
+
+  # EventBridge Rule for Starting EC2 and RDS (8AM JST, which is 23:00 UTC the previous day)
+  storeamazonPrdStartEC2AndRDSEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: 'storeamazon-prd-start-ec2-and-rds-event-rule'
+      ScheduleExpression: 'cron(0 23 * * ? *)' # 8AM JST = 23PM UTC
+      Targets:
+        - Arn: !GetAtt storeamazonPrdEc2AndRdsControlLambda.Arn
+          Id: 'StartEC2AndRDSTarget'
+          Input: '{"action": "start"}'
+      State: 'ENABLED'
+
+  # EventBridge Rule for Stopping EC2 and RDS (6PM JST, which is 9:00 UTC)
+  storeamazonPrdStopEC2AndRDSEventRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: 'storeamazon-prd-stop-ec2-and-rds-event-rule'
+      ScheduleExpression: 'cron(0 9 * * ? *)' # 6PM JST = 9AM UTC
+      Targets:
+        - Arn: !GetAtt storeamazonPrdEc2AndRdsControlLambda.Arn
+          Id: 'StopEC2AndRDSTarget'
+          Input: '{"action": "stop"}'
+      State: 'ENABLED'
+
+  # Permissions for EventBridge to invoke Lambda
+  storeamazonPrdLambdaStartPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt storeamazonPrdEc2AndRdsControlLambda.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: 'events.amazonaws.com'
+      SourceArn: !GetAtt storeamazonPrdStartEC2AndRDSEventRule.Arn
+
+  storeamazonPrdLambdaStopPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt storeamazonPrdEc2AndRdsControlLambda.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: 'events.amazonaws.com'
+      SourceArn: !GetAtt storeamazonPrdStopEC2AndRDSEventRule.Arn
+
+Outputs:
+  LambdaFunctionArn:
+    Description: 'Lambda Function ARN'
+    Value: !GetAtt storeamazonPrdEc2AndRdsControlLambda.Arn

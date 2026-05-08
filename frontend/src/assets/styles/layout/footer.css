@@ -1,0 +1,122 @@
+/* layout/footer.css — Store Footer */
+
+.store-footer {
+    background-color: #111827;
+    color: #fff;
+}
+
+.store-footer__inner {
+    padding: var(--space-12) 0;
+}
+
+.store-footer__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-8);
+}
+
+/* Brand column */
+.store-footer__brand-link {
+    display: inline-block;
+    margin-bottom: var(--space-4);
+    text-decoration: none;
+}
+
+.store-footer__brand-name {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-extrabold);
+}
+
+.store-footer__brand-accent {
+    color: var(--color-primary);
+}
+
+.store-footer__brand-desc {
+    font-size: var(--font-size-sm);
+    color: #9ca3af;
+    line-height: 1.625;
+    margin-bottom: var(--space-4);
+}
+
+.store-footer__socials {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.store-footer__social-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-semibold);
+    color: #fff;
+    text-decoration: none;
+    transition: var(--transition-colors);
+    cursor: pointer;
+}
+
+.store-footer__social-btn--fb {
+    background-color: #1877f2;
+}
+
+.store-footer__social-btn--fb:hover {
+    background-color: #166fe5;
+}
+
+.store-footer__social-btn--msg {
+    background-color: #0084ff;
+}
+
+.store-footer__social-btn--msg:hover {
+    background-color: #0073e6;
+}
+
+/* Column */
+.store-footer__col-title {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-semibold);
+    margin-bottom: var(--space-4);
+}
+
+.store-footer__col-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.store-footer__col-link {
+    font-size: var(--font-size-sm);
+    color: #9ca3af;
+    text-decoration: none;
+    transition: var(--transition-colors);
+    cursor: pointer;
+}
+
+.store-footer__col-link:hover {
+    color: #fff;
+}
+
+.store-footer__col-text {
+    font-size: var(--font-size-sm);
+    color: #6b7280;
+}
+
+/* Bottom bar */
+.store-footer__bottom {
+    margin-top: var(--space-10);
+    padding-top: var(--space-6);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.store-footer__copyright {
+    font-size: var(--font-size-sm);
+    color: #6b7280;
+}

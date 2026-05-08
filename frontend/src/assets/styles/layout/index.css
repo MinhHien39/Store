@@ -1,0 +1,5 @@
+/* styles/layout/index.css */
+@import './header.css';
+@import './footer.css';
+@import './container.css';
+

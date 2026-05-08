@@ -1,0 +1,11 @@
+/* styles/modules/index.css */
+@import './text.css';
+@import './button.css';
+@import './input.css';
+@import './loading.css';
+@import './alert.css';
+@import './dialog.css';
+@import './table.css';
+@import './checkbox.css';
+@import './tab.css';
+@import './admin-form.css';

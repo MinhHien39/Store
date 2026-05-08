@@ -1,0 +1,3 @@
+id,name,slug,short_description,description,price,sale_price,stock_quantity,main_image_url,display_order,status,category_slug,brand_slug
+,iPhone 15 Pro Max,iphone-15-pro-max,Flagship smartphone,Premium smartphone with titanium frame,34990000,32990000,25,https://example.com/images/iphone-15-pro-max.jpg,1,1,dien-thoai,apple
+,Samsung Galaxy S24 Ultra,samsung-galaxy-s24-ultra,Android flagship,High-end Android phone with S Pen,31990000,29990000,18,https://example.com/images/s24-ultra.jpg,2,1,dien-thoai,samsung

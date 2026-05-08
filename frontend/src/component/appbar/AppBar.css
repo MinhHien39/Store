@@ -1,0 +1,216 @@
+/* App Bar */
+.app-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  height: var(--height-appBar, 3.5rem);
+  padding: 0 1rem 0 0.5rem;
+
+  color: black;
+  background-color: white;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+}
+
+.app-bar--menu-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  transition: all 0.1s ease-in;
+  cursor: pointer;
+}
+.app-bar--menu-button:hover {
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: var(--primary-color);
+}
+
+.app-bar--title {
+  flex-grow: 1;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.user-bar--user-info {
+  display: flex;
+  align-items: center;
+}
+
+.app-bar--username {
+  display: flex;
+  flex-direction: column;
+  margin-right: 1rem;
+}
+
+.app-bar--logout-button {
+  background-color: white;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  color: var(--primary-color);
+  font-weight: 700;
+  cursor: pointer;
+  border: var(--primary-color) 1px solid;
+}
+
+.app-bar--logout-button:hover {
+  opacity: 0.7;
+}
+
+/* Drawer */
+.app-drawer {
+  position: fixed;
+  top: 0;
+  left: calc(-1 * var(--width-drawerMenu, 16rem));
+  width: var(--width-drawerMenu, 16rem);
+  height: 100vh;
+  background-color: #fafafa;
+  box-shadow: 
+    0px 3px 5px -1px rgba(0, 0, 0, 0.2), 
+    0px 5px 8px 0px rgba(0, 0, 0, 0.15), 
+    0px 2px 10px 0px rgba(0, 0, 0, 0.1) !important;
+  z-index: 1000;
+  transition: all 0.25s ease-in-out;
+  background-color: white;
+}
+
+.app-drawer.open {
+  left: 0;
+}
+
+.app-drawer-header {
+  border-bottom: 1px solid #ccc;
+  position: relative;
+}
+
+.app-drawer-header img {
+  padding: 1rem;
+  object-fit: contain;
+}
+
+.app-drawer-list {
+  list-style: none;
+  padding: 0;
+}
+
+.app-drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin: 0.25rem 0.75rem;
+  border-radius: 0.5rem;
+}
+.app-drawer-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.app-drawer-item.selected {
+  background-color: var(--color-drawerMenu);
+  color: white;
+}
+.app-drawer-item.selected .app-drawer-icon {
+  filter: brightness(0) invert(1);
+}
+
+.app-drawer-icon {
+  width: 24px;
+  height: 24px;
+  transition: filter 0.2s ease;
+  color: var(--color-drawerMenu);
+}
+
+.app-drawer-item-arrow {
+    margin-left: auto;
+    font-size: 12px;
+}
+
+.app-drawer-sublist {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.app-drawer-subItem {
+    font-size: 1rem;
+    padding: 0.5rem 0;
+    padding-left: calc(0.75rem + 24px + 8px);
+    cursor: pointer;
+    color: #444;
+    margin: 0 0.75rem;
+    border-radius: 0.5rem;
+}
+.app-drawer-subItem:hover {
+    background-color: #efefef;
+}
+.app-drawer-subItem.selected {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Overlay */
+.app-drawer-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  display: none;
+}
+
+.app-drawer-header-back-button {
+  display: none;
+}
+
+.app-drawer-logout-button {
+  display: none;
+}
+
+
+@media (max-width: 768px) {
+  .app-bar .app-bar--logout-button {
+    display: none;
+  }
+
+  .app-bar--username {
+    margin-right: 0;
+    align-items: end;
+  }
+
+  .app-drawer-header-back-button {
+    display: block;
+    position: absolute;
+    top: -0.5rem;
+    right: 0rem;
+  }
+
+  .app-drawer-backdrop {
+    display: block;
+  }
+
+  .app-drawer-logout-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .app-drawer-item {
+    padding: 0.75rem 0.5rem;
+    font-size: 1.25rem;
+  }
+
+  .app-drawer-logo {
+    width: 160px;
+  }
+}

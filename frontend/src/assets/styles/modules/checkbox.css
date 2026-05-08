@@ -1,0 +1,92 @@
+/* ========================================
+   CHECKBOX COMPONENTS
+   Modern checkbox with Tailwind-inspired design
+======================================== */
+
+.base-checkbox {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+    user-select: none;
+}
+
+.base-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.base-checkbox .checkbox-box {
+    width: var(--space-5);
+    height: var(--space-5);
+    border: 2px solid var(--color-gray-400);
+    border-radius: var(--radius-md);
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-all);
+    flex-shrink: 0;
+}
+
+.base-checkbox:hover .checkbox-box {
+    border-color: var(--color-primary-500);
+    background-color: var(--color-primary-50);
+}
+
+.base-checkbox input[type="checkbox"]:checked + .checkbox-box {
+    background-color: var(--color-primary-600);
+    border-color: var(--color-primary-600);
+    box-shadow: var(--shadow-sm);
+}
+
+.base-checkbox input[type="checkbox"]:focus-visible + .checkbox-box {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+}
+
+.base-checkbox .checkbox-box svg {
+    display: none;
+    width: var(--space-4);
+    height: var(--space-4);
+    color: white;
+}
+
+.base-checkbox input[type="checkbox"]:checked + .checkbox-box svg {
+    display: block;
+    animation: checkmarkScale 200ms ease-out;
+}
+
+.base-checkbox .checkbox-label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-gray-700);
+    cursor: pointer;
+}
+
+.base-checkbox input[type="checkbox"]:disabled + .checkbox-box {
+    background-color: var(--color-gray-100);
+    border-color: var(--color-gray-300);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.base-checkbox input[type="checkbox"]:disabled ~ .checkbox-label {
+    color: var(--color-gray-400);
+    cursor: not-allowed;
+}
+
+@keyframes checkmarkScale {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

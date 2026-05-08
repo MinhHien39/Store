@@ -1,0 +1,72 @@
+[client]
+default-character-set = utf8mb4
+
+[mysql]
+default-character-set = utf8mb4
+
+[mysqld]
+# ===============================
+# BASIC
+# ===============================
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+skip-name-resolve
+sql_mode=STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION
+
+# ===============================
+# CONNECTION
+# ===============================
+max_connections = 10
+thread_cache_size = 2
+thread_stack = 256K
+
+# ===============================
+# INNODB (CRITICAL)
+# ===============================
+innodb_buffer_pool_size = 64M
+innodb_buffer_pool_instances = 1
+
+innodb_log_buffer_size = 8M
+innodb_log_file_size = 32M
+innodb_log_files_in_group = 2
+
+innodb_flush_method = O_DIRECT
+innodb_flush_log_at_trx_commit = 2
+
+innodb_change_buffering = none
+innodb_doublewrite = OFF
+
+# ===============================
+# TABLE CACHE
+# ===============================
+table_open_cache = 32
+table_definition_cache = 256
+
+# ===============================
+# PER-THREAD BUFFER (VERY IMPORTANT)
+# ===============================
+sort_buffer_size = 128K
+join_buffer_size = 128K
+read_buffer_size = 64K
+read_rnd_buffer_size = 128K
+
+# ===============================
+# TEMP TABLE
+# ===============================
+tmp_table_size = 8M
+max_heap_table_size = 8M
+
+# ===============================
+# MYISAM (DISABLE)
+# ===============================
+key_buffer_size = 1M
+
+# ===============================
+# PERFORMANCE / MONITOR
+# ===============================
+performance_schema = OFF
+
+# ===============================
+# SAFETY
+# ===============================
+max_allowed_packet = 16M

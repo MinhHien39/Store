@@ -1,0 +1,275 @@
+/* ========================================
+   BUTTON COMPONENTS
+   Modern button styles with Tailwind-inspired design
+======================================== */
+
+/* ========================================
+   BASE BUTTON
+======================================== */
+.base-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    
+    padding: var(--space-2-5) var(--space-4);
+    min-width: max-content;
+    
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-semibold);
+    font-family: var(--font-family-base);
+    line-height: var(--leading-normal);
+    
+    border: none;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-base);
+    
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    
+    transition: var(--transition-all);
+    
+    /* Focus styles */
+    outline: none;
+    outline-offset: 2px;
+}
+.base-button:hover {
+    background-color: var(--color-primary-100);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.base-button:focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+}
+
+/* ========================================
+   BUTTON VARIANTS
+======================================== */
+
+/* Primary/Contained Button */
+.base-button--contained {
+    color: white;
+    background-color: var(--color-primary-600);
+    box-shadow: var(--shadow-sm);
+}
+
+.base-button--contained:hover {
+    background-color: var(--color-primary-700);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.base-button--contained:active {
+    background-color: var(--color-primary-800);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(0);
+}
+
+.base-button--contained img,
+.base-button--contained svg {
+    filter: brightness(0) invert(1);
+}
+
+/* Outline/Fill Button */
+.base-button--outline,
+.base-button--fill {
+    color: var(--color-primary-600);
+    background-color: white;
+    border: 2px solid var(--color-primary-600);
+    box-shadow: none;
+}
+
+.base-button--outline:hover,
+.base-button--fill:hover {
+    background-color: var(--color-primary-50);
+    border-color: var(--color-primary-700);
+    box-shadow: var(--shadow-sm);
+}
+
+.base-button--outline:active,
+.base-button--fill:active {
+    background-color: var(--color-primary-100);
+}
+
+/* Ghost/Text Button */
+.base-button--ghost {
+    color: var(--color-primary-600);
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.base-button--ghost:hover {
+    background-color: var(--color-primary-50);
+}
+
+.base-button--ghost:active {
+    background-color: var(--color-primary-100);
+}
+
+/* Normal/Secondary Button */
+.base-button--normal {
+    color: var(--color-gray-700);
+    background-color: var(--color-gray-200);
+    box-shadow: var(--shadow-sm);
+}
+
+.base-button--normal:hover {
+    background-color: var(--color-gray-300);
+    box-shadow: var(--shadow);
+}
+
+.base-button--normal:active {
+    background-color: var(--color-gray-400);
+}
+
+/* Success Button */
+.base-button--success {
+    color: white;
+    background-color: var(--color-success-600);
+    box-shadow: var(--shadow-sm);
+}
+
+.base-button--success:hover {
+    background-color: var(--color-success-700);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.base-button--success:active {
+    background-color: var(--color-success-800);
+    transform: translateY(0);
+}
+
+/* Warning Button */
+.base-button--warning {
+    color: white;
+    background-color: var(--color-warning-600);
+    box-shadow: var(--shadow-sm);
+}
+
+.base-button--warning:hover {
+    background-color: var(--color-warning-700);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.base-button--warning:active {
+    background-color: var(--color-warning-800);
+    transform: translateY(0);
+}
+
+/* Danger/Delete Button */
+.base-button--danger,
+.base-button--delete {
+    color: white;
+    background-color: var(--color-error-600);
+    box-shadow: var(--shadow-sm);
+}
+
+.base-button--danger:hover,
+.base-button--delete:hover {
+    background-color: var(--color-error-700);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.base-button--danger:active,
+.base-button--delete:active {
+    background-color: var(--color-error-800);
+    transform: translateY(0);
+}
+
+/* Danger Outline */
+.base-button--danger-outline {
+    color: var(--color-error-600);
+    background-color: white;
+    border: 2px solid var(--color-error-600);
+}
+
+.base-button--danger-outline:hover {
+    background-color: var(--color-error-50);
+    border-color: var(--color-error-700);
+}
+
+.base-button--danger-outline:active {
+    background-color: var(--color-error-100);
+}
+
+/* ========================================
+   BUTTON SIZES
+======================================== */
+.base-button--xs {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--font-size-xs);
+}
+
+.base-button--small,
+.base-button--sm {
+    padding: var(--space-1-5) var(--space-3);
+    font-size: var(--font-size-xs);
+}
+
+.base-button--medium,
+.base-button--md {
+    padding: var(--space-2-5) var(--space-4);
+    font-size: var(--font-size-sm);
+}
+
+.base-button--large,
+.base-button--lg {
+    padding: var(--space-3) var(--space-6);
+    font-size: var(--font-size-base);
+}
+
+.base-button--xl {
+    padding: var(--space-4) var(--space-8);
+    font-size: var(--font-size-lg);
+}
+
+.base-button--border {
+    border: 1px solid var(--color-gray-500);
+}
+
+/* ========================================
+   BUTTON STATES
+======================================== */
+.base-button--disabled,
+.base-button:disabled {
+    background-color: var(--color-gray-200);
+    color: var(--color-gray-400);
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+    pointer-events: none;
+    transform: none;
+}
+
+.base-button--loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+}
+
+.base-button--loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: button-spin 0.6s linear infinite;
+}
+
+@keyframes button-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

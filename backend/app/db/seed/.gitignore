@@ -1,0 +1,5 @@
+# Seed template local folders (not committed to git)
+template/register/local/
+
+template/uploaded/
+

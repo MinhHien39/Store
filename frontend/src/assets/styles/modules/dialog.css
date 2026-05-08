@@ -1,0 +1,171 @@
+/* ========================================
+   DIALOG/MODAL COMPONENTS
+   Modern dialog with Tailwind-inspired design
+======================================== */
+
+.base-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-9999);
+    animation: fadeIn 200ms var(--ease-out);
+}
+
+.base-dialog-container {
+    background-color: white;
+    border-radius: var(--radius-2xl);
+    width: 90%;
+    max-width: 20rem;
+    overflow: hidden;
+    text-align: center;
+    box-shadow: var(--shadow-2xl);
+    animation: scaleIn 200ms var(--ease-out);
+    
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-normal);
+    font-family: var(--font-family-base);
+    line-height: var(--leading-normal);
+}
+
+.base-dialog-header {
+    padding: var(--space-6) var(--space-6) var(--space-4);
+}
+
+.base-dialog-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-bold);
+    color: var(--color-gray-900);
+    padding: var(--space-3) var(--space-3) 0 var(--space-3);
+}
+
+.base-dialog-subtitle {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-normal);
+    color: var(--color-gray-600);
+}
+
+.base-dialog-content {
+    font-size: var(--font-size-base);
+    color: var(--color-gray-700);
+    padding: var(--space-3) var(--space-4);
+    line-height: var(--leading-relaxed);
+    white-space: pre-wrap;
+    text-align: center;
+}
+
+.base-dialog-actions {
+    display: flex;
+    border-top: 1px solid var(--color-gray-200);
+}
+
+.base-dialog-actions.one-button {
+    justify-content: center;
+    border-top: none;
+    padding: 0 var(--space-6) var(--space-6);
+}
+
+.base-dialog-button {
+    flex: 1;
+    padding: var(--space-3);
+    color: var(--color-primary-600);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-bold);
+    font-family: var(--font-family-base);
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-colors);
+}
+
+.base-dialog-button.cancel {
+    border-right: 1px solid var(--color-gray-200);
+    color: var(--color-gray-600);
+}
+
+.base-dialog-button:hover {
+    background-color: var(--color-gray-200);
+}
+
+.base-dialog-button.primary {
+    font-weight: var(--font-bold);
+}
+
+.base-dialog-button.danger {
+    color: var(--color-error-600);
+}
+
+.base-dialog-button.danger:hover {
+    background-color: var(--color-error-50);
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 200ms var(--ease-out) forwards;
+}
+
+.fade-out {
+    animation: fadeOut 200ms var(--ease-in) forwards;
+}
+
+.scale-in {
+    animation: scaleIn 200ms var(--ease-out) forwards;
+}
+
+.scale-out {
+    animation: scaleOut 200ms var(--ease-in) forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes scaleOut {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .base-dialog-container {
+        width: 90%;
+        max-width: 340px;
+    }
+    
+    .base-dialog-title {
+        font-size: var(--font-size-base);
+    }
+    
+    .base-dialog-content {
+        font-size: var(--font-size-base);
+    }
+
+    .base-dialog-button {
+        font-size: var(--font-size-lg);
+    }
+}
