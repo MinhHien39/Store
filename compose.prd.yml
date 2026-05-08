@@ -121,6 +121,7 @@ services:
       - ENV=${ENV}
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - backend
       - frontend
@@ -135,6 +136,10 @@ services:
       - type: bind
         source: ${HOST_PROJECT_DIR:-.}/logs/nginx
         target: /var/log/nginx
+      - type: bind
+        source: ${HOST_PROJECT_DIR:-.}/nginx/certs
+        target: /etc/nginx/certs
+        read_only: true
 
 volumes:
   mysql-data:
