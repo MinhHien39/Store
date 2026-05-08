@@ -62,7 +62,7 @@ interface Action extends BaseAction<Config> {
     setMainImagePreview: (url: string) => void;
     handleMainImageUpload: (file: File) => void;
     handleSubImagesUpload: (files: FileList) => void;
-    removeSubImage: (imageId: number) => void;
+    removeSubImage: (imageId: number) => Promise<void>;
     moveSubImage: (fromIndex: number, toIndex: number) => void;
     onSubmit: () => Promise<void>;
     onCancel: () => void;
@@ -183,9 +183,12 @@ export const AdminProductFormVM: BaseViewModelFunc<Config, Action> = () => {
         action.setNewConfig({ subImages: [...config.subImages, ...newImages] });
     };
 
-    const removeSubImage = (imageId: number) => {
-        // If it's a pending image, remove the corresponding File too
-        if (pendingIdSetRef.current.has(imageId)) {
+    const removeSubImage = async (imageId: number) => {
+        // If it's a server-saved image (not pending blob), call delete API
+        if (!pendingIdSetRef.current.has(imageId)) {
+            await productRepository.adminDeleteImage(imageId);
+        } else {
+            // Remove corresponding pending File
             const pendingList = config.subImages.filter(img => pendingIdSetRef.current.has(img.id));
             const removingIndex = pendingList.findIndex(img => img.id === imageId);
             if (removingIndex !== -1) {

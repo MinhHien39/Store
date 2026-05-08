@@ -68,7 +68,7 @@ interface Action extends BaseAction<Config> {
     setMainImagePreview: (url: string) => void;
     handleMainImageUpload: (file: File) => void;
     handleSubImagesUpload: (files: FileList) => void;
-    removeSubImage: (imageId: number) => void;
+    removeSubImage: (imageId: number) => Promise<void>;
     moveSubImage: (fromIndex: number, toIndex: number) => void;
     handleSave: () => Promise<void>;
     handleCsvImport: (file: File | null) => Promise<void>;
@@ -241,8 +241,11 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
         action.setNewConfig(config);
     };
 
-    const removeSubImage = (imageId: number) => {
-        if (pendingSubIdSetRef.current.has(imageId)) {
+    const removeSubImage = async (imageId: number) => {
+        if (!pendingSubIdSetRef.current.has(imageId)) {
+            // Server-saved image — delete via API immediately
+            await productRepository.adminDeleteImage(imageId);
+        } else {
             const pendingList = config.subImages.filter(img => pendingSubIdSetRef.current.has(img.id));
             const removingIndex = pendingList.findIndex(img => img.id === imageId);
             if (removingIndex !== -1) {
