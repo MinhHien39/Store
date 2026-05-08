@@ -10,6 +10,7 @@ import {
     Award,
     BadgeCheck,
     ChevronRight,
+    Headphones,
     Loader2,
     Package,
     ShieldCheck,
