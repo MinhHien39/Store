@@ -18,7 +18,6 @@ stages:
 # ─── Deploy job ─────────────────────────────────────────────
 deploy_prd:
   stage: deploy
-  image: ubuntu:24.04
 
   rules:
     - if: '$CI_COMMIT_BRANCH == "deploy_prd"'
@@ -28,18 +27,9 @@ deploy_prd:
     name: production
     url: $PRD_BASE_URL
 
-  before_script:
-    - apt-get update -qq && apt-get install -y -qq openssh-client
-    - eval "$(ssh-agent -s)"
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
-    - ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
-
   script:
     - |
-      ssh "$VPS_USER@$VPS_HOST" "bash -s" << REMOTE
       set -e
-
       REPO="${VPS_PROJECT_DIR}"
       BACKEND_CONTAINER="store-backend-prd"
       NGINX_CONTAINER="store-nginx-prd"
@@ -47,15 +37,15 @@ deploy_prd:
       echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
       echo "  [1/4] Git pull latest code"
       echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-      git -C "\$REPO" fetch origin deploy_prd
-      git -C "\$REPO" reset --hard origin/deploy_prd
-      echo "✅ Code: \$(git -C \$REPO log -1 --oneline)"
+      git -C "$REPO" fetch origin deploy_prd
+      git -C "$REPO" reset --hard origin/deploy_prd
+      echo "✅ Code: $(git -C $REPO log -1 --oneline)"
 
       echo ""
       echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
       echo "  [2/4] Reload Gunicorn (zero-downtime)"
       echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-      docker kill --signal=HUP "\$BACKEND_CONTAINER"
+      docker kill --signal=HUP "$BACKEND_CONTAINER"
       sleep 3
       echo "✅ Gunicorn reloaded"
 
@@ -63,17 +53,16 @@ deploy_prd:
       echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
       echo "  [3/4] Reload Nginx config"
       echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-      docker exec "\$NGINX_CONTAINER" nginx -t
-      docker exec "\$NGINX_CONTAINER" nginx -s reload
+      docker exec "$NGINX_CONTAINER" nginx -t
+      docker exec "$NGINX_CONTAINER" nginx -s reload
       echo "✅ Nginx reloaded"
 
       echo ""
       echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
       echo "  [4/4] Status"
       echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-      echo "  Backend: \$(docker inspect --format '{{.State.Status}}' \$BACKEND_CONTAINER)"
-      echo "  Nginx  : \$(docker inspect --format '{{.State.Status}}' \$NGINX_CONTAINER)"
-      REMOTE
+      echo "  Backend: $(docker inspect --format '{{.State.Status}}' $BACKEND_CONTAINER)"
+      echo "  Nginx  : $(docker inspect --format '{{.State.Status}}' $NGINX_CONTAINER)"
 
   artifacts:
     when: always
@@ -82,7 +71,6 @@ deploy_prd:
 # ─── Smoke Test ─────────────────────────────────────────────
 smoke_test_prd:
   stage: smoke-test
-  image: ubuntu:24.04
 
   rules:
     - if: '$CI_COMMIT_BRANCH == "deploy_prd"'
@@ -90,9 +78,6 @@ smoke_test_prd:
 
   needs:
     - deploy_prd
-
-  before_script:
-    - apt-get update -qq && apt-get install -y -qq curl
 
   script:
     - |
