@@ -1,0 +1,147 @@
+# ─────────────────────────────────────────────────────────────
+# GitLab CI/CD — Deploy to Production
+#
+# Trigger: merge request merged into branch "deploy_prd"
+#
+# Required GitLab CI/CD Variables (Settings → CI/CD → Variables):
+#   SSH_PRIVATE_KEY  — nội dung file .pem / private key (type: File, protected, masked)
+#   VPS_HOST         — IP VPS, ví dụ: 57.182.103.190
+#   VPS_USER         — user SSH, ví dụ: ec2-user hoặc root
+#   VPS_PROJECT_DIR  — đường dẫn project trên VPS, ví dụ: /home/ec2-user/store
+#   PRD_BASE_URL     — URL public của site, ví dụ: https://tmhstore.site
+# ─────────────────────────────────────────────────────────────
+
+stages:
+  - deploy
+  - smoke-test
+
+# ─── Shared SSH setup ───────────────────────────────────────
+.ssh_setup: &ssh_setup |
+  which ssh-agent || (apt-get update -qq && apt-get install -y -qq openssh-client curl)
+  eval "$(ssh-agent -s)"
+  echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  mkdir -p ~/.ssh && chmod 700 ~/.ssh
+  ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+# ─── deploy job ─────────────────────────────────────────────
+deploy_prd:
+  stage: deploy
+  image: ubuntu:24.04
+
+  # Chỉ chạy khi merge vào branch deploy_prd
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "deploy_prd"'
+      when: on_success
+
+  environment:
+    name: production
+    url: $PRD_BASE_URL
+
+  before_script:
+    - *ssh_setup
+
+  script:
+    - |
+      ssh -o StrictHostKeyChecking=no "$VPS_USER@$VPS_HOST" "bash -s" << 'REMOTE'
+      set -e
+
+      REPO="${VPS_PROJECT_DIR:-/home/ec2-user/store}"
+      ENV_FILE="$REPO/environment/.env.prd"
+      COMPOSE="docker compose -f $REPO/compose.prd.yml --env-file $ENV_FILE"
+      BACKEND_CONTAINER="store-backend-prd"
+      NGINX_CONTAINER="store-nginx-prd"
+
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      echo "  [1/4] Git pull latest code"
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      git -C "$REPO" fetch origin deploy_prd
+      git -C "$REPO" reset --hard origin/deploy_prd
+      echo "✅ Code updated: $(git -C $REPO log -1 --oneline)"
+
+      echo ""
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      echo "  [2/4] Reload Gunicorn (backend)"
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      # SIGHUP = graceful reload: gunicorn master spawns new workers
+      # với code mới rồi tắt worker cũ — zero downtime
+      docker kill --signal=HUP "$BACKEND_CONTAINER"
+      echo "✅ Gunicorn reloaded (SIGHUP sent)"
+
+      # Chờ workers khởi động lại
+      sleep 3
+
+      echo ""
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      echo "  [3/4] Reload Nginx config"
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      docker exec "$NGINX_CONTAINER" nginx -t
+      docker exec "$NGINX_CONTAINER" nginx -s reload
+      echo "✅ Nginx reloaded"
+
+      echo ""
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      echo "  [4/4] Deploy complete"
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      echo "  Commit : $(git -C $REPO log -1 --oneline)"
+      echo "  Backend: $(docker inspect --format '{{.State.Status}}' $BACKEND_CONTAINER)"
+      echo "  Nginx  : $(docker inspect --format '{{.State.Status}}' $NGINX_CONTAINER)"
+      REMOTE
+
+  # Giữ log artifact 7 ngày
+  artifacts:
+    when: always
+    expire_in: 7 days
+
+# ─── smoke-test job ─────────────────────────────────────────
+smoke_test_prd:
+  stage: smoke-test
+  image: ubuntu:24.04
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "deploy_prd"'
+      when: on_success
+
+  # Chỉ chạy sau khi deploy thành công
+  needs:
+    - deploy_prd
+
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq curl
+
+  script:
+    - |
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      echo "  Smoke Test: $PRD_BASE_URL"
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      # 1. Backend health check
+      echo "[Test 1] Backend /api/v1/get-healthy"
+      HEALTH=$(curl -sf --max-time 10 "$PRD_BASE_URL/api/v1/get-healthy")
+      echo "$HEALTH"
+      echo "$HEALTH" | grep -q '"status":"ok"' || (echo "❌ Health check failed" && exit 1)
+      echo "✅ Backend healthy"
+
+      # 2. DB health check (từ health response)
+      echo "$HEALTH" | grep -q '"db":"ok"' || (echo "❌ DB unreachable" && exit 1)
+      echo "✅ DB ok"
+
+      # 3. Product list API
+      echo ""
+      echo "[Test 2] GET /api/v1/products"
+      HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$PRD_BASE_URL/api/v1/products")
+      echo "HTTP $HTTP_CODE"
+      [ "$HTTP_CODE" = "200" ] || (echo "❌ Products API returned $HTTP_CODE" && exit 1)
+      echo "✅ Products API ok"
+
+      # 4. Frontend (homepage)
+      echo ""
+      echo "[Test 3] GET / (frontend)"
+      HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$PRD_BASE_URL/")
+      echo "HTTP $HTTP_CODE"
+      [ "$HTTP_CODE" = "200" ] || (echo "❌ Frontend returned $HTTP_CODE" && exit 1)
+      echo "✅ Frontend ok"
+
+      echo ""
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      echo "✅ All smoke tests passed"
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
