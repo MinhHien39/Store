@@ -10,16 +10,16 @@
 #   ./prd.sh nginx    # reload nginx config only
 #   ./prd.sh fe       # pull FE dist only (bind mount → nginx picks up automatically, no restart needed)
 
-PEM_FILE="/Volumes/Working/remote/store.pem"
-USER="ec2-user"
-HOST="57.182.103.190"
+PEM_FILE="$HOME/.ssh/gitlab_ci_deploy"
+USER="root"
+HOST="180.93.36.17"
 TARGET="${1:-restart}"
 
 ssh -i "$PEM_FILE" "$USER@$HOST" 'sudo bash -s' "$TARGET" << 'ENDSSH'
 set -e
 
 TARGET="${1:-pull}"
-REPO="/home/ec2-user/store"
+REPO="/root/store"
 ENV_FILE="$REPO/environment/.env.prd"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
