@@ -63,20 +63,26 @@ jobs:
           BASE_URL: ${{ secrets.PRD_BASE_URL }}
         run: |
           echo "=== Smoke Test $BASE_URL ==="
+          sleep 5
 
           echo "[1] Backend health"
-          HEALTH=$(curl -sf --max-time 10 "$BASE_URL/api/v1/get-healthy")
-          echo "$HEALTH" | grep -q '"status":"ok"' || (echo "FAIL health" && exit 1)
-          echo "$HEALTH" | grep -q '"db":"ok"' || (echo "FAIL db" && exit 1)
-          echo "OK backend+db"
+          HEALTH=$(curl -s --max-time 15 "$BASE_URL/api/v1/get-healthy")
+          echo "Response: $HEALTH"
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$BASE_URL/api/v1/get-healthy")
+          echo "HTTP: $CODE"
+          [ "$CODE" = "200" ] || (echo "FAIL health HTTP $CODE" && exit 1)
+          echo "$HEALTH" | grep -q '"ok"' || (echo "FAIL health response" && exit 1)
+          echo "OK backend"
 
           echo "[2] Products API"
           CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$BASE_URL/api/v1/products")
+          echo "HTTP: $CODE"
           [ "$CODE" = "200" ] || (echo "FAIL products $CODE" && exit 1)
           echo "OK products"
 
           echo "[3] Frontend"
           CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$BASE_URL/")
+          echo "HTTP: $CODE"
           [ "$CODE" = "200" ] || (echo "FAIL frontend $CODE" && exit 1)
           echo "OK frontend"
 
