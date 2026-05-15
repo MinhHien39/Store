@@ -58,32 +58,32 @@ jobs:
     needs: deploy
 
     steps:
-      - name: Test endpoints
-        env:
-          BASE_URL: ${{ secrets.PRD_BASE_URL }}
-        run: |
-          echo "=== Smoke Test $BASE_URL ==="
-          sleep 5
+      - name: Test endpoints via VPS (bypass Cloudflare)
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            echo "=== Smoke Test (from VPS localhost) ==="
+            sleep 3
 
-          echo "[1] Backend health"
-          HEALTH=$(curl -s --max-time 15 "$BASE_URL/api/v1/get-healthy")
-          echo "Response: $HEALTH"
-          CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$BASE_URL/api/v1/get-healthy")
-          echo "HTTP: $CODE"
-          [ "$CODE" = "200" ] || (echo "FAIL health HTTP $CODE" && exit 1)
-          echo "$HEALTH" | grep -q '"ok"' || (echo "FAIL health response" && exit 1)
-          echo "OK backend"
+            echo "[1] Backend health"
+            HEALTH=$(curl -s --max-time 10 http://localhost/api/v1/get-healthy)
+            echo "Response: $HEALTH"
+            echo "$HEALTH" | grep -q '"ok"' || (echo "FAIL health" && exit 1)
+            echo "OK backend"
 
-          echo "[2] Products API"
-          CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$BASE_URL/api/v1/products")
-          echo "HTTP: $CODE"
-          [ "$CODE" = "200" ] || (echo "FAIL products $CODE" && exit 1)
-          echo "OK products"
+            echo "[2] Products API"
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 http://localhost/api/v1/products)
+            echo "HTTP: $CODE"
+            [ "$CODE" = "200" ] || (echo "FAIL products $CODE" && exit 1)
+            echo "OK products"
 
-          echo "[3] Frontend"
-          CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$BASE_URL/")
-          echo "HTTP: $CODE"
-          [ "$CODE" = "200" ] || (echo "FAIL frontend $CODE" && exit 1)
-          echo "OK frontend"
+            echo "[3] Frontend"
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 http://localhost/)
+            echo "HTTP: $CODE"
+            [ "$CODE" = "200" ] || (echo "FAIL frontend $CODE" && exit 1)
+            echo "OK frontend"
 
-          echo "All smoke tests passed"
+            echo "All smoke tests passed"
