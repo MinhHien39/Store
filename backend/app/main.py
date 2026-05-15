@@ -79,3 +79,4 @@ app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 @app.exception_handler(SQLAlchemyError)
 async def global_exception_handler(request: Request, exception: Exception):
     return await ErrorHandler.handle(request, exception)
+# test deploy Fri May 15 09:18:42 +07 2026
