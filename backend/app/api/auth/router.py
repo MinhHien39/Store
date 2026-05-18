@@ -1,6 +1,6 @@
 from fastapi import Depends, Response
 
-from app.core import SuccessResponse, BaseApiRouter, AccessTokenDep
+from app.core import SuccessResponse, BaseApiRouter, AccessTokenDep, RefreshTokenDep
 from .schemas import RegisterRequest, LoginRequest, ChangePasswordRequest, ForgotPasswordRequest
 from .service import AuthService, get_auth_service, get_auth_service_no_token
 
@@ -54,7 +54,7 @@ async def change_password(
 @router.post("/refresh_token")
 async def refresh_token(
     response: Response,
-    refresh_token: str | None = Depends(lambda: None),
+    refresh_token: str | None = RefreshTokenDep,
     service: AuthService = Depends(get_auth_service_no_token),
 ):
     data = service.refresh_token(response=response, refresh_token=refresh_token)

@@ -4,7 +4,7 @@
 # Required GitHub Secrets (Settings → Secrets → Actions):
 #   VPS_HOST        = 180.93.36.17
 #   VPS_USER        = root
-#   VPS_SSH_KEY     = (nội dung file ~/.ssh/github_actions_deploy)
+#   VPS_SSH_KEY     = CAT ssh_key.pem
 #   VPS_PROJECT_DIR = /root/store
 # ─────────────────────────────────────────────────────────────
 

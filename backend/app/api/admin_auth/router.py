@@ -1,6 +1,6 @@
 from fastapi import Depends, Response
 
-from app.core import SuccessResponse, BaseApiRouter, RequireAdminDep, AccessTokenDep
+from app.core import SuccessResponse, BaseApiRouter, RequireAdminDep, AccessTokenDep, RefreshTokenDep
 from .schemas import LoginRequest
 from .service import AdminAuthService, get_admin_auth_service, get_admin_auth_service_no_token
 
@@ -32,4 +32,14 @@ async def admin_me(
     service: AdminAuthService = Depends(get_admin_auth_service),
 ):
     data = service.info()
+    return SuccessResponse(data=data)
+
+
+@router.post("/admin/auth/refresh_token")
+async def admin_refresh_token(
+    response: Response,
+    refresh_token: str | None = RefreshTokenDep,
+    service: AdminAuthService = Depends(get_admin_auth_service_no_token),
+):
+    data = service.refresh_token(response=response, refresh_token=refresh_token)
     return SuccessResponse(data=data)

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Rubik, Nunito_Sans } from "next/font/google";
+import AdSenseScript from "@/component/common/AdSenseScript";
+import { ADSENSE_CLIENT, isAdsenseConfigured } from "@/core/adsense";
 import "./globals.css";
 
 const rubik = Rubik({
@@ -31,6 +33,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi" suppressHydrationWarning>
+      <head>
+        {isAdsenseConfigured && (
+          <meta name="google-adsense-account" content={ADSENSE_CLIENT} />
+        )}
+        <AdSenseScript />
+      </head>
       <body className={`${rubik.variable} ${nunitoSans.variable} ${nunitoSans.className} antialiased`} suppressHydrationWarning>
         {children}
       </body>
