@@ -5,7 +5,7 @@ import Token from '@/data/models/Token';
 import LocalStorageImpl, { LocalStorageKey } from './LocalStorageService';
 import { JsonUtils, StringUtils } from '@/core/utils';
 
-const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'iretoru';
+const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'store';
 
 class AppLocalStorage {
     private static _instance: AppLocalStorage;
