@@ -363,6 +363,15 @@ hr {
   background-color: var(--color-gray-400);
 }
 
+.ad-section {
+  margin: 28px auto;
+}
+
+.ad-section__unit {
+  min-height: 90px;
+  overflow: hidden;
+}
+
 /* Print styles */
 @media print {
   *,

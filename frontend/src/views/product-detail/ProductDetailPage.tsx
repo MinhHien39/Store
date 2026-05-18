@@ -4,6 +4,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import StoreLayout from "@/component/layout/StoreLayout";
+import AdUnit from "@/component/common/AdUnit";
 import CatalogProductCard from "@/component/product/CatalogProductCard";
 import ProductGallery from "@/component/product/ProductGallery";
 import {
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 import { t } from "@/core/localized";
 import { useLanguage } from "@/provider/LanguageProvider";
+import { ADSENSE_SLOTS } from "@/core/adsense";
 import { formatVnd } from "@/core/utils/currency";
 import { ProductDetailVM } from "./ProductDetailVM";
 import "./styles.css";
@@ -182,6 +184,8 @@ const ProductDetailPage: React.FC = () => {
                         </div>
                     </div>
                 </section>
+
+                <AdUnit adSlot={ADSENSE_SLOTS.productDetail} className="ad-section__unit detail-ad" />
 
                 {/* Description */}
                 {product.description && (

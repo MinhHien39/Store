@@ -1,3 +1,20 @@
+# Store Frontend
+
+## Google AdSense
+
+Set these environment variables in `frontend/.env.local` or your deployment environment:
+
+```env
+NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT=ca-pub-0000000000000000
+NEXT_PUBLIC_GOOGLE_ADSENSE_HOME_SLOT=0000000000
+NEXT_PUBLIC_GOOGLE_ADSENSE_PRODUCT_LIST_SLOT=0000000000
+NEXT_PUBLIC_GOOGLE_ADSENSE_PRODUCT_DETAIL_SLOT=0000000000
+```
+
+`NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT` is your AdSense publisher ID. Each slot value is the ad unit ID copied from AdSense.
+
+When the publisher ID is configured, the app loads the AdSense script on every page and adds the `google-adsense-account` verification meta tag. The static `public/ads.txt` file exposes the required AdSense seller record at the site root.
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

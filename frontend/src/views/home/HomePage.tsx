@@ -4,6 +4,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import StoreLayout from "@/component/layout/StoreLayout";
+import AdUnit from "@/component/common/AdUnit";
 import CatalogProductCard from "@/component/product/CatalogProductCard";
 import {
     ArrowRight,
@@ -20,6 +21,7 @@ import {
 } from "lucide-react";
 import { t } from "@/core/localized";
 import { useLanguage } from "@/provider/LanguageProvider";
+import { ADSENSE_SLOTS } from "@/core/adsense";
 import { formatVnd, getImageUrl } from "@/core/utils/currency";
 import { getCategoryIcon } from "@/core/utils/categoryIcon";
 import { HomeVM } from "./HomeVM";
@@ -172,6 +174,10 @@ const HomePage: React.FC = () => {
                         ))}
                     </div>
                 </div>
+            </section>
+
+            <section className="container-page ad-section">
+                <AdUnit adSlot={ADSENSE_SLOTS.home} className="ad-section__unit" />
             </section>
 
             {/* Categories */}

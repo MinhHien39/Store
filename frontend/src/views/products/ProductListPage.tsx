@@ -2,6 +2,7 @@
 
 import React from "react";
 import StoreLayout from "@/component/layout/StoreLayout";
+import AdUnit from "@/component/common/AdUnit";
 import CatalogProductCard from "@/component/product/CatalogProductCard";
 import {
     ArrowDownUp,
@@ -16,6 +17,7 @@ import {
 } from "lucide-react";
 import { t } from "@/core/localized";
 import { useLanguage } from "@/provider/LanguageProvider";
+import { ADSENSE_SLOTS } from "@/core/adsense";
 import { ProductListVM } from "./ProductListVM";
 import "./styles.css";
 
@@ -169,6 +171,8 @@ const ProductListPage: React.FC = () => {
 
                     {/* Products */}
                     <div>
+                        <AdUnit adSlot={ADSENSE_SLOTS.productList} className="ad-section__unit products-ad" />
+
                         {/* Active filter pills */}
                         {hasFilters && !isLoading && (
                             <div className="products-active-filters">
