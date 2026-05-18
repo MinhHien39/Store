@@ -2,10 +2,10 @@ import EnvUtils from "./EnvUtils";
 
 class LogUtils {
     static init(msg: unknown): void {
-        LogUtils._log(() => console.log("iretoru ⇨ Initialize:", msg));
+        LogUtils._log(() => console.log("store ⇨ Initialize:", msg));
     }
     static debug(...args: unknown[]): void {
-        LogUtils._log(() => console.log(`iretoru ⇨`, ...args));
+        LogUtils._log(() => console.log(`store ⇨`, ...args));
     }
 
     static todo(msg: string): void {
@@ -21,11 +21,11 @@ class LogUtils {
     }
 
     static error(...args: unknown[]): void {
-        LogUtils._log(() => console.error(`iretoru ⇨`, ...args));
+        LogUtils._log(() => console.error(`store ⇨`, ...args));
     }
 
     static warn(...args: unknown[]): void {
-        LogUtils._log(() => console.warn(`iretoru ⇨`, ...args));
+        LogUtils._log(() => console.warn(`store ⇨`, ...args));
     }
 
     // Private helper to conditionally execute logging

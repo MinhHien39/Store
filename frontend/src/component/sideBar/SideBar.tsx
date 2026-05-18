@@ -62,7 +62,7 @@ const SideBar: React.FC<{ props: SideBarProps }> = ({ props }) => {
                 <img
                     className="app-sidebar-logo"
                     src={ic_logo}
-                    alt="IRETORU"
+                    alt="Store"
                 />
             </div>
 
