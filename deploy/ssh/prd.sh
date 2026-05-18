@@ -8,7 +8,7 @@
 #   ./prd.sh pull     # git pull only
 #   ./prd.sh migrate  # pull + run alembic upgrade head in backend container
 #   ./prd.sh nginx    # reload nginx config only
-#   ./prd.sh fe       # pull FE dist only (bind mount → nginx picks up automatically, no restart needed)
+#   ./prd.sh fe       # pull + rebuild frontend image + restart frontend
 
 PEM_FILE="$HOME/.ssh/gitlab_ci_deploy"
 USER="root"
@@ -67,6 +67,12 @@ rebuild_backend() {
     echo "✅ Backend rebuilt & restarted"
 }
 
+rebuild_frontend() {
+    echo "🔨 Rebuilding frontend image + restart..."
+    dc up -d --no-deps --build --force-recreate frontend
+    echo "✅ Frontend rebuilt & restarted"
+}
+
 migrate() {
     echo "🗄️  Running DB migration in backend container..."
     dc exec backend alembic upgrade head
@@ -75,7 +81,7 @@ migrate() {
 
 deploy_fe() {
     pull
-    # No nginx restart needed: bind mount serves new files from disk automatically
+    rebuild_frontend
 }
 
 case "$TARGET" in
