@@ -6,6 +6,7 @@ import LocalStorageImpl, { LocalStorageKey } from './LocalStorageService';
 import { JsonUtils, StringUtils } from '@/core/utils';
 
 const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'store';
+const LEGACY_APP_NAMES = ['iretoru'];
 
 class AppLocalStorage {
     private static _instance: AppLocalStorage;
@@ -25,6 +26,12 @@ class AppLocalStorage {
 
     private buildKey(key: string): string {
         return `${APP_NAME}_${key}`;
+    }
+
+    private buildLegacyKeys(key: string): string[] {
+        return LEGACY_APP_NAMES
+            .filter(appName => appName !== APP_NAME)
+            .map(appName => `${appName}_${key}`);
     }
 
     public getRoleIdFromUrl(): UserRole {
@@ -99,10 +106,18 @@ class AppLocalStorage {
             const userKey = this.getUserKey();
             const key = this.buildKey(userKey);
             const tokenKey = this.getTokenKey();
+            this.removeLegacyData(userKey);
             this.localStorageService.setItemSync(key, userJsonString);
             this.localStorageService.setItemSync(tokenKey, tokenJsonString);
         }
     };
+
+    private removeLegacyData(userKey: LocalStorageKey) {
+        const tokenSuffix = `${userKey}_${LocalStorageKey.TOKEN}`;
+        for (const key of [...this.buildLegacyKeys(userKey), ...this.buildLegacyKeys(tokenSuffix)]) {
+            this.localStorageService.removeItemSync(key, false);
+        }
+    }
 
     // Clear user and token from local storage for the given role (or URL-inferred role if omitted)
     public clearData(roleId?: UserRole) {
@@ -111,6 +126,7 @@ class AppLocalStorage {
         const tokenKey = this.getTokenKey(roleId);
         this.localStorageService.removeItemSync(key);
         this.localStorageService.removeItemSync(tokenKey);
+        this.removeLegacyData(userKey);
     }
 
     // Get access token from local storage, return empty string if not found or expired
