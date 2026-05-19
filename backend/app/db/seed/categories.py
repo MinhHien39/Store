@@ -12,17 +12,22 @@ CATEGORIES_DATA = [
     {"name": "Tai nghe", "slug": "tai-nghe", "icon": "headphones", "description": "Tai nghe & Loa", "display_order": 6},
     {"name": "Camera", "slug": "camera", "icon": "camera", "description": "Máy ảnh & Camera", "display_order": 7},
     {"name": "Thiết bị mạng", "slug": "thiet-bi-mang", "icon": "router", "description": "Router, Switch, Access Point", "display_order": 8},
+    {"name": "Thực Phẩm Bổ Sung", "slug": "thuc-pham-bo-sung", "icon": "pill", "description": "Vitamin, omega 3 và thực phẩm bổ sung", "display_order": 9},
 ]
 
 
 def seed_categories():
     with Session(engine) as db:
-        existing = db.exec(select(Category)).first()
-        if existing:
-            logger.info("Categories already exist, skipping seeding.")
-            return
+        existing_by_slug = {
+            category.slug: category
+            for category in db.exec(select(Category)).all()
+        }
 
+        created_count = 0
         for data in CATEGORIES_DATA:
+            if data["slug"] in existing_by_slug:
+                continue
+
             category = Category(
                 name=data["name"],
                 slug=data["slug"],
@@ -33,6 +38,7 @@ def seed_categories():
                 created_by="seed",
             )
             db.add(category)
+            created_count += 1
 
         db.commit()
-        logger.info(f"Seeded {len(CATEGORIES_DATA)} categories successfully")
+        logger.info(f"Seeded {created_count} missing categories successfully")

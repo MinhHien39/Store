@@ -50,6 +50,19 @@ class ProductService(BaseService):
         except ValueError as exc:
             raise DefaultException(message=f"Row {row_number}: {field_name} must be a number") from exc
 
+    def _parse_image_urls(self, value: str | None) -> list[str]:
+        cleaned = self._clean_text(value)
+        if cleaned is None:
+            return []
+
+        urls: list[str] = []
+        for raw_url in re.split(r"[\n|;]+", cleaned):
+            url = self._clean_text(raw_url)
+            if url and url not in urls:
+                urls.append(url)
+
+        return urls
+
     def _build_category_maps(self) -> tuple[dict[int, Category], dict[str, Category], dict[str, Category]]:
         categories = self.db.exec(
             select(Category).where(Category.is_deleted == False)
@@ -496,8 +509,10 @@ class ProductService(BaseService):
                     existing_product.updated_by = self.updated_by
                     existing_product.updated_at = self.updated_at
                     self.db.add(existing_product)
+                    self.db.flush()
                     product_by_id[existing_product.id] = existing_product
                     product_by_slug[slug.lower()] = existing_product
+                    product_id = existing_product.id
                     result.updated_count += 1
                 else:
                     new_product = Product(
@@ -510,7 +525,32 @@ class ProductService(BaseService):
                     product_by_id[new_product.id] = new_product
                     if new_product.slug:
                         product_by_slug[new_product.slug.lower()] = new_product
+                    product_id = new_product.id
                     result.created_count += 1
+
+                additional_image_urls = self._parse_image_urls(row.get("additional_image_urls"))
+                if product_id is not None and additional_image_urls:
+                    current_images = self.db.exec(
+                        select(ProductImage).where(
+                            ProductImage.product_id == product_id,
+                            ProductImage.is_deleted == False,
+                        )
+                    ).all()
+                    for image in current_images:
+                        image.is_deleted = True
+                        image.updated_by = self.updated_by
+                        image.updated_at = self.updated_at
+                        self.db.add(image)
+
+                    for sort_order, image_url in enumerate(additional_image_urls, start=1):
+                        self.db.add(
+                            ProductImage(
+                                product_id=product_id,
+                                image_url=image_url,
+                                sort_order=sort_order,
+                                created_by=self.created_by,
+                            )
+                        )
 
             except DefaultException as exc:
                 result.skipped_count += 1
