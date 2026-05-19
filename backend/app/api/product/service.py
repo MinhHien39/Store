@@ -23,6 +23,8 @@ from .schemas import (
 
 
 class ProductService(BaseService):
+    JPY_TO_VND_RATE = 167.08
+
     @staticmethod
     def _slugify(value: str) -> str:
         normalized = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
@@ -49,6 +51,21 @@ class ProductService(BaseService):
             return int(float(cleaned))
         except ValueError as exc:
             raise DefaultException(message=f"Row {row_number}: {field_name} must be a number") from exc
+
+    def _parse_price_vnd(self, row: dict[str, str | None], field_name: str, row_number: int, required: bool = False) -> int | None:
+        parsed = self._parse_int(row.get(field_name), field_name, row_number, required=False)
+        if parsed is not None:
+            return parsed
+
+        jpy_key = f"source_{field_name}_jpy"
+        parsed_jpy = self._parse_int(row.get(jpy_key), jpy_key, row_number, required=False)
+        if parsed_jpy is not None:
+            return int(round((parsed_jpy * self.JPY_TO_VND_RATE) / 1000) * 1000)
+
+        if required:
+            raise DefaultException(message=f"Row {row_number}: {field_name} is required")
+
+        return None
 
     def _parse_image_urls(self, value: str | None) -> list[str]:
         cleaned = self._clean_text(value)
@@ -439,8 +456,8 @@ class ProductService(BaseService):
                 if not name:
                     raise DefaultException(message=f"Row {row_number}: name is required")
 
-                price = self._parse_int(row.get("price"), "price", row_number, required=True)
-                sale_price = self._parse_int(row.get("sale_price"), "sale_price", row_number)
+                price = self._parse_price_vnd(row, "price", row_number, required=True)
+                sale_price = self._parse_price_vnd(row, "sale_price", row_number)
                 stock_quantity = self._parse_int(row.get("stock_quantity"), "stock_quantity", row_number) or 0
                 display_order = self._parse_int(row.get("display_order"), "display_order", row_number) or 0
                 status = self._parse_int(row.get("status"), "status", row_number) or 1

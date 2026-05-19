@@ -2,6 +2,7 @@
 
 import React from "react";
 import AdminLayout from "@/component/layout/AdminLayout";
+import Pagination from "@/component/pagination/Pagination";
 import { Plus, Pencil, Trash2, Loader2, X, Award } from "lucide-react";
 import { t } from "@/core/localized";
 import { useLanguage } from "@/provider/LanguageProvider";
@@ -10,14 +11,15 @@ import { AdminBrandsVM } from "./AdminBrandsVM";
 const AdminBrandsPage: React.FC = () => {
     useLanguage();
     const { config, action } = AdminBrandsVM();
-    const { brands, isLoading, isModalOpen, editItem, deleteId, isDeleting, isSaving, formName, formDesc, formError } = config;
+    const { brands, paging, isLoading, isModalOpen, editItem, deleteId, isDeleting, isSaving, formName, formDesc, formError, page, perPage } = config;
+    const pagedBrands = brands.slice((page - 1) * perPage, page * perPage);
 
     return (
         <AdminLayout>
             <div className="page-header">
                 <div>
                     <h2 className="page-title">{t.admin.brand.page_title()}</h2>
-                    {!isLoading && <p className="page-subtitle">{t.admin.brand.items_count({ count: brands.length })}</p>}
+                    {!isLoading && <p className="page-subtitle">{t.admin.brand.items_count({ count: paging?.totalCount ?? brands.length })}</p>}
                 </div>
                 <button onClick={action.openCreate} className="btn btn-primary">
                     <Plus size={18} />
@@ -37,7 +39,7 @@ const AdminBrandsPage: React.FC = () => {
                 </div>
             ) : (
                 <div className="list-card">
-                    {brands.map((brand) => (
+                    {pagedBrands.map((brand) => (
                         <div key={brand.id} className="list-card-row">
                             <div>
                                 <p className="admin-list__name">{brand.name}</p>
@@ -53,6 +55,16 @@ const AdminBrandsPage: React.FC = () => {
                             </div>
                         </div>
                     ))}
+                    {paging && (
+                        <Pagination
+                            props={{
+                                paging,
+                                onPageChange: action.handlePageChange,
+                                onPerPageChange: action.handlePerPageChange,
+                                style: { padding: "16px" },
+                            }}
+                        />
+                    )}
                 </div>
             )}
 

@@ -4,6 +4,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import StoreLayout from "@/component/layout/StoreLayout";
+import Pagination from "@/component/pagination/Pagination";
 import { ArrowRight, Award, BadgeCheck, Loader2 } from "lucide-react";
 import { t } from "@/core/localized";
 import { useLanguage } from "@/provider/LanguageProvider";
@@ -12,8 +13,9 @@ import "./styles.css";
 
 const BrandsPage: React.FC = () => {
     useLanguage();
-    const { config } = BrandsVM();
-    const { brands, isLoading } = config;
+    const { config, action } = BrandsVM();
+    const { brands, paging, isLoading, page, perPage } = config;
+    const pagedBrands = brands.slice((page - 1) * perPage, page * perPage);
 
     return (
         <StoreLayout>
@@ -36,8 +38,9 @@ const BrandsPage: React.FC = () => {
                         <Loader2 size={34} className="animate-spin text-primary" />
                     </div>
                 ) : (
+                    <>
                     <div className="brands-grid">
-                        {brands.map((brand) => (
+                        {pagedBrands.map((brand) => (
                             <Link
                                 key={brand.id}
                                 to={`${AppRoutePath.PRODUCTS}?brand_id=${brand.id}`}
@@ -56,6 +59,17 @@ const BrandsPage: React.FC = () => {
                             </Link>
                         ))}
                     </div>
+                    {paging && (
+                        <Pagination
+                            props={{
+                                paging,
+                                onPageChange: action.handlePageChange,
+                                onPerPageChange: action.handlePerPageChange,
+                                style: { marginTop: 28 },
+                            }}
+                        />
+                    )}
+                    </>
                 )}
             </section>
         </StoreLayout>

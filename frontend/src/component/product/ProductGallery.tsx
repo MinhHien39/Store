@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { ChevronLeft, ChevronRight, ImageOff, Package } from "lucide-react";
-import { getImageUrl } from "@/core/utils/currency";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { getImageUrl, getProductPlaceholderImage, isBlankImageElement } from "@/core/utils/currency";
 import type { ProductImage } from "@/data/models/Product";
 import styles from "./ProductGallery.module.css";
 
@@ -36,6 +36,12 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ mainImage, images, prod
         setImgErrors((prev) => new Set(prev).add(idx));
     }, []);
 
+    const handleImgLoad = useCallback((idx: number, event: React.SyntheticEvent<HTMLImageElement>) => {
+        if (isBlankImageElement(event.currentTarget)) {
+            handleImgError(idx);
+        }
+    }, [handleImgError]);
+
     const currentSrc = allImages[selectedIndex];
     const showFallback = !currentSrc || imgErrors.has(selectedIndex);
 
@@ -43,18 +49,18 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ mainImage, images, prod
         <div className={styles.gallery}>
             <div className={styles.mainFrame}>
                 {showFallback ? (
-                    <div className={styles.emptyState}>
-                        <div className={styles.emptyIcon}>
-                            <Package size={46} strokeWidth={1.7} />
-                        </div>
-                        <p className={styles.emptyTitle}>{productName}</p>
-                        <span className={styles.emptyText}>Product image coming soon</span>
-                    </div>
+                    <img
+                        src={getProductPlaceholderImage(productName)}
+                        alt={productName}
+                        className={styles.mainImage}
+                        draggable={false}
+                    />
                 ) : (
                     <img
                         src={currentSrc}
                         alt={productName}
                         className={styles.mainImage}
+                        onLoad={(event) => handleImgLoad(selectedIndex, event)}
                         onError={() => handleImgError(selectedIndex)}
                         draggable={false}
                     />
@@ -100,15 +106,19 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ mainImage, images, prod
                                 className={`${styles.thumbnailButton} ${isActive ? styles.thumbnailActive : ""}`}
                             >
                                 {hasError ? (
-                                    <div className={styles.thumbnailEmpty}>
-                                        <ImageOff size={16} />
-                                    </div>
+                                    <img
+                                        src={getProductPlaceholderImage(productName)}
+                                        alt={`${productName} - ${idx + 1}`}
+                                        className={styles.thumbnailImage}
+                                        draggable={false}
+                                    />
                                 ) : (
                                     <img
                                         src={img}
                                         alt={`${productName} - ${idx + 1}`}
                                         className={styles.thumbnailImage}
                                         loading="lazy"
+                                        onLoad={(event) => handleImgLoad(idx, event)}
                                         onError={() => handleImgError(idx)}
                                         draggable={false}
                                     />
