@@ -4,6 +4,7 @@ import React from "react";
 import StoreLayout from "@/component/layout/StoreLayout";
 import AdUnit from "@/component/common/AdUnit";
 import CatalogProductCard from "@/component/product/CatalogProductCard";
+import Pagination from "@/component/pagination/Pagination";
 import {
     ArrowDownUp,
     Award,
@@ -24,7 +25,7 @@ import "./styles.css";
 const ProductListPage: React.FC = () => {
     useLanguage();
     const { config, action } = ProductListVM();
-    const { products, categories, brands, isLoading, searchInput, keyword, categoryId, brandId, sort } = config;
+    const { products, paging, categories, brands, isLoading, searchInput, keyword, categoryId, brandId, sort } = config;
 
     const hasFilters = Boolean(keyword || categoryId || brandId);
     const activeFilterCount = [keyword, categoryId, brandId].filter(Boolean).length;
@@ -50,7 +51,7 @@ const ProductListPage: React.FC = () => {
                         <h1 className="type-title">{t.store.product.list_title()}</h1>
                         {!isLoading && (
                             <p className="section-subtitle">
-                                {t.store.product.items_count({ count: products.length })}
+                                {t.store.product.items_count({ count: paging?.totalCount ?? products.length })}
                             </p>
                         )}
                     </div>
@@ -221,11 +222,23 @@ const ProductListPage: React.FC = () => {
                                 </button>
                             </div>
                         ) : (
-                            <div className="products-grid">
-                                {products.map((product) => (
-                                    <CatalogProductCard key={product.id} product={product} />
-                                ))}
-                            </div>
+                            <>
+                                <div className="products-grid">
+                                    {products.map((product) => (
+                                        <CatalogProductCard key={product.id} product={product} />
+                                    ))}
+                                </div>
+                                {paging && (
+                                    <Pagination
+                                        props={{
+                                            paging,
+                                            onPageChange: action.handlePageChange,
+                                            onPerPageChange: action.handlePerPageChange,
+                                            style: { marginTop: 28 },
+                                        }}
+                                    />
+                                )}
+                            </>
                         )}
                     </div>
                 </div>

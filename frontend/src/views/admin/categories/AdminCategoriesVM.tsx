@@ -5,9 +5,11 @@ import { ApiResultType } from '@/core/api';
 import { t } from '@/core/localized';
 import type { Category } from "@/data/models/Category";
 import { DEFAULT_CATEGORY_ICON } from "@/core/utils/categoryIcon";
+import Paging from "@/data/models/Paging";
 
 interface Config extends BaseConfig {
     categories: Category[];
+    paging: Paging | null;
     isLoading: boolean;
     isModalOpen: boolean;
     editItem: Category | null;
@@ -18,6 +20,8 @@ interface Config extends BaseConfig {
     formDesc: string;
     formIcon: string;
     formError: string;
+    page: number;
+    perPage: number;
 }
 
 interface Action extends BaseAction<Config> {
@@ -30,6 +34,8 @@ interface Action extends BaseAction<Config> {
     handleSave: () => Promise<void>;
     setDeleteId: (id: number | null) => void;
     handleDelete: () => Promise<void>;
+    handlePageChange: (page: number) => void;
+    handlePerPageChange: (perPage: number) => void;
 }
 
 export const AdminCategoriesVM: BaseViewModelFunc<Config, Action> = () => {
@@ -39,6 +45,7 @@ export const AdminCategoriesVM: BaseViewModelFunc<Config, Action> = () => {
         AdminCategoriesVM.name,
         {
             categories: [],
+            paging: null,
             isLoading: true,
             isModalOpen: false,
             editItem: null,
@@ -49,8 +56,17 @@ export const AdminCategoriesVM: BaseViewModelFunc<Config, Action> = () => {
             formDesc: '',
             formIcon: DEFAULT_CATEGORY_ICON,
             formError: '',
+            page: 1,
+            perPage: 20,
         }
     );
+
+    const buildPaging = (totalCount: number, page = config.page, perPage = config.perPage) => new Paging().fromJson({
+        current_page: page,
+        per_page: perPage,
+        total_count: totalCount,
+        next_page: page * perPage < totalCount ? page + 1 : null,
+    });
 
     const fetchCategories = async () => {
         config.isLoading = true;
@@ -59,6 +75,7 @@ export const AdminCategoriesVM: BaseViewModelFunc<Config, Action> = () => {
         config.isLoading = false;
         if (res.type === ApiResultType.Success) {
             config.categories = res.data;
+            config.paging = buildPaging(res.data.length);
         } else {
             globalUI.handleApiError(res.error);
         }
@@ -146,12 +163,26 @@ export const AdminCategoriesVM: BaseViewModelFunc<Config, Action> = () => {
         const res = await categoryRepository.adminDelete(config.deleteId);
         if (res.type === ApiResultType.Success) {
             config.categories = config.categories.filter(c => c.id !== config.deleteId);
+            config.paging = buildPaging(config.categories.length);
             globalUI.showSuccessAlert(t.admin.category.delete_success());
         } else {
             globalUI.handleApiError(res.error);
         }
         config.deleteId = null;
         config.isDeleting = false;
+        action.setNewConfig(config);
+    };
+
+    const handlePageChange = (page: number) => {
+        config.page = page;
+        config.paging = buildPaging(config.categories.length, page, config.perPage);
+        action.setNewConfig(config);
+    };
+
+    const handlePerPageChange = (perPage: number) => {
+        config.page = 1;
+        config.perPage = perPage;
+        config.paging = buildPaging(config.categories.length, 1, perPage);
         action.setNewConfig(config);
     };
 
@@ -174,6 +205,8 @@ export const AdminCategoriesVM: BaseViewModelFunc<Config, Action> = () => {
             handleSave,
             setDeleteId,
             handleDelete,
+            handlePageChange,
+            handlePerPageChange,
         },
         appNavigation,
     };

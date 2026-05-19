@@ -4,9 +4,11 @@ import { BaseViewModelFunc, BaseConfig, BaseAction, useBaseViewModel } from '@/c
 import { ApiResultType } from '@/core/api';
 import { t } from '@/core/localized';
 import type { Brand } from "@/data/models/Brand";
+import Paging from "@/data/models/Paging";
 
 interface Config extends BaseConfig {
     brands: Brand[];
+    paging: Paging | null;
     isLoading: boolean;
     isModalOpen: boolean;
     editItem: Brand | null;
@@ -16,6 +18,8 @@ interface Config extends BaseConfig {
     formName: string;
     formDesc: string;
     formError: string;
+    page: number;
+    perPage: number;
 }
 
 interface Action extends BaseAction<Config> {
@@ -27,6 +31,8 @@ interface Action extends BaseAction<Config> {
     handleSave: () => Promise<void>;
     setDeleteId: (id: number | null) => void;
     handleDelete: () => Promise<void>;
+    handlePageChange: (page: number) => void;
+    handlePerPageChange: (perPage: number) => void;
 }
 
 export const AdminBrandsVM: BaseViewModelFunc<Config, Action> = () => {
@@ -36,6 +42,7 @@ export const AdminBrandsVM: BaseViewModelFunc<Config, Action> = () => {
         AdminBrandsVM.name,
         {
             brands: [],
+            paging: null,
             isLoading: true,
             isModalOpen: false,
             editItem: null,
@@ -45,8 +52,17 @@ export const AdminBrandsVM: BaseViewModelFunc<Config, Action> = () => {
             formName: '',
             formDesc: '',
             formError: '',
+            page: 1,
+            perPage: 20,
         }
     );
+
+    const buildPaging = (totalCount: number, page = config.page, perPage = config.perPage) => new Paging().fromJson({
+        current_page: page,
+        per_page: perPage,
+        total_count: totalCount,
+        next_page: page * perPage < totalCount ? page + 1 : null,
+    });
 
     const fetchBrands = async () => {
         config.isLoading = true;
@@ -55,6 +71,7 @@ export const AdminBrandsVM: BaseViewModelFunc<Config, Action> = () => {
         config.isLoading = false;
         if (res.type === ApiResultType.Success) {
             config.brands = res.data;
+            config.paging = buildPaging(res.data.length);
         } else {
             globalUI.handleApiError(res.error);
         }
@@ -131,12 +148,26 @@ export const AdminBrandsVM: BaseViewModelFunc<Config, Action> = () => {
         const res = await brandRepository.adminDelete(config.deleteId);
         if (res.type === ApiResultType.Success) {
             config.brands = config.brands.filter(b => b.id !== config.deleteId);
+            config.paging = buildPaging(config.brands.length);
             globalUI.showSuccessAlert(t.admin.brand.delete_success());
         } else {
             globalUI.handleApiError(res.error);
         }
         config.deleteId = null;
         config.isDeleting = false;
+        action.setNewConfig(config);
+    };
+
+    const handlePageChange = (page: number) => {
+        config.page = page;
+        config.paging = buildPaging(config.brands.length, page, config.perPage);
+        action.setNewConfig(config);
+    };
+
+    const handlePerPageChange = (perPage: number) => {
+        config.page = 1;
+        config.perPage = perPage;
+        config.paging = buildPaging(config.brands.length, 1, perPage);
         action.setNewConfig(config);
     };
 
@@ -158,6 +189,8 @@ export const AdminBrandsVM: BaseViewModelFunc<Config, Action> = () => {
             handleSave,
             setDeleteId,
             handleDelete,
+            handlePageChange,
+            handlePerPageChange,
         },
         appNavigation,
     };

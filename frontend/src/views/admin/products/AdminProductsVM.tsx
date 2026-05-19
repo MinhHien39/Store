@@ -5,6 +5,7 @@ import { ApiResultType } from '@/core/api';
 import type { Product, ProductImage } from "@/data/models/Product";
 import type { Category } from "@/data/models/Category";
 import type { Brand } from "@/data/models/Brand";
+import Paging from "@/data/models/Paging";
 import { t } from '@/core/localized';
 import { formatPriceInput, parsePriceInput } from '@/core/utils/currency';
 
@@ -38,6 +39,7 @@ const emptyForm: ProductFormData = {
 
 interface Config extends BaseConfig {
     products: Product[];
+    paging: Paging | null;
     isLoading: boolean;
     searchInput: string;
     keyword: string;
@@ -55,6 +57,8 @@ interface Config extends BaseConfig {
     mainImagePreview: string;
     subImages: ProductImage[];
     isImporting: boolean;
+    page: number;
+    perPage: number;
 }
 
 interface Action extends BaseAction<Config> {
@@ -72,6 +76,8 @@ interface Action extends BaseAction<Config> {
     moveSubImage: (fromIndex: number, toIndex: number) => void;
     handleSave: () => Promise<void>;
     handleCsvImport: (file: File | null) => Promise<void>;
+    handlePageChange: (page: number) => void;
+    handlePerPageChange: (perPage: number) => void;
 }
 
 export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
@@ -85,6 +91,7 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
         AdminProductsVM.name,
         {
             products: [],
+            paging: null,
             isLoading: true,
             searchInput: '',
             keyword: '',
@@ -101,14 +108,30 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
             mainImagePreview: '',
             subImages: [],
             isImporting: false,
+            page: 1,
+            perPage: 20,
         }
     );
 
-    const loadProducts = async (kw?: string) => {
+    const loadProducts = async (kw?: string, page?: number, perPage?: number) => {
         action.setNewConfig({ isLoading: true });
-        const res = await productRepository.adminGetList({ keyword: kw ?? config.keyword, sort_by: 'created_at', sort_dir: 'desc' });
+        const targetPage = page ?? config.page;
+        const targetPerPage = perPage ?? config.perPage;
+        const res = await productRepository.adminGetList({
+            keyword: kw ?? config.keyword,
+            sort_by: 'created_at',
+            sort_dir: 'desc',
+            page: targetPage,
+            per_page: targetPerPage,
+        });
         if (res.type === ApiResultType.Success) {
-            action.setNewConfig({ products: res.data.items || [], isLoading: false });
+            action.setNewConfig({
+                products: res.data.items || [],
+                paging: new Paging().fromJson(res.data.paging || {}),
+                page: targetPage,
+                perPage: targetPerPage,
+                isLoading: false,
+            });
         } else {
             globalUI.handleApiError(res.error);
             action.setNewConfig({ isLoading: false });
@@ -301,7 +324,7 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
                 globalUI.showSuccessAlert(summary);
             }
 
-            await loadProducts(config.keyword);
+            await loadProducts(config.keyword, 1, config.perPage);
         } else {
             globalUI.handleApiError(res.error);
         }
@@ -389,9 +412,23 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(() => {
             config.keyword = value.trim();
+            config.page = 1;
             action.setNewConfig(config);
-            loadProducts(value.trim());
+            loadProducts(value.trim(), 1, config.perPage);
         }, 400);
+    };
+
+    const handlePageChange = (page: number) => {
+        config.page = page;
+        action.setNewConfig(config);
+        loadProducts(config.keyword, page, config.perPage);
+    };
+
+    const handlePerPageChange = (perPage: number) => {
+        config.page = 1;
+        config.perPage = perPage;
+        action.setNewConfig(config);
+        loadProducts(config.keyword, 1, perPage);
     };
 
     const setDeleteId = (id: number | null) => {
@@ -443,6 +480,8 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
             moveSubImage,
             handleSave,
             handleCsvImport,
+            handlePageChange,
+            handlePerPageChange,
         },
         appNavigation,
     };

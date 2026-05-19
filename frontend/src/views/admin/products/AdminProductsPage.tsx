@@ -2,18 +2,19 @@
 
 import React from "react";
 import AdminLayout from "@/component/layout/AdminLayout";
+import Pagination from "@/component/pagination/Pagination";
 import { Plus, Search, Pencil, Trash2, Loader2, PackageSearch, Package, X, Upload, GripVertical } from "lucide-react";
 import { t } from "@/core/localized";
 import { useLanguage } from "@/provider/LanguageProvider";
 import { AdminProductsVM } from "./AdminProductsVM";
-import { formatVnd, getImageUrl } from "@/core/utils/currency";
+import { formatVnd, getImageUrl, getProductPlaceholderImage, isBlankImageElement } from "@/core/utils/currency";
 
 const AdminProductsPage: React.FC = () => {
     useLanguage();
     const { config, action } = AdminProductsVM();
     const csvInputRef = React.useRef<HTMLInputElement | null>(null);
     const {
-        products, isLoading, searchInput, deleteId, isDeleting,
+        products, paging, isLoading, searchInput, deleteId, isDeleting,
         isModalOpen, isModalLoading, editItem, isSaving,
         categories, brands, form, formErrors, mainImagePreview, subImages, isImporting,
     } = config;
@@ -24,7 +25,7 @@ const AdminProductsPage: React.FC = () => {
             <div className="page-header">
                 <div>
                     <h2 className="page-title">{t.admin.product.page_title()}</h2>
-                    {!isLoading && <p className="page-subtitle">{t.admin.product.items_count({ count: products.length })}</p>}
+                    {!isLoading && <p className="page-subtitle">{t.admin.product.items_count({ count: paging?.totalCount ?? products.length })}</p>}
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                     <input
@@ -102,7 +103,19 @@ const AdminProductsPage: React.FC = () => {
                                         <td>
                                             <div className="admin-product-cell">
                                                 {getImageUrl(p.main_image_url) ? (
-                                                    <img src={getImageUrl(p.main_image_url)} alt="" className="admin-product-cell__img" />
+                                                    <img
+                                                        src={getImageUrl(p.main_image_url)}
+                                                        alt=""
+                                                        className="admin-product-cell__img"
+                                                        onLoad={(event) => {
+                                                            if (isBlankImageElement(event.currentTarget)) {
+                                                                event.currentTarget.src = getProductPlaceholderImage(p.name);
+                                                            }
+                                                        }}
+                                                        onError={(event) => {
+                                                            event.currentTarget.src = getProductPlaceholderImage(p.name);
+                                                        }}
+                                                    />
                                                 ) : (
                                                     <span className="admin-product-cell__placeholder">
                                                         <Package size={18} />
@@ -143,6 +156,16 @@ const AdminProductsPage: React.FC = () => {
                             </tbody>
                         </table>
                     </div>
+                    {paging && (
+                        <Pagination
+                            props={{
+                                paging,
+                                onPageChange: action.handlePageChange,
+                                onPerPageChange: action.handlePerPageChange,
+                                style: { padding: "16px" },
+                            }}
+                        />
+                    )}
                 </div>
             )}
 
@@ -250,7 +273,18 @@ const AdminProductsPage: React.FC = () => {
                                         <div className="admin-form__image-row">
                                             {mainImagePreview ? (
                                                 <div className="admin-form__image-preview">
-                                                    <img src={mainImagePreview} alt="Main" />
+                                                    <img
+                                                        src={mainImagePreview}
+                                                        alt="Main"
+                                                        onLoad={(event) => {
+                                                            if (isBlankImageElement(event.currentTarget)) {
+                                                                event.currentTarget.src = getProductPlaceholderImage(form.name);
+                                                            }
+                                                        }}
+                                                        onError={(event) => {
+                                                            event.currentTarget.src = getProductPlaceholderImage(form.name);
+                                                        }}
+                                                    />
                                                     <button type="button"
                                                         onClick={() => { action.setMainImagePreview(''); action.setFormField('main_image_url', ''); }}
                                                         className="admin-form__image-remove">
@@ -283,7 +317,18 @@ const AdminProductsPage: React.FC = () => {
                                         {subImages.map((img, idx) => (
                                             <div key={img.id} className="admin-form__sub-image">
                                                 {getImageUrl(img.image_url)
-                                                    ? <img src={getImageUrl(img.image_url)} alt={`Sub ${idx + 1}`} />
+                                                    ? <img
+                                                        src={getImageUrl(img.image_url)}
+                                                        alt={`Sub ${idx + 1}`}
+                                                        onLoad={(event) => {
+                                                            if (isBlankImageElement(event.currentTarget)) {
+                                                                event.currentTarget.src = getProductPlaceholderImage(form.name);
+                                                            }
+                                                        }}
+                                                        onError={(event) => {
+                                                            event.currentTarget.src = getProductPlaceholderImage(form.name);
+                                                        }}
+                                                    />
                                                     : <span className="admin-form__sub-image-placeholder"><Package size={20} /></span>
                                                 }
                                                 <div className="admin-form__sub-image-actions">

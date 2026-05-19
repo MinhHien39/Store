@@ -13,9 +13,11 @@ import { useAppContext } from "@/provider/AppContextProvider";
 import type { Product } from "@/data/models/Product";
 import type { Category } from "@/data/models/Category";
 import type { Brand } from "@/data/models/Brand";
+import Paging from "@/data/models/Paging";
 
 interface Config extends BaseConfig {
     products: Product[];
+    paging: Paging | null;
     categories: Category[];
     brands: Brand[];
     isLoading: boolean;
@@ -24,11 +26,15 @@ interface Config extends BaseConfig {
     categoryId: number | undefined;
     brandId: number | undefined;
     sort: string;
+    page: number;
+    perPage: number;
 }
 
 interface Action extends BaseAction<Config> {
     handleSearchChange: (value: string) => void;
     updateFilter: (key: string, value: string | undefined) => void;
+    handlePageChange: (page: number) => void;
+    handlePerPageChange: (perPage: number) => void;
     clearFilters: () => void;
 }
 
@@ -41,11 +47,14 @@ export const ProductListVM: BaseViewModelFunc<Config, Action> = () => {
     const categoryId = searchParams.get("category_id") ? Number(searchParams.get("category_id")) : undefined;
     const brandId = searchParams.get("brand_id") ? Number(searchParams.get("brand_id")) : undefined;
     const sort = searchParams.get("sort") || "newest";
+    const page = searchParams.get("page") ? Number(searchParams.get("page")) : 1;
+    const perPage = searchParams.get("per_page") ? Number(searchParams.get("per_page")) : 20;
 
     const { config, action } = useBaseViewModel<Config>(
         ProductListVM.name,
         {
             products: [],
+            paging: null,
             categories: [],
             brands: [],
             isLoading: true,
@@ -54,6 +63,8 @@ export const ProductListVM: BaseViewModelFunc<Config, Action> = () => {
             categoryId,
             brandId,
             sort,
+            page,
+            perPage,
         }
     );
 
@@ -80,14 +91,17 @@ export const ProductListVM: BaseViewModelFunc<Config, Action> = () => {
                 brand_id: brandId,
                 sort_by: sort === "newest" ? "created_at" : "price",
                 sort_dir: sort === "price_asc" ? "asc" : "desc",
+                page,
+                per_page: perPage,
             });
             action.setNewConfig({
                 products: res.type === ApiResultType.Success ? (res.data.items || []) : [],
+                paging: res.type === ApiResultType.Success ? new Paging().fromJson(res.data.paging || {}) : null,
                 isLoading: false,
             });
         };
         loadProducts();
-    }, [keyword, categoryId, brandId, sort]);
+    }, [keyword, categoryId, brandId, sort, page, perPage]);
 
     const handleSearchChange = (value: string) => {
         action.setNewConfig({ searchInput: value });
@@ -99,6 +113,7 @@ export const ProductListVM: BaseViewModelFunc<Config, Action> = () => {
             } else {
                 params.delete("keyword");
             }
+            params.set("page", "1");
             setSearchParams(params);
         }, 350);
     };
@@ -110,6 +125,20 @@ export const ProductListVM: BaseViewModelFunc<Config, Action> = () => {
         } else {
             params.delete(key);
         }
+        params.set("page", "1");
+        setSearchParams(params);
+    };
+
+    const handlePageChange = (nextPage: number) => {
+        const params = new URLSearchParams(searchParams);
+        params.set("page", String(nextPage));
+        setSearchParams(params);
+    };
+
+    const handlePerPageChange = (nextPerPage: number) => {
+        const params = new URLSearchParams(searchParams);
+        params.set("per_page", String(nextPerPage));
+        params.set("page", "1");
         setSearchParams(params);
     };
 
@@ -119,7 +148,7 @@ export const ProductListVM: BaseViewModelFunc<Config, Action> = () => {
     };
 
     return {
-        config: { ...config, keyword, categoryId, brandId, sort },
-        action: { ...action, handleSearchChange, updateFilter, clearFilters },
+        config: { ...config, keyword, categoryId, brandId, sort, page, perPage },
+        action: { ...action, handleSearchChange, updateFilter, handlePageChange, handlePerPageChange, clearFilters },
     };
 };

@@ -4,6 +4,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import StoreLayout from "@/component/layout/StoreLayout";
+import Pagination from "@/component/pagination/Pagination";
 import {
     ArrowRight,
     Loader2,
@@ -17,8 +18,9 @@ import "./styles.css";
 
 const CategoriesPage: React.FC = () => {
     useLanguage();
-    const { config } = CategoriesVM();
-    const { categories, isLoading } = config;
+    const { config, action } = CategoriesVM();
+    const { categories, paging, isLoading, page, perPage } = config;
+    const pagedCategories = categories.slice((page - 1) * perPage, page * perPage);
 
     return (
         <StoreLayout>
@@ -41,8 +43,9 @@ const CategoriesPage: React.FC = () => {
                         <Loader2 size={34} className="animate-spin text-primary" />
                     </div>
                 ) : (
+                    <>
                     <div className="categories-grid">
-                        {categories.map((category, index) => {
+                        {pagedCategories.map((category, index) => {
                             const Icon = getCategoryIcon(category.icon, index);
                             return (
                                 <Link
@@ -64,6 +67,17 @@ const CategoriesPage: React.FC = () => {
                             );
                         })}
                     </div>
+                    {paging && (
+                        <Pagination
+                            props={{
+                                paging,
+                                onPageChange: action.handlePageChange,
+                                onPerPageChange: action.handlePerPageChange,
+                                style: { marginTop: 28 },
+                            }}
+                        />
+                    )}
+                    </>
                 )}
             </section>
         </StoreLayout>

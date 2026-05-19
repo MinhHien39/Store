@@ -2,10 +2,9 @@
 
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Package } from "lucide-react";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import type { Product } from "@/data/models/Product";
-import { formatVnd, getImageUrl } from "@/core/utils/currency";
+import { formatVnd, getImageUrl, getProductPlaceholderImage, isBlankImageElement } from "@/core/utils/currency";
 import styles from "./CatalogProductCard.module.css";
 
 interface CatalogProductCardProps {
@@ -35,13 +34,18 @@ const CatalogProductCard: React.FC<CatalogProductCardProps> = ({ product }) => {
                         alt={product.name}
                         className={styles.image}
                         loading="lazy"
+                        onLoad={(event) => {
+                            if (isBlankImageElement(event.currentTarget)) setImageFailed(true);
+                        }}
                         onError={() => setImageFailed(true)}
                     />
                 ) : (
-                    <div className={styles.imageFallback}>
-                        <Package size={30} strokeWidth={1.7} />
-                        <span>{product.name}</span>
-                    </div>
+                    <img
+                        src={getProductPlaceholderImage(product.name)}
+                        alt={product.name}
+                        className={styles.image}
+                        loading="lazy"
+                    />
                 )}
                 {hasSale && (
                     <span className={styles.saleBadge}>
