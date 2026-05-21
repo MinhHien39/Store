@@ -23,6 +23,7 @@ const MESSENGER_URL = "https://m.me/xh.456789";
 const AccountPage: React.FC = () => {
     useLanguage();
     const { config, action } = AccountVM();
+    const { handleLogout } = action;
     const { user, isAuthenticated } = config;
 
     if (!isAuthenticated || !user) {
