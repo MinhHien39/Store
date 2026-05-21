@@ -584,6 +584,7 @@ export const LocaleKeys = {
       categories_and_brands: 'admin.dashboard.categories_and_brands',
       category_badge: 'admin.dashboard.category_badge',
       brand_badge: 'admin.dashboard.brand_badge',
+      chart_title: 'admin.dashboard.chart_title',
       no_data: 'admin.dashboard.no_data',
     },
     product: {
