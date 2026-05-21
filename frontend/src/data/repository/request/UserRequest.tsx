@@ -174,9 +174,7 @@ export class UserRequest extends BaseRequest {
         request.userId = user.userId?.toString();
         request.status = user.status;
         request.roleId = user.roleId;
-        request.phoneNumber = user.phoneNumber;
-        request.furigana = user.furigana;
-        request.address = user.address;
+        request.phoneNumber = user.phone;
         request.createdAt = user.createdAt;
         request.updatedAt = user.updatedAt;
 
@@ -196,7 +194,7 @@ export class UserRequest extends BaseRequest {
         request.furigana = "";
         request.address = "";
         request.status = UserStatus.ACTIVE;
-        request.roleId = UserRole.MEMBER;
+        request.roleId = UserRole.STORE_USER;
         request.createdAt = undefined;
         request.updatedAt = undefined;
 
