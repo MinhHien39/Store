@@ -10,7 +10,9 @@ import {
     LogOut,
     Menu,
     Package,
+    Eye,
     ShoppingCart,
+    Star,
     Users,
     X,
 } from "lucide-react";
@@ -34,6 +36,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         { label: t.admin.nav.categories(), path: AppRoutePath.ADMIN_CATEGORIES, icon: FolderTree },
         { label: t.admin.nav.brands(), path: AppRoutePath.ADMIN_BRANDS, icon: Award },
         { label: t.admin.nav.orders(), path: AppRoutePath.ADMIN_ORDERS, icon: ShoppingCart },
+        { label: "Product Views", path: AppRoutePath.ADMIN_PRODUCT_VIEWS, icon: Eye },
+        { label: "Reviews", path: AppRoutePath.ADMIN_PRODUCT_REVIEWS, icon: Star },
         { label: t.admin.nav.customers(), path: AppRoutePath.ADMIN_CUSTOMERS, icon: Users },
     ];
 

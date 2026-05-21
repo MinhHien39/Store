@@ -16,6 +16,7 @@ export interface OrderRepository {
     adminGetOrders(params?: Record<string, any>): Promise<ApiResult<OrderListResponse>>;
     adminGetOrderDetail(orderId: number): Promise<ApiResult<Order>>;
     adminUpdateOrderStatus(orderId: number, status: number): Promise<ApiResult<Order>>;
+    adminExportOrders(params?: Record<string, any>): Promise<ApiResult<{ blob: Blob; fileName: string | null }>>;
 }
 
 export class OrderRepositoryImpl extends BaseRepository implements OrderRepository {
@@ -52,6 +53,12 @@ export class OrderRepositoryImpl extends BaseRepository implements OrderReposito
     adminUpdateOrderStatus(orderId: number, status: number): Promise<ApiResult<Order>> {
         return this.safeCall(() =>
             this.apiService.patch<Order>(`/api/v1/admin/orders/${orderId}/status`, { status })
+        );
+    }
+
+    adminExportOrders(params?: Record<string, any>): Promise<ApiResult<{ blob: Blob; fileName: string | null }>> {
+        return this.safeCall(() =>
+            this.apiService.downloadFile('/api/v1/admin/orders/export-csv', params || {})
         );
     }
 }

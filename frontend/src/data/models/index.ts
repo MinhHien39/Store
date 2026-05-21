@@ -7,3 +7,5 @@ export type { Category } from './Category';
 export type { Brand } from './Brand';
 export type { Order, OrderItem } from './Order';
 export { OrderStatus } from './Order';
+export type { ProductViewStats } from './ProductView';
+export type { ProductReview, ProductReviewListResponse, ProductReviewSummary } from './ProductReview';

@@ -6,7 +6,7 @@ import { AdminOrderListVM } from "./AdminOrderListVM";
 import { OrderStatus } from "@/data/models/Order";
 import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { Download, Loader2, ShoppingBag } from "lucide-react";
 import dayjs from "dayjs";
 
 const AdminOrderListPage: React.FC = () => {
@@ -24,6 +24,10 @@ const AdminOrderListPage: React.FC = () => {
                         <p className="page-subtitle">{config.orders.length} đơn hàng</p>
                     )}
                 </div>
+                <button className="btn btn-primary" onClick={action.onExportCsv}>
+                    <Download size={16} />
+                    Export CSV
+                </button>
             </div>
 
             {/* Status filter */}

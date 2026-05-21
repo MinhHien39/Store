@@ -3,12 +3,13 @@ import io
 import re
 import unicodedata
 
-from fastapi import UploadFile
+from fastapi import Request, UploadFile
 from sqlmodel import col, select
-from sqlalchemy import func
+from sqlalchemy import String, case, cast, func
 
-from app.core import BaseService, create_service, DataNotFoundException, DefaultException, PagingHelper, PaginatedContent
-from app.db import Brand, Category, Product, ProductImage, ReadDbSessionDep, WriteDbSessionDep
+from app.core import BaseService, create_service, DataNotFoundException, DefaultException, PagingHelper, PaginatedContent, RequireStoreUserDep, UserRole
+from app.core.auth.token import TokenService
+from app.db import Brand, Category, Product, ProductImage, ProductReview, ProductView, ReadDbSessionDep, StoreUser, WriteDbSessionDep
 
 from .schemas import (
     ProductCreateRequest,
@@ -19,6 +20,15 @@ from .schemas import (
     ProductListItem,
     ProductListQuery,
     ProductUpdateRequest,
+    ProductReviewCreateRequest,
+    ProductReviewItem,
+    ProductReviewListQuery,
+    ProductReviewListResponse,
+    ProductReviewSummary,
+    ProductReviewUpdateStatusRequest,
+    ProductViewStatsItem,
+    ProductViewStatsQuery,
+    ProductViewTrackRequest,
 )
 
 
@@ -79,6 +89,40 @@ class ProductService(BaseService):
                 urls.append(url)
 
         return urls
+
+    @staticmethod
+    def _resolve_client_ip(request: Request) -> str | None:
+        forwarded_for = request.headers.get("x-forwarded-for")
+        if forwarded_for:
+            return forwarded_for.split(",")[0].strip()[:64]
+
+        real_ip = request.headers.get("x-real-ip")
+        if real_ip:
+            return real_ip[:64]
+
+        if request.client and request.client.host:
+            return request.client.host[:64]
+
+        return None
+
+    @staticmethod
+    def _resolve_optional_user_id(request: Request) -> int | None:
+        authorization = request.headers.get("authorization")
+        if not authorization:
+            return None
+
+        scheme, _, token = authorization.partition(" ")
+        if scheme.lower() != "bearer" or not token:
+            return None
+
+        try:
+            payload = TokenService.execute(token)
+            if payload and payload.get("role_id") == UserRole.STORE_USER.value:
+                return payload.get("user_id")
+        except Exception:
+            return None
+
+        return None
 
     def _build_category_maps(self) -> tuple[dict[int, Category], dict[str, Category], dict[str, Category]]:
         categories = self.db.exec(
@@ -327,6 +371,295 @@ class ProductService(BaseService):
                 )
                 for img in images
             ],
+        )
+
+    def track_view(
+        self,
+        product_id: int,
+        payload: ProductViewTrackRequest | None,
+        request: Request,
+    ) -> dict:
+        product = self.db.exec(
+            select(Product).where(
+                Product.id == product_id,
+                Product.is_deleted == False,
+                Product.status == 1,
+            )
+        ).first()
+        if not product:
+            raise DataNotFoundException(message="Product not found")
+
+        payload = payload or ProductViewTrackRequest()
+        view = ProductView(
+            product_id=product.id,
+            product_name=product.name,
+            user_id=self._resolve_optional_user_id(request),
+            anonymous_id=payload.anonymous_id,
+            session_id=payload.session_id,
+            ip_address=self._resolve_client_ip(request),
+            user_agent=(request.headers.get("user-agent") or None),
+            referrer=(request.headers.get("referer") or None),
+            viewed_path=payload.viewed_path,
+            locale=payload.locale,
+            screen_width=payload.screen_width,
+            screen_height=payload.screen_height,
+            created_by="product-view-tracker",
+        )
+        self.db.add(view)
+        self.db.flush()
+
+        return {"tracked": True, "product_id": product.id}
+
+    def admin_get_view_stats(self, query: ProductViewStatsQuery) -> PaginatedContent:
+        where_sql = [ProductView.is_deleted == False]
+
+        if query.product_id is not None:
+            where_sql.append(ProductView.product_id == query.product_id)
+
+        if query.keyword:
+            where_sql.append(col(ProductView.product_name).contains(query.keyword))
+
+        visitor_key = func.coalesce(
+            cast(ProductView.user_id, String),
+            ProductView.anonymous_id,
+            ProductView.session_id,
+            ProductView.ip_address,
+        )
+
+        grouped = (
+            select(
+                ProductView.product_id.label("product_id"),
+                func.max(ProductView.product_name).label("product_name"),
+                func.count(ProductView.id).label("total_views"),
+                func.coalesce(func.sum(case((ProductView.user_id.is_not(None), 1), else_=0)), 0).label("authenticated_views"),
+                func.coalesce(func.sum(case((ProductView.user_id.is_(None), 1), else_=0)), 0).label("anonymous_views"),
+                func.count(func.distinct(visitor_key)).label("unique_visitors"),
+                func.max(ProductView.viewed_at).label("latest_viewed_at"),
+            )
+            .where(*where_sql)
+            .group_by(ProductView.product_id)
+        ).subquery()
+
+        total_count = self.db.exec(select(func.count()).select_from(grouped)).first() or 0
+        offset, limit = query.get_offset_limit()
+
+        rows = self.db.exec(
+            select(grouped)
+            .order_by(grouped.c.total_views.desc(), grouped.c.latest_viewed_at.desc())
+            .offset(offset)
+            .limit(limit)
+        ).all()
+
+        items = [
+            ProductViewStatsItem(
+                product_id=row._mapping["product_id"],
+                product_name=row._mapping["product_name"],
+                total_views=row._mapping["total_views"],
+                authenticated_views=row._mapping["authenticated_views"],
+                anonymous_views=row._mapping["anonymous_views"],
+                unique_visitors=row._mapping["unique_visitors"],
+                latest_viewed_at=row._mapping["latest_viewed_at"],
+            )
+            for row in rows
+        ]
+        paging = PagingHelper(query.page, query.per_page, total_count).create_meta()
+
+        return PaginatedContent(items=items, paging=paging)
+
+    def get_reviews(self, product_id: int, query: ProductReviewListQuery) -> ProductReviewListResponse:
+        product = self.db.exec(
+            select(Product).where(
+                Product.id == product_id,
+                Product.is_deleted == False,
+                Product.status == 1,
+            )
+        ).first()
+        if not product:
+            raise DataNotFoundException(message="Product not found")
+
+        where_sql = [
+            ProductReview.product_id == product_id,
+            ProductReview.is_deleted == False,
+            ProductReview.status == 1,
+        ]
+        if query.keyword:
+            where_sql.append(col(ProductReview.comment).contains(query.keyword))
+
+        total_count = self.db.exec(
+            select(func.count()).select_from(ProductReview).where(*where_sql)
+        ).first() or 0
+        offset, limit = query.get_offset_limit()
+        reviews = self.db.exec(
+            select(ProductReview)
+            .where(*where_sql)
+            .order_by(ProductReview.created_at.desc(), ProductReview.id.desc())
+            .offset(offset)
+            .limit(limit)
+        ).all()
+
+        paging = PagingHelper(query.page, query.per_page, total_count).create_meta()
+        return ProductReviewListResponse(
+            summary=self._build_review_summary(product_id),
+            items=[self._review_to_item(review) for review in reviews],
+            paging=paging,
+        )
+
+    def admin_get_reviews(self, query: ProductReviewListQuery) -> PaginatedContent:
+        where_sql = [ProductReview.is_deleted == False]
+
+        if query.product_id is not None:
+            where_sql.append(ProductReview.product_id == query.product_id)
+
+        if query.status is not None:
+            where_sql.append(ProductReview.status == query.status)
+
+        if query.keyword:
+            where_sql.append(
+                col(ProductReview.product_name).contains(query.keyword)
+                | col(ProductReview.user_name).contains(query.keyword)
+                | col(ProductReview.comment).contains(query.keyword)
+            )
+
+        total_count = self.db.exec(
+            select(func.count()).select_from(ProductReview).where(*where_sql)
+        ).first() or 0
+        offset, limit = query.get_offset_limit()
+        reviews = self.db.exec(
+            select(ProductReview)
+            .where(*where_sql)
+            .order_by(ProductReview.created_at.desc(), ProductReview.id.desc())
+            .offset(offset)
+            .limit(limit)
+        ).all()
+
+        paging = PagingHelper(query.page, query.per_page, total_count).create_meta()
+        return PaginatedContent(items=[self._review_to_item(review) for review in reviews], paging=paging)
+
+    def create_or_update_review(self, product_id: int, payload: ProductReviewCreateRequest) -> ProductReviewItem:
+        product = self.db.exec(
+            select(Product).where(
+                Product.id == product_id,
+                Product.is_deleted == False,
+                Product.status == 1,
+            )
+        ).first()
+        if not product:
+            raise DataNotFoundException(message="Product not found")
+
+        user = self.db.exec(
+            select(StoreUser).where(
+                StoreUser.id == self.token_payload.user_id,
+                StoreUser.is_deleted == False,
+            )
+        ).first()
+        if not user:
+            raise DataNotFoundException(message="User not found")
+
+        review = self.db.exec(
+            select(ProductReview).where(
+                ProductReview.product_id == product_id,
+                ProductReview.user_id == user.id,
+                ProductReview.is_deleted == False,
+            )
+        ).first()
+
+        comment = self._clean_text(payload.comment)
+        user_name = user.full_name or user.email
+        if review:
+            review.product_name = product.name
+            review.user_name = user_name
+            review.rating = payload.rating
+            review.comment = comment
+            review.status = 1
+            review.updated_by = self.updated_by
+            review.updated_at = self.updated_at
+            self.db.add(review)
+        else:
+            review = ProductReview(
+                product_id=product.id,
+                product_name=product.name,
+                user_id=user.id,
+                user_name=user_name,
+                rating=payload.rating,
+                comment=comment,
+                status=1,
+                created_by=self.created_by,
+            )
+            self.db.add(review)
+
+        self.db.flush()
+        self.db.refresh(review)
+        return self._review_to_item(review)
+
+    def update_review_status(self, review_id: int, payload: ProductReviewUpdateStatusRequest) -> ProductReviewItem:
+        review = self.db.exec(
+            select(ProductReview).where(
+                ProductReview.id == review_id,
+                ProductReview.is_deleted == False,
+            )
+        ).first()
+        if not review:
+            raise DataNotFoundException(message="Review not found")
+
+        review.status = payload.status
+        review.updated_by = self.updated_by
+        review.updated_at = self.updated_at
+        self.db.add(review)
+        self.db.flush()
+        self.db.refresh(review)
+        return self._review_to_item(review)
+
+    def delete_review(self, review_id: int) -> dict:
+        review = self.db.exec(
+            select(ProductReview).where(
+                ProductReview.id == review_id,
+                ProductReview.is_deleted == False,
+            )
+        ).first()
+        if not review:
+            raise DataNotFoundException(message="Review not found")
+
+        review.is_deleted = True
+        review.updated_by = self.updated_by
+        review.updated_at = self.updated_at
+        self.db.add(review)
+        self.db.flush()
+        return {"id": review_id}
+
+    def _build_review_summary(self, product_id: int) -> ProductReviewSummary:
+        rows = self.db.exec(
+            select(ProductReview.rating, func.count(ProductReview.id))
+            .where(
+                ProductReview.product_id == product_id,
+                ProductReview.is_deleted == False,
+                ProductReview.status == 1,
+            )
+            .group_by(ProductReview.rating)
+        ).all()
+        rating_counts = {rating: count for rating, count in rows}
+        total_reviews = sum(rating_counts.values())
+        weighted_total = sum(rating * count for rating, count in rating_counts.items())
+        average_rating = round(weighted_total / total_reviews, 1) if total_reviews else 0
+        return ProductReviewSummary(
+            product_id=product_id,
+            average_rating=average_rating,
+            total_reviews=total_reviews,
+            rating_counts={rating: rating_counts.get(rating, 0) for rating in range(1, 6)},
+        )
+
+    @staticmethod
+    def _review_to_item(review: ProductReview) -> ProductReviewItem:
+        return ProductReviewItem(
+            id=review.id,
+            product_id=review.product_id,
+            product_name=review.product_name,
+            user_id=review.user_id,
+            user_name=review.user_name,
+            rating=review.rating,
+            comment=review.comment,
+            status=review.status,
+            created_at=review.created_at,
+            updated_at=review.updated_at,
         )
 
     def create(self, payload: ProductCreateRequest) -> ProductListItem:
@@ -584,3 +917,4 @@ class ProductService(BaseService):
 
 get_product_read_service = create_service(ProductService, ReadDbSessionDep)
 get_product_write_service = create_service(ProductService, WriteDbSessionDep)
+get_product_user_write_service = create_service(ProductService, WriteDbSessionDep, RequireStoreUserDep)

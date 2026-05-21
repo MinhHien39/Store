@@ -1,9 +1,16 @@
 import BaseRepository from './BaseRepository';
 import { ApiResult } from '@/core/api';
 import type { Product } from '@/data/models/Product';
+import type { ProductReview, ProductReviewListResponse } from '@/data/models/ProductReview';
+import type { ProductViewStats } from '@/data/models/ProductView';
 
 export interface ProductListResponse {
     items: Product[];
+    paging: Record<string, any>;
+}
+
+export interface ProductViewStatsListResponse {
+    items: ProductViewStats[];
     paging: Record<string, any>;
 }
 
@@ -44,6 +51,13 @@ export interface ProductRepository {
     adminUploadImages(productId: number, formData: FormData): Promise<ApiResult<any>>;
     adminUploadMainImage(productId: number, file: File): Promise<ApiResult<{ main_image_url: string }>>;
     adminDeleteImage(imageId: number): Promise<ApiResult<{ id: number }>>;
+    trackView(productId: number, data: Record<string, any>): Promise<ApiResult<{ tracked: boolean; product_id: number }>>;
+    adminGetViewStats(params: Record<string, any>): Promise<ApiResult<ProductViewStatsListResponse>>;
+    getReviews(productId: number, params: Record<string, any>): Promise<ApiResult<ProductReviewListResponse>>;
+    createOrUpdateReview(productId: number, data: { rating: number; comment?: string | null }): Promise<ApiResult<ProductReview>>;
+    adminGetReviews(params: Record<string, any>): Promise<ApiResult<{ items: ProductReview[]; paging: Record<string, any> }>>;
+    adminUpdateReviewStatus(reviewId: number, status: number): Promise<ApiResult<ProductReview>>;
+    adminDeleteReview(reviewId: number): Promise<ApiResult<{ id: number }>>;
 }
 
 export class ProductRepositoryImpl extends BaseRepository implements ProductRepository {
@@ -112,6 +126,48 @@ export class ProductRepositoryImpl extends BaseRepository implements ProductRepo
     adminDeleteImage(imageId: number): Promise<ApiResult<{ id: number }>> {
         return this.safeCall(() =>
             this.apiService.delete<{ id: number }>(`/api/v1/admin/product-images/${imageId}`)
+        );
+    }
+
+    trackView(productId: number, data: Record<string, any>): Promise<ApiResult<{ tracked: boolean; product_id: number }>> {
+        return this.safeCall(() =>
+            this.apiService.post<{ tracked: boolean; product_id: number }>(`/api/v1/products/${productId}/views`, data)
+        );
+    }
+
+    adminGetViewStats(params: Record<string, any>): Promise<ApiResult<ProductViewStatsListResponse>> {
+        return this.safeCall(() =>
+            this.apiService.get<ProductViewStatsListResponse>('/api/v1/admin/product-views', params)
+        );
+    }
+
+    getReviews(productId: number, params: Record<string, any>): Promise<ApiResult<ProductReviewListResponse>> {
+        return this.safeCall(() =>
+            this.apiService.get<ProductReviewListResponse>(`/api/v1/products/${productId}/reviews`, params)
+        );
+    }
+
+    createOrUpdateReview(productId: number, data: { rating: number; comment?: string | null }): Promise<ApiResult<ProductReview>> {
+        return this.safeCall(() =>
+            this.apiService.post<ProductReview>(`/api/v1/products/${productId}/reviews`, data)
+        );
+    }
+
+    adminGetReviews(params: Record<string, any>): Promise<ApiResult<{ items: ProductReview[]; paging: Record<string, any> }>> {
+        return this.safeCall(() =>
+            this.apiService.get<{ items: ProductReview[]; paging: Record<string, any> }>('/api/v1/admin/product-reviews', params)
+        );
+    }
+
+    adminUpdateReviewStatus(reviewId: number, status: number): Promise<ApiResult<ProductReview>> {
+        return this.safeCall(() =>
+            this.apiService.patch<ProductReview>(`/api/v1/admin/product-reviews/${reviewId}/status`, { status })
+        );
+    }
+
+    adminDeleteReview(reviewId: number): Promise<ApiResult<{ id: number }>> {
+        return this.safeCall(() =>
+            this.apiService.delete<{ id: number }>(`/api/v1/admin/product-reviews/${reviewId}`)
         );
     }
 }

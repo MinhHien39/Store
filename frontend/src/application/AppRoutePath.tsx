@@ -33,6 +33,8 @@ export enum AppRoutePath {
     ADMIN_BRANDS = "/admin/brands",
     ADMIN_ORDERS = "/admin/orders",
     ADMIN_ORDER_DETAIL = "/admin/orders/:id",
+    ADMIN_PRODUCT_VIEWS = "/admin/product-views",
+    ADMIN_PRODUCT_REVIEWS = "/admin/product-reviews",
     ADMIN_CUSTOMERS = "/admin/customers",
 
     // Others
