@@ -443,7 +443,7 @@ class ProductService(BaseService):
         total_count = self.db.exec(select(func.count()).select_from(grouped)).first() or 0
         offset, limit = query.get_offset_limit()
 
-        rows = self.db.exec(
+        rows = self.db.execute(
             select(grouped)
             .order_by(grouped.c.total_views.desc(), grouped.c.latest_viewed_at.desc())
             .offset(offset)

@@ -87,7 +87,7 @@ services:
     memswap_limit: 1024m
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/api/v1/get-healthy >/dev/null || exit 1"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/get-healthy')"]
       interval: 60s
       timeout: 5s
       retries: 5
