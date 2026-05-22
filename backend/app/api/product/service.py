@@ -2,12 +2,13 @@ import csv
 import io
 import re
 import unicodedata
+from datetime import datetime
 
 from fastapi import Request, UploadFile
 from sqlmodel import col, select
 from sqlalchemy import String, case, cast, func
 
-from app.core import BaseService, create_service, DataNotFoundException, DefaultException, PagingHelper, PaginatedContent, RequireStoreUserDep, UserRole
+from app.core import BaseService, create_service, DataNotFoundException, DateUtils, DefaultException, PagingHelper, PaginatedContent, RequireStoreUserDep, UserRole
 from app.core.auth.token import TokenService
 from app.db import Brand, Category, Product, ProductImage, ProductReview, ProductView, ReadDbSessionDep, StoreUser, WriteDbSessionDep
 
@@ -26,8 +27,11 @@ from .schemas import (
     ProductReviewListResponse,
     ProductReviewSummary,
     ProductReviewUpdateStatusRequest,
+    ProductViewChartItem,
     ProductViewStatsItem,
     ProductViewStatsQuery,
+    ProductViewStatsResponse,
+    ProductViewStatsSummary,
     ProductViewTrackRequest,
 )
 
@@ -123,6 +127,79 @@ class ProductService(BaseService):
             return None
 
         return None
+
+    @staticmethod
+    def _normalize_analytics_value(value: str | None, fallback: str | None = None) -> str | None:
+        if value is None:
+            return fallback
+
+        cleaned = value.strip().lower()
+        return cleaned or fallback
+
+    @staticmethod
+    def _detect_device_type(user_agent: str | None, screen_width: int | None = None) -> str:
+        ua = (user_agent or "").lower()
+        if "ipad" in ua or "tablet" in ua:
+            return "tablet"
+        if "mobi" in ua or "iphone" in ua or ("android" in ua and "mobile" in ua):
+            return "mobile"
+        if screen_width is not None and screen_width <= 767:
+            return "mobile"
+        if screen_width is not None and screen_width <= 1024:
+            return "tablet"
+        return "desktop"
+
+    @staticmethod
+    def _detect_browser(user_agent: str | None) -> str | None:
+        ua = (user_agent or "").lower()
+        if not ua:
+            return None
+        if "edg/" in ua:
+            return "edge"
+        if "opr/" in ua or "opera" in ua:
+            return "opera"
+        if "chrome/" in ua and "chromium" not in ua:
+            return "chrome"
+        if "firefox/" in ua:
+            return "firefox"
+        if "safari/" in ua:
+            return "safari"
+        return "unknown"
+
+    @staticmethod
+    def _detect_os(user_agent: str | None) -> str | None:
+        ua = (user_agent or "").lower()
+        if not ua:
+            return None
+        if "iphone" in ua or "ipad" in ua or "ios" in ua:
+            return "ios"
+        if "android" in ua:
+            return "android"
+        if "windows" in ua:
+            return "windows"
+        if "mac os" in ua or "macintosh" in ua:
+            return "macos"
+        if "linux" in ua:
+            return "linux"
+        return "unknown"
+
+    @staticmethod
+    def _apply_product_view_date_filter(where_sql: list, query: ProductViewStatsQuery) -> None:
+        if query.year is None and query.month is None:
+            return
+
+        year = query.year or DateUtils.now().year
+        if query.month is not None:
+            start_at = datetime(year, query.month, 1)
+            if query.month == 12:
+                end_at = datetime(year + 1, 1, 1)
+            else:
+                end_at = datetime(year, query.month + 1, 1)
+        else:
+            start_at = datetime(year, 1, 1)
+            end_at = datetime(year + 1, 1, 1)
+
+        where_sql.extend([ProductView.viewed_at >= start_at, ProductView.viewed_at < end_at])
 
     def _build_category_maps(self) -> tuple[dict[int, Category], dict[str, Category], dict[str, Category]]:
         categories = self.db.exec(
@@ -390,6 +467,12 @@ class ProductService(BaseService):
             raise DataNotFoundException(message="Product not found")
 
         payload = payload or ProductViewTrackRequest()
+        user_agent = request.headers.get("user-agent") or None
+        source = self._normalize_analytics_value(payload.source, "web")
+        device_type = self._normalize_analytics_value(
+            payload.device_type,
+            self._detect_device_type(user_agent, payload.screen_width),
+        )
         view = ProductView(
             product_id=product.id,
             product_name=product.name,
@@ -397,8 +480,13 @@ class ProductService(BaseService):
             anonymous_id=payload.anonymous_id,
             session_id=payload.session_id,
             ip_address=self._resolve_client_ip(request),
-            user_agent=(request.headers.get("user-agent") or None),
+            user_agent=user_agent,
             referrer=(request.headers.get("referer") or None),
+            source=source,
+            device_type=device_type,
+            browser=self._normalize_analytics_value(payload.browser, self._detect_browser(user_agent)),
+            os=self._normalize_analytics_value(payload.os, self._detect_os(user_agent)),
+            timezone=payload.timezone,
             viewed_path=payload.viewed_path,
             locale=payload.locale,
             screen_width=payload.screen_width,
@@ -410,7 +498,7 @@ class ProductService(BaseService):
 
         return {"tracked": True, "product_id": product.id}
 
-    def admin_get_view_stats(self, query: ProductViewStatsQuery) -> PaginatedContent:
+    def admin_get_view_stats(self, query: ProductViewStatsQuery) -> ProductViewStatsResponse:
         where_sql = [ProductView.is_deleted == False]
 
         if query.product_id is not None:
@@ -419,6 +507,14 @@ class ProductService(BaseService):
         if query.keyword:
             where_sql.append(col(ProductView.product_name).contains(query.keyword))
 
+        if query.source:
+            where_sql.append(ProductView.source == self._normalize_analytics_value(query.source))
+
+        if query.device_type:
+            where_sql.append(ProductView.device_type == self._normalize_analytics_value(query.device_type))
+
+        self._apply_product_view_date_filter(where_sql, query)
+
         visitor_key = func.coalesce(
             cast(ProductView.user_id, String),
             ProductView.anonymous_id,
@@ -426,7 +522,7 @@ class ProductService(BaseService):
             ProductView.ip_address,
         )
 
-        grouped = (
+        grouped_select = (
             select(
                 ProductView.product_id.label("product_id"),
                 func.max(ProductView.product_name).label("product_name"),
@@ -434,11 +530,16 @@ class ProductService(BaseService):
                 func.coalesce(func.sum(case((ProductView.user_id.is_not(None), 1), else_=0)), 0).label("authenticated_views"),
                 func.coalesce(func.sum(case((ProductView.user_id.is_(None), 1), else_=0)), 0).label("anonymous_views"),
                 func.count(func.distinct(visitor_key)).label("unique_visitors"),
+                func.coalesce(func.sum(case((ProductView.source == "web", 1), else_=0)), 0).label("web_views"),
+                func.coalesce(func.sum(case((ProductView.device_type == "mobile", 1), else_=0)), 0).label("mobile_views"),
+                func.coalesce(func.sum(case((ProductView.device_type == "desktop", 1), else_=0)), 0).label("desktop_views"),
+                func.coalesce(func.sum(case((ProductView.device_type == "tablet", 1), else_=0)), 0).label("tablet_views"),
                 func.max(ProductView.viewed_at).label("latest_viewed_at"),
             )
             .where(*where_sql)
             .group_by(ProductView.product_id)
-        ).subquery()
+        )
+        grouped = grouped_select.subquery()
 
         total_count = self.db.exec(select(func.count()).select_from(grouped)).first() or 0
         offset, limit = query.get_offset_limit()
@@ -450,21 +551,106 @@ class ProductService(BaseService):
             .limit(limit)
         ).all()
 
+        product_ids = [row._mapping["product_id"] for row in rows]
+        latest_by_product: dict[int, ProductView] = {}
+        if product_ids:
+            latest_views = self.db.exec(
+                select(ProductView)
+                .where(*where_sql, col(ProductView.product_id).in_(product_ids))
+                .order_by(ProductView.viewed_at.desc(), ProductView.id.desc())
+            ).all()
+            for view in latest_views:
+                if view.product_id not in latest_by_product:
+                    latest_by_product[view.product_id] = view
+
         items = [
             ProductViewStatsItem(
                 product_id=row._mapping["product_id"],
                 product_name=row._mapping["product_name"],
-                total_views=row._mapping["total_views"],
-                authenticated_views=row._mapping["authenticated_views"],
-                anonymous_views=row._mapping["anonymous_views"],
-                unique_visitors=row._mapping["unique_visitors"],
+                total_views=row._mapping["total_views"] or 0,
+                authenticated_views=row._mapping["authenticated_views"] or 0,
+                anonymous_views=row._mapping["anonymous_views"] or 0,
+                unique_visitors=row._mapping["unique_visitors"] or 0,
+                web_views=row._mapping["web_views"] or 0,
+                mobile_views=row._mapping["mobile_views"] or 0,
+                desktop_views=row._mapping["desktop_views"] or 0,
+                tablet_views=row._mapping["tablet_views"] or 0,
+                latest_ip_address=latest_by_product.get(row._mapping["product_id"]).ip_address if latest_by_product.get(row._mapping["product_id"]) else None,
+                latest_source=latest_by_product.get(row._mapping["product_id"]).source if latest_by_product.get(row._mapping["product_id"]) else None,
+                latest_device_type=latest_by_product.get(row._mapping["product_id"]).device_type if latest_by_product.get(row._mapping["product_id"]) else None,
+                latest_browser=latest_by_product.get(row._mapping["product_id"]).browser if latest_by_product.get(row._mapping["product_id"]) else None,
+                latest_os=latest_by_product.get(row._mapping["product_id"]).os if latest_by_product.get(row._mapping["product_id"]) else None,
                 latest_viewed_at=row._mapping["latest_viewed_at"],
             )
             for row in rows
         ]
         paging = PagingHelper(query.page, query.per_page, total_count).create_meta()
 
-        return PaginatedContent(items=items, paging=paging)
+        chart_rows = self.db.execute(
+            select(grouped)
+            .order_by(grouped.c.total_views.desc(), grouped.c.latest_viewed_at.desc())
+            .offset(offset)
+            .limit(limit)
+        ).all()
+
+        chart_product_ids = [row._mapping["product_id"] for row in chart_rows]
+        chart_latest_by_product: dict[int, ProductView] = {}
+        if chart_product_ids:
+            chart_latest_views = self.db.exec(
+                select(ProductView)
+                .where(*where_sql, col(ProductView.product_id).in_(chart_product_ids))
+                .order_by(ProductView.viewed_at.desc(), ProductView.id.desc())
+            ).all()
+            for view in chart_latest_views:
+                if view.product_id not in chart_latest_by_product:
+                    chart_latest_by_product[view.product_id] = view
+
+        chart = [
+            ProductViewChartItem(
+                product_id=row._mapping["product_id"],
+                product_name=row._mapping["product_name"],
+                total_views=row._mapping["total_views"] or 0,
+                authenticated_views=row._mapping["authenticated_views"] or 0,
+                anonymous_views=row._mapping["anonymous_views"] or 0,
+                unique_visitors=row._mapping["unique_visitors"] or 0,
+                mobile_views=row._mapping["mobile_views"] or 0,
+                desktop_views=row._mapping["desktop_views"] or 0,
+                tablet_views=row._mapping["tablet_views"] or 0,
+                latest_ip_address=chart_latest_by_product.get(row._mapping["product_id"]).ip_address if chart_latest_by_product.get(row._mapping["product_id"]) else None,
+                latest_source=chart_latest_by_product.get(row._mapping["product_id"]).source if chart_latest_by_product.get(row._mapping["product_id"]) else None,
+                latest_device_type=chart_latest_by_product.get(row._mapping["product_id"]).device_type if chart_latest_by_product.get(row._mapping["product_id"]) else None,
+                latest_browser=chart_latest_by_product.get(row._mapping["product_id"]).browser if chart_latest_by_product.get(row._mapping["product_id"]) else None,
+                latest_os=chart_latest_by_product.get(row._mapping["product_id"]).os if chart_latest_by_product.get(row._mapping["product_id"]) else None,
+                latest_viewed_at=row._mapping["latest_viewed_at"],
+            )
+            for row in chart_rows
+        ]
+
+        summary_row = self.db.execute(
+            select(
+                func.count(ProductView.id).label("total_views"),
+                func.coalesce(func.sum(case((ProductView.user_id.is_not(None), 1), else_=0)), 0).label("authenticated_views"),
+                func.coalesce(func.sum(case((ProductView.user_id.is_(None), 1), else_=0)), 0).label("anonymous_views"),
+                func.count(func.distinct(visitor_key)).label("unique_visitors"),
+                func.coalesce(func.sum(case((ProductView.source == "web", 1), else_=0)), 0).label("web_views"),
+                func.coalesce(func.sum(case((ProductView.device_type == "mobile", 1), else_=0)), 0).label("mobile_views"),
+                func.coalesce(func.sum(case((ProductView.device_type == "desktop", 1), else_=0)), 0).label("desktop_views"),
+                func.coalesce(func.sum(case((ProductView.device_type == "tablet", 1), else_=0)), 0).label("tablet_views"),
+            ).where(*where_sql)
+        ).first()
+        summary_map = summary_row._mapping if summary_row else {}
+        summary = ProductViewStatsSummary(
+            total_views=summary_map.get("total_views") or 0,
+            authenticated_views=summary_map.get("authenticated_views") or 0,
+            anonymous_views=summary_map.get("anonymous_views") or 0,
+            unique_visitors=summary_map.get("unique_visitors") or 0,
+            web_views=summary_map.get("web_views") or 0,
+            mobile_views=summary_map.get("mobile_views") or 0,
+            desktop_views=summary_map.get("desktop_views") or 0,
+            tablet_views=summary_map.get("tablet_views") or 0,
+        )
+
+        return ProductViewStatsResponse(items=items, paging=paging, chart=chart, summary=summary)
 
     def get_reviews(self, product_id: int, query: ProductReviewListQuery) -> ProductReviewListResponse:
         product = self.db.exec(

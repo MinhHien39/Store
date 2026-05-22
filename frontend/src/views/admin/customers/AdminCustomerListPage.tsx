@@ -4,24 +4,27 @@ import React from "react";
 import AdminLayout from "@/component/layout/AdminLayout";
 import { AdminCustomerListVM } from "./AdminCustomerListVM";
 import { Loader2, Search, Users } from "lucide-react";
+import { t } from "@/core/localized";
+import { useLanguage } from "@/provider/LanguageProvider";
 import dayjs from "dayjs";
 
 const getStatusBadge = (status: number) => {
-    if (status === 1) return <span className="badge badge-success">Hoạt động</span>;
-    if (status === 2) return <span className="badge badge-danger">Ngừng</span>;
-    return <span className="badge badge-warning">Chờ</span>;
+    if (status === 1) return <span className="badge badge-success">{t.admin.customer.status_active()}</span>;
+    if (status === 2) return <span className="badge badge-danger">{t.admin.customer.status_stopped()}</span>;
+    return <span className="badge badge-warning">{t.admin.customer.status_pending()}</span>;
 };
 
 const AdminCustomerListPage: React.FC = () => {
+    useLanguage();
     const { config, action } = AdminCustomerListVM();
 
     return (
         <AdminLayout>
             <div className="page-header">
                 <div>
-                    <h2 className="page-title">Quản lý khách hàng</h2>
+                    <h2 className="page-title">{t.admin.customer.page_title()}</h2>
                     {!config.isLoading && (
-                        <p className="page-subtitle">{config.customers.length} khách hàng</p>
+                        <p className="page-subtitle">{t.admin.customer.items_count({ count: config.customers.length })}</p>
                     )}
                 </div>
             </div>
@@ -37,12 +40,12 @@ const AdminCustomerListPage: React.FC = () => {
                         type="text"
                         value={config.searchInput}
                         onChange={(e) => action.setSearchInput(e.target.value)}
-                        placeholder="Tìm theo tên hoặc email..."
+                        placeholder={t.admin.customer.search_placeholder()}
                         className="input"
                     />
                 </div>
                 <button type="submit" className="btn btn-primary">
-                    Tìm kiếm
+                    {t.admin.common.search()}
                 </button>
             </form>
 
@@ -53,8 +56,8 @@ const AdminCustomerListPage: React.FC = () => {
             ) : config.customers.length === 0 ? (
                 <div className="empty-state">
                     <Users size={48} className="empty-state-icon" />
-                    <h3 className="empty-state-title">Không tìm thấy khách hàng</h3>
-                    <p className="empty-state-desc">Thử tìm kiếm với từ khóa khác</p>
+                    <h3 className="empty-state-title">{t.admin.customer.empty_title()}</h3>
+                    <p className="empty-state-desc">{t.admin.customer.empty_desc()}</p>
                 </div>
             ) : (
                 <div className="list-card">
@@ -63,11 +66,11 @@ const AdminCustomerListPage: React.FC = () => {
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Họ tên</th>
+                                    <th>{t.admin.customer.col_full_name()}</th>
                                     <th>Email</th>
-                                    <th>SĐT</th>
-                                    <th>Trạng thái</th>
-                                    <th>Ngày tạo</th>
+                                    <th>{t.admin.customer.col_phone()}</th>
+                                    <th>{t.admin.customer.col_status()}</th>
+                                    <th>{t.admin.customer.col_created()}</th>
                                 </tr>
                             </thead>
                             <tbody>

@@ -4,6 +4,7 @@ import {
     DateFormat,
     DateUtils
 } from '@/core/utils';
+import { t } from '@/core/localized';
 
 //、1：Admin、2：StoreUser
 export enum UserRole {
@@ -12,23 +13,23 @@ export enum UserRole {
 };
 
 export namespace UserRole {
-    const LabelMap: Record<UserRole, string> = {
-        [UserRole.ADMIN]: "Admin",
-        [UserRole.STORE_USER]: "Khách hàng",
-    };
+    const labelEntries = (): Array<[UserRole, string]> => [
+        [UserRole.ADMIN, "Admin"],
+        [UserRole.STORE_USER, t.status.user.storeUser()],
+    ];
 
     export const Values: UserRole[] = Object.values(UserRole).filter(value => typeof value === 'number') as UserRole[];
 
     export const getLabel = (role: UserRole | number): string => {
-        return LabelMap[role as UserRole] ?? "";
+        return labelEntries().find(([key]) => key === role)?.[1] ?? "";
     };
     export const fromLabel = (label: string): UserRole | undefined => {
-        const entry = Object.entries(LabelMap).find(([_, v]) => v === label);
-        return entry ? Number(entry[0]) as UserRole : undefined;
+        const entry = labelEntries().find(([_, value]) => value === label);
+        return entry?.[0];
     };
 }
 
-// 未設定=0, 稼働中=1, 停止中=2
+// Unset=0, active=1, stopped=2
 export enum UserStatus {
     TEMP = 0,
     ACTIVE = 1,
@@ -36,11 +37,11 @@ export enum UserStatus {
 }
 
 export namespace UserStatus {
-    const LabelMap: Record<UserStatus, string> = {
-        [UserStatus.TEMP]: "Chưa kích hoạt",
-        [UserStatus.ACTIVE]: "Hoạt động",
-        [UserStatus.INACTIVE]: "Ngừng hoạt động",
-    };
+    const labelEntries = (): Array<[UserStatus, string]> => [
+        [UserStatus.TEMP, t.status.user.temp()],
+        [UserStatus.ACTIVE, t.status.user.active()],
+        [UserStatus.INACTIVE, t.status.user.inactive()],
+    ];
 
     export const ValuesSelect: UserStatus[] = Object.values(UserStatus).filter(value => typeof value === 'number') as UserStatus[];
 
@@ -48,12 +49,12 @@ export namespace UserStatus {
     export const Values: UserStatus[] = Object.values(UserStatus).filter(value => typeof value === 'number' && value !== UserStatus.TEMP) as UserStatus[];
 
     export const getLabel = (status: UserStatus | number): string => {
-        return LabelMap[status as UserStatus] ?? "";
+        return labelEntries().find(([key]) => key === status)?.[1] ?? "";
     };
 
     export const fromLabel = (label: string): UserStatus | undefined => {
-        const entry = Object.entries(LabelMap).find(([_, v]) => v === label);
-        return entry ? Number(entry[0]) as UserStatus : undefined;
+        const entry = labelEntries().find(([_, value]) => value === label);
+        return entry?.[0];
     };
 
     const StyleMap: Record<

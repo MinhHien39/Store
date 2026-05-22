@@ -1,77 +1,84 @@
 import StringUtils from "./StringUtils";
 import AppConstant from "./AppConstant";
+import { t } from "@/core/localized";
 
 const ALPHA_NUMERIC_PATTERN = /^[a-zA-Z0-9!@#$%^&*()+$_]+$/;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const USER_ID_PATTERN = /^[a-zA-Z0-9._-]+$/;
 class ValidateUtils {
+    private static required(field: string): string {
+        return t.validation.required({ field });
+    }
+
+    private static minLength(field: string, count: number): string {
+        return t.validation.minLength({ field, count });
+    }
+
+    private static invalidFormat(field: string): string {
+        return t.validation.invalidFormat({ field });
+    }
 
     static emailOrLoginId(value: string): string[] {
-        const filedName = "メールアドレス/ユーザID";
-        const inputPlease = "入力してください。";
+        const fieldName = t.validation.field.emailOrUserId();
         const msgList: string[] = [];
 
         if (value.length < 4) {
-            msgList.push(`${filedName}は最低4文字${inputPlease}`);
+            msgList.push(this.minLength(fieldName, 4));
         }
         return msgList;
     }
 
     static loginId(value: string): string[] {
-        const filedName = "ログインID";
-        const inputPlease = "入力してください。";
+        const fieldName = t.validation.field.loginId();
 
         if (StringUtils.isEmpty(value)) {
-            return [`${filedName}を${inputPlease}`];
+            return [this.required(fieldName)];
         }
 
         const msgList: string[] = [];
 
         if (!ALPHA_NUMERIC_PATTERN.test(value)) {
-            msgList.push(`${filedName}はローマ字で${inputPlease}`);
+            msgList.push(t.validation.latinOnly({ field: fieldName }));
         }
 
         if (value.length < 4) {
-            msgList.push(`${filedName}は最低4文字${inputPlease}`);
+            msgList.push(this.minLength(fieldName, 4));
         }
 
         return msgList;
     }
 
     static email(value: string): string[] {
-        const fieldName = "メールアドレス";
-        const inputPlease = "入力してください。";
-        const invalidEmail = "形式が間違っています。";
+        const fieldName = t.validation.field.email();
     
         if (StringUtils.isEmpty(value)) {
-            return [`${fieldName}を${inputPlease}`];
+            return [this.required(fieldName)];
         }
     
         const msgList: string[] = [];
     
         if (!EMAIL_PATTERN.test(value)) {
-            msgList.push(`${fieldName}の${invalidEmail}`);
+            msgList.push(this.invalidFormat(fieldName));
         }
     
         return msgList;
     }
 
     static password(value: string): string[] {
-        const filedName = "パスワード";
-        const inputPlease = "入力してください。";
+        const fieldName = t.validation.field.password();
 
         if (StringUtils.isEmpty(value)) {
-            return [`${filedName}を${inputPlease}`];
+            return [this.required(fieldName)];
         }
 
         const msgList: string[] = [];
 
         if (!ALPHA_NUMERIC_PATTERN.test(value)) {
-            msgList.push(`${filedName}の形式が間違っています。`);
+            msgList.push(this.invalidFormat(fieldName));
         }
 
         if (value.length < 6) {
-            msgList.push(`${filedName}は最低6文字${inputPlease}`);
+            msgList.push(this.minLength(fieldName, 6));
         }
 
         return msgList;
@@ -79,77 +86,72 @@ class ValidateUtils {
 
 
     static confirmPassword(password: string, confirmPassword: string): string[] {
-        const filedName = "パスワード再確認";
-        const inputPlease = "入力してください。";
-        const invalidFormat = "の形式が間違っています。";
+        const fieldName = t.validation.field.confirmPassword();
 
         if (StringUtils.isEmpty(confirmPassword)) {
-            return [`${filedName}を${inputPlease}`];
+            return [this.required(fieldName)];
         }
 
         const msgList: string[] = [];
 
         if (!ALPHA_NUMERIC_PATTERN.test(confirmPassword)) {
-            msgList.push(`${filedName}${invalidFormat}`);
+            msgList.push(this.invalidFormat(fieldName));
         }
 
         if (confirmPassword.length < 6) {
-            msgList.push(`${filedName}は最低6文字${inputPlease}`);
+            msgList.push(this.minLength(fieldName, 6));
         }
 
         if (password.length > 0 && confirmPassword.length > 0 && confirmPassword !== password) {
-            msgList.push(`パスワードとパスワード再確認が間違っています。`);
+            msgList.push(t.validation.passwordMismatch());
         }
         
         return msgList;
     }
 
     static fullName(value: string): string[] {
-        const filedName = "指名";
-        const inputPlease = "入力してください。";
+        const fieldName = t.validation.field.fullName();
 
         if (StringUtils.isEmpty(value)) {
-            return [`${filedName}を${inputPlease}`];
+            return [this.required(fieldName)];
         }
 
         const msgList: string[] = [];
 
         if (value.length < 1) {
-            msgList.push(`${filedName}は最低6文字${inputPlease}`);
+            msgList.push(this.minLength(fieldName, 1));
         }
 
         return msgList;
     }
 
     static lastName(value: string): string[] {
-        const filedName = "姓";
-        const inputPlease = "入力してください。";
+        const fieldName = t.validation.field.lastName();
 
         if (StringUtils.isEmpty(value)) {
-            return [`${filedName}を${inputPlease}`];
+            return [this.required(fieldName)];
         }
 
         const msgList: string[] = [];
 
         if (value.length < 1) {
-            msgList.push(`${filedName}は最低6文字${inputPlease}`);
+            msgList.push(this.minLength(fieldName, 1));
         }
 
         return msgList;
     }
 
     static firstName(value: string): string[] {
-        const filedName = "名";
-        const inputPlease = "入力してください。";
+        const fieldName = t.validation.field.firstName();
 
         if (StringUtils.isEmpty(value)) {
-            return [`${filedName}を${inputPlease}`];
+            return [this.required(fieldName)];
         }
 
         const msgList: string[] = [];
 
         if (value.length < 1) {
-            msgList.push(`${filedName}は最低6文字${inputPlease}`);
+            msgList.push(this.minLength(fieldName, 1));
         }
 
         return msgList;
@@ -157,51 +159,46 @@ class ValidateUtils {
 
 
     static roleId(roleId: number): string[] {
-        const filedName = "ロール";
-        const inputPlease = "選択してください。";
+        const fieldName = t.validation.field.role();
 
         if (AppConstant.ROLE_ID_DEFAULT === roleId) {
-            return [`${filedName}を${inputPlease}`];
+            return [t.validation.pleaseSelect({ field: fieldName })];
         }
         return [];
     }
 
     static status(roleId: number): string[] {
-        const filedName = "ステータス";
-        const inputPlease = "選択してください。";
+        const fieldName = t.validation.field.status();
 
         if (AppConstant.STATUS_ID_DEFAULT === roleId) {
-            return [`${filedName}を${inputPlease}`];
+            return [t.validation.pleaseSelect({ field: fieldName })];
         }
         return [];
     }
 
     static userId(value: string): string[] {
-        const fieldName = "ユーザID";
-        const inputPlease = "入力してください。";
+        const fieldName = t.validation.field.userId();
 
         if (StringUtils.isEmpty(value)) {
-            return [`${fieldName}を${inputPlease}`];
+            return [this.required(fieldName)];
         }
 
         const msgList: string[] = [];
 
         if (!USER_ID_PATTERN.test(value)) {
-            msgList.push(`${fieldName}の形式が間違っています。`);
+            msgList.push(this.invalidFormat(fieldName));
         }
 
         if (value.length < 4) {
-            msgList.push(`${fieldName}は最低4文字${inputPlease}`);
+            msgList.push(this.minLength(fieldName, 4));
         }
 
         return msgList;
     }
 
     static choice(value: string, fieldName: string): string[] {
-        const inputPlease = "入力してください。";
-
         if (StringUtils.isEmpty(value)) {
-            return [`${fieldName}を${inputPlease}`];
+            return [this.required(fieldName)];
         }
 
         const msgList: string[] = [];
@@ -211,55 +208,51 @@ class ValidateUtils {
         }
 
         if (value.length < 4) {
-            msgList.push(`${fieldName}は最低4文字${inputPlease}`);
+            msgList.push(this.minLength(fieldName, 4));
         }
 
         return msgList;
     }
 
     static clientCode(value: string): string[] {
-        const fieldName = "得意先コード";
-        const inputPlease = "入力してください。";
+        const fieldName = t.validation.field.customerCode();
 
         if (StringUtils.isEmpty(value)) {
-            return [`${fieldName}を${inputPlease}`];
+            return [this.required(fieldName)];
         }
 
         const msgList: string[] = [];
 
         if (value.length < 1) {
-            msgList.push(`${fieldName}は最低1文字${inputPlease}`);
+            msgList.push(this.minLength(fieldName, 1));
         }
 
         return msgList;
     }
 
     static initialCreationLimit(value: number | undefined | null): string[] {
-        const fieldName = "初期生成残数";
-        const inputPlease = "入力してください。";
-        const invalidNumber = "正の数で入力してください。";
+        const fieldName = t.validation.field.initialCredit();
 
         if (value === undefined || value === null) {
-            return [`${fieldName}を${inputPlease}`];
+            return [this.required(fieldName)];
         }
 
         const msgList: string[] = [];
 
         if (Number.isNaN(value)) {
-            msgList.push(`${fieldName}を${invalidNumber}`);
+            msgList.push(t.validation.positiveNumber({ field: fieldName }));
         } else if (value <= 0) {
-            msgList.push(`${fieldName}を${invalidNumber}`);
+            msgList.push(t.validation.positiveNumber({ field: fieldName }));
         }
 
         return msgList;
     }
 
     static templateSelection(templateId: number | undefined): string[] {
-        const fieldName = "テンプレート";
-        const inputPlease = "選択してください。";
+        const fieldName = t.validation.field.template();
 
         if (templateId === undefined) {
-            return [`${fieldName}を${inputPlease}`];
+            return [t.validation.pleaseSelect({ field: fieldName })];
         }
 
         return [];

@@ -74,15 +74,15 @@ import PathNavigation, { PathNavigationItem } from "@/component/pathNavigation";
 
 const navItems: PathNavigationItem[] = [
   {
-    title: "システム管理者トップ",
+    title: "Admin Dashboard",
     link: "/admin"
   },
   {
-    title: "企業一覧",
+    title: "Company List",
     onClick: () => window.history.back()
   },
   {
-    title: "企業登録"
+    title: "Create Company"
   }
 ];
 

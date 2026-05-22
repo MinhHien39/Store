@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import "dayjs/locale/ja";
 import "./App.css";
 import { AppRouter } from "./AppRouter";
 import { AppContextProvider } from '@/provider/AppContextProvider';

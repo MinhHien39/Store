@@ -10,6 +10,7 @@ import {
 import { ApiResultType } from "@/core/api";
 import { useAppContext } from "@/provider/AppContextProvider";
 import type { ProductReview } from "@/data/models/ProductReview";
+import { t } from "@/core/localized";
 
 interface Config extends BaseConfig {
     reviews: ProductReview[];
@@ -90,7 +91,7 @@ export const AdminProductReviewsVM: BaseViewModelFunc<Config, Action> = () => {
         globalUI.hideLoading();
 
         if (result.type === ApiResultType.Success) {
-            globalUI.showSuccessAlert("Đã cập nhật trạng thái đánh giá");
+            globalUI.showSuccessAlert(t.admin.productReview.update_success());
             fetchReviews(config.page, config.keyword, config.statusFilter);
         } else {
             globalUI.handleApiError(result.error);
@@ -108,7 +109,7 @@ export const AdminProductReviewsVM: BaseViewModelFunc<Config, Action> = () => {
         const result = await productRepository.adminDeleteReview(config.deleteId);
 
         if (result.type === ApiResultType.Success) {
-            globalUI.showSuccessAlert("Đã xoá đánh giá");
+            globalUI.showSuccessAlert(t.admin.productReview.delete_success());
             action.setNewConfig({ isDeleting: false, deleteId: null });
             fetchReviews(config.page, config.keyword, config.statusFilter);
         } else {

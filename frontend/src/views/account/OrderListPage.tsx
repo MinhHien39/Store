@@ -7,9 +7,12 @@ import StoreLayout from "@/component/layout/StoreLayout";
 import { Loader2, Package, ChevronRight } from "lucide-react";
 import { OrderStatus } from "@/data/models/Order";
 import { OrderListVM } from "./OrderListVM";
+import { t } from "@/core/localized";
+import { useLanguage } from "@/provider/LanguageProvider";
 import dayjs from "dayjs";
 
 const OrderListPage: React.FC = () => {
+    useLanguage();
     const { config, action } = OrderListVM();
     const { orders, isLoading, page, totalPages } = config;
 
@@ -20,7 +23,7 @@ const OrderListPage: React.FC = () => {
         <StoreLayout>
             <div className="container-page py-10">
                 <div className="max-w-4xl mx-auto">
-                    <h1 className="page-title mb-6">Đơn hàng của tôi</h1>
+                    <h1 className="page-title mb-6">{t.store.orders.title()}</h1>
 
                     {isLoading ? (
                         <div className="flex items-center justify-center min-h-[40vh]">
@@ -29,9 +32,9 @@ const OrderListPage: React.FC = () => {
                     ) : orders.length === 0 ? (
                         <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
                             <Package size={48} className="text-muted-foreground" strokeWidth={1.2} />
-                            <p className="text-muted-foreground">Bạn chưa có đơn hàng nào.</p>
+                            <p className="text-muted-foreground">{t.store.orders.empty()}</p>
                             <Link to={AppRoutePath.PRODUCTS} className="base-button base-button--contained">
-                                Mua sắm ngay
+                                {t.store.orders.shop_now()}
                             </Link>
                         </div>
                     ) : (
@@ -43,7 +46,7 @@ const OrderListPage: React.FC = () => {
                                     className="card p-5 flex items-center justify-between gap-4 hover:shadow-md transition"
                                 >
                                     <div className="flex flex-col gap-1">
-                                        <p className="font-bold text-sm">Đơn hàng #{order.id}</p>
+                                        <p className="font-bold text-sm">{t.store.orders.order_number({ id: order.id })}</p>
                                         <p className="text-xs text-muted-foreground">
                                             {dayjs(order.created_at).format("DD/MM/YYYY HH:mm")}
                                         </p>

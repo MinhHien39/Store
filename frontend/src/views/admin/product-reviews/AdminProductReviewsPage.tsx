@@ -6,6 +6,8 @@ import { AdminProductReviewsVM } from "./AdminProductReviewsVM";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import { Link } from "react-router-dom";
 import { Loader2, MessageSquareText, Search, Star, Trash2 } from "lucide-react";
+import { t } from "@/core/localized";
+import { useLanguage } from "@/provider/LanguageProvider";
 import dayjs from "dayjs";
 
 const REVIEW_STATUS = {
@@ -13,9 +15,10 @@ const REVIEW_STATUS = {
     HIDDEN: 2,
 } as const;
 
-const getStatusLabel = (status: number) => (status === REVIEW_STATUS.VISIBLE ? "Hiển thị" : "Ẩn");
+const getStatusLabel = (status: number) => (status === REVIEW_STATUS.VISIBLE ? t.admin.productReview.status_visible() : t.admin.productReview.status_hidden());
 
 const AdminProductReviewsPage: React.FC = () => {
+    useLanguage();
     const { config, action } = AdminProductReviewsVM();
     const [keyword, setKeyword] = useState("");
 
@@ -36,9 +39,9 @@ const AdminProductReviewsPage: React.FC = () => {
         <AdminLayout>
             <div className="page-header">
                 <div>
-                    <h2 className="page-title">Quản lý đánh giá</h2>
+                    <h2 className="page-title">{t.admin.productReview.page_title()}</h2>
                     {!config.isLoading && (
-                        <p className="page-subtitle">{config.reviews.length} đánh giá trong trang này</p>
+                        <p className="page-subtitle">{t.admin.productReview.items_count({ count: config.reviews.length })}</p>
                     )}
                 </div>
             </div>
@@ -46,7 +49,7 @@ const AdminProductReviewsPage: React.FC = () => {
             <div className="flex flex-wrap gap-2 mb-4">
                 <input
                     className="input max-w-sm"
-                    placeholder="Tìm theo sản phẩm, khách hàng, comment..."
+                    placeholder={t.admin.productReview.search_placeholder()}
                     value={keyword}
                     onChange={(event) => setKeyword(event.target.value)}
                     onKeyDown={(event) => {
@@ -55,7 +58,7 @@ const AdminProductReviewsPage: React.FC = () => {
                 />
                 <button className="btn btn-primary" onClick={() => action.onSearch(keyword)}>
                     <Search size={16} />
-                    Tìm kiếm
+                    {t.admin.common.search()}
                 </button>
             </div>
 
@@ -64,7 +67,7 @@ const AdminProductReviewsPage: React.FC = () => {
                     onClick={() => action.onFilterStatus(null)}
                     className={`btn btn-sm ${config.statusFilter === null ? "btn-primary" : "btn-outline"}`}
                 >
-                    Tất cả
+                    {t.admin.common.all()}
                 </button>
                 {[REVIEW_STATUS.VISIBLE, REVIEW_STATUS.HIDDEN].map((status) => (
                     <button
@@ -84,8 +87,8 @@ const AdminProductReviewsPage: React.FC = () => {
             ) : config.reviews.length === 0 ? (
                 <div className="empty-state">
                     <MessageSquareText size={48} className="empty-state-icon" />
-                    <h3 className="empty-state-title">Chưa có đánh giá</h3>
-                    <p className="empty-state-desc">Đánh giá sẽ xuất hiện khi khách đăng nhập và gửi review.</p>
+                    <h3 className="empty-state-title">{t.admin.productReview.empty_title()}</h3>
+                    <p className="empty-state-desc">{t.admin.productReview.empty_desc()}</p>
                 </div>
             ) : (
                 <div className="list-card">
@@ -94,13 +97,13 @@ const AdminProductReviewsPage: React.FC = () => {
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Sản phẩm</th>
-                                    <th>Khách hàng</th>
-                                    <th>Sao</th>
-                                    <th>Comment</th>
-                                    <th>Trạng thái</th>
-                                    <th>Ngày tạo</th>
-                                    <th>Thao tác</th>
+                                    <th>{t.admin.productReview.col_product()}</th>
+                                    <th>{t.admin.productReview.col_customer()}</th>
+                                    <th>{t.admin.productReview.col_rating()}</th>
+                                    <th>{t.admin.productReview.col_comment()}</th>
+                                    <th>{t.admin.productReview.col_status()}</th>
+                                    <th>{t.admin.productReview.col_created()}</th>
+                                    <th>{t.admin.productReview.col_actions()}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -116,8 +119,8 @@ const AdminProductReviewsPage: React.FC = () => {
                                             </Link>
                                         </td>
                                         <td>
-                                            <div className="font-medium">{review.user_name || "Khách hàng"}</div>
-                                            <div className="text-xs text-muted-foreground">User #{review.user_id}</div>
+                                            <div className="font-medium">{review.user_name || t.common.customer()}</div>
+                                            <div className="text-xs text-muted-foreground">{t.admin.productReview.user_id({ id: review.user_id })}</div>
                                         </td>
                                         <td className="whitespace-nowrap">
                                             {renderStars(review.rating)}
@@ -133,8 +136,8 @@ const AdminProductReviewsPage: React.FC = () => {
                                                 onChange={(event) => action.onUpdateStatus(review.id, Number(event.target.value))}
                                                 className="select !min-h-[32px] !px-2 !text-xs !font-semibold !rounded-full"
                                             >
-                                                <option value={REVIEW_STATUS.VISIBLE}>Hiển thị</option>
-                                                <option value={REVIEW_STATUS.HIDDEN}>Ẩn</option>
+                                                <option value={REVIEW_STATUS.VISIBLE}>{t.admin.productReview.status_visible()}</option>
+                                                <option value={REVIEW_STATUS.HIDDEN}>{t.admin.productReview.status_hidden()}</option>
                                             </select>
                                         </td>
                                         <td className="text-muted-foreground whitespace-nowrap">
@@ -146,7 +149,7 @@ const AdminProductReviewsPage: React.FC = () => {
                                                 onClick={() => action.setDeleteId(review.id)}
                                             >
                                                 <Trash2 size={14} />
-                                                Xoá
+                                                {t.admin.productReview.delete_button()}
                                             </button>
                                         </td>
                                     </tr>
@@ -174,19 +177,19 @@ const AdminProductReviewsPage: React.FC = () => {
             {config.deleteId !== null && (
                 <div className="modal-overlay">
                     <div className="modal-panel modal-sm">
-                        <h3 className="admin-delete__title">Xoá đánh giá</h3>
-                        <p className="admin-delete__desc">Đánh giá này sẽ bị xoá khỏi danh sách quản lý và trang sản phẩm.</p>
+                        <h3 className="admin-delete__title">{t.admin.productReview.delete_title()}</h3>
+                        <p className="admin-delete__desc">{t.admin.productReview.delete_confirm()}</p>
                         <div className="admin-delete__actions">
                             <button
                                 onClick={() => action.setDeleteId(null)}
                                 disabled={config.isDeleting}
                                 className="btn btn-outline"
                             >
-                                Huỷ
+                                {t.admin.common.cancel()}
                             </button>
                             <button onClick={action.handleDelete} disabled={config.isDeleting} className="btn btn-destructive">
                                 {config.isDeleting && <Loader2 size={14} className="animate-spin" />}
-                                Xoá
+                                {t.admin.productReview.delete_button()}
                             </button>
                         </div>
                     </div>

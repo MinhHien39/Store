@@ -61,37 +61,37 @@ class Company extends BaseModel {
     // ID
     id: number;
 
-    // 会社コード（必須）
+    // Company code (required).
     code: string;
 
-    // 会社名（必須）
+    // Company name (required).
     name: string;
 
-    // メールアドレス（必須）
+    // Email address (required).
     email: string;
 
-    // 初期生成残数（必須）
+    // Initial generation balance (required).
     initialCreationLimit: number = 0;
 
-    // アラート表示閾値（必須）
+    // Alert display threshold (required).
     alertCreationLimit: number = 0;
 
-    // ステータス（必須）
+    // Status (required).
     status: number = CompanyStatus.ACTIVE;
 
-    // 郵便番号（任意）
+    // Postal code (optional).
     postCode?: string;
 
-    // 住所（任意）
+    // Address (optional).
     address?: string;
 
-    // 電話番号（任意）
+    // Phone number (optional).
     phoneNumber?: string;
 
-    // 担当者名（任意）
+    // Contact person name (optional).
     managerName?: string;
 
-    // 備考（任意）
+    // Notes (optional).
     remarks?: string;
     
     propertyRemainInitCreationLimit?: number;

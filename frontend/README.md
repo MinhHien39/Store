@@ -6,6 +6,9 @@ Set these environment variables in `frontend/.env.local` or your deployment envi
 
 ```env
 NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT=ca-pub-0000000000000000
+NEXT_PUBLIC_ADSENSE_ENABLED=false
+NEXT_PUBLIC_GOOGLE_ADSENSE_TEST_MODE=true
+NEXT_PUBLIC_GOOGLE_ADSENSE_SESSION_SLOT_LIMIT=1
 NEXT_PUBLIC_GOOGLE_ADSENSE_HOME_SLOT=0000000000
 NEXT_PUBLIC_GOOGLE_ADSENSE_PRODUCT_LIST_SLOT=0000000000
 NEXT_PUBLIC_GOOGLE_ADSENSE_PRODUCT_DETAIL_SLOT=0000000000
@@ -13,7 +16,9 @@ NEXT_PUBLIC_GOOGLE_ADSENSE_PRODUCT_DETAIL_SLOT=0000000000
 
 `NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT` is your AdSense publisher ID. Each slot value is the ad unit ID copied from AdSense.
 
-When the publisher ID is configured, the app loads the AdSense script on every page and adds the `google-adsense-account` verification meta tag. The static `public/ads.txt` file exposes the required AdSense seller record at the site root.
+Ads are opt-in. Set `NEXT_PUBLIC_ADSENSE_ENABLED=true` only in the production deployment. Local development keeps ads disabled by default. The app also blocks ad loading on local/private hosts, admin routes, bot-like user agents, and browsers with Do Not Track enabled. Ad units lazy-load near the viewport and each slot is capped by `NEXT_PUBLIC_GOOGLE_ADSENSE_SESSION_SLOT_LIMIT` per browser session.
+
+Use `NEXT_PUBLIC_GOOGLE_ADSENSE_TEST_MODE=true` for test environments. The static `public/ads.txt` file exposes the required AdSense seller record at the site root.
 
 # React + TypeScript + Vite
 

@@ -84,15 +84,59 @@ export const ProductDetailVM: BaseViewModelFunc<Config, Action> = () => {
             return value;
         };
 
+        const getOrCreateSessionId = () => {
+            const existing = sessionStorage.getItem("store_session_id");
+            if (existing) return existing;
+
+            const cryptoValue = window.crypto?.randomUUID?.();
+            const value = cryptoValue || `session-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+            sessionStorage.setItem("store_session_id", value);
+            return value;
+        };
+
+        const getDeviceType = () => {
+            const userAgent = navigator.userAgent.toLowerCase();
+            if (userAgent.includes("ipad") || userAgent.includes("tablet")) return "tablet";
+            if (userAgent.includes("mobi") || userAgent.includes("iphone") || (userAgent.includes("android") && userAgent.includes("mobile"))) return "mobile";
+            if (window.innerWidth <= 767) return "mobile";
+            if (window.innerWidth <= 1024) return "tablet";
+            return "desktop";
+        };
+
+        const getBrowser = () => {
+            const userAgent = navigator.userAgent.toLowerCase();
+            if (userAgent.includes("edg/")) return "edge";
+            if (userAgent.includes("opr/") || userAgent.includes("opera")) return "opera";
+            if (userAgent.includes("chrome/") && !userAgent.includes("chromium")) return "chrome";
+            if (userAgent.includes("firefox/")) return "firefox";
+            if (userAgent.includes("safari/")) return "safari";
+            return "unknown";
+        };
+
+        const getOS = () => {
+            const userAgent = navigator.userAgent.toLowerCase();
+            if (userAgent.includes("iphone") || userAgent.includes("ipad")) return "ios";
+            if (userAgent.includes("android")) return "android";
+            if (userAgent.includes("windows")) return "windows";
+            if (userAgent.includes("mac os") || userAgent.includes("macintosh")) return "macos";
+            if (userAgent.includes("linux")) return "linux";
+            return "unknown";
+        };
+
         const trackProductView = async (productId: number) => {
             if (trackedProductIds.current.has(productId)) return;
             trackedProductIds.current.add(productId);
 
             await productRepository.trackView(productId, {
                 anonymous_id: getOrCreateLocalId("store_anonymous_id", "anon"),
-                session_id: getOrCreateLocalId("store_session_id", "session"),
+                session_id: getOrCreateSessionId(),
                 viewed_path: window.location.pathname,
                 locale: navigator.language,
+                source: "web",
+                device_type: getDeviceType(),
+                browser: getBrowser(),
+                os: getOS(),
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 screen_width: window.innerWidth,
                 screen_height: window.innerHeight,
             });

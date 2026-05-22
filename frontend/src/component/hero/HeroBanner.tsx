@@ -3,12 +3,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
+import { t } from "@/core/localized";
+import { useLanguage } from "@/provider/LanguageProvider";
 
 interface Slide {
     id: number;
-    title: string;
-    subtitle: string;
-    cta: string;
+    title: () => string;
+    subtitle: () => string;
+    cta: () => string;
     ctaLink: string;
     image: string;
     align: "left" | "center";
@@ -18,9 +20,9 @@ interface Slide {
 const slides: Slide[] = [
     {
         id: 1,
-        title: "SUMMER\nCOLLECTION",
-        subtitle: "2025年サマーコレクション。新しいスタイルで夏を楽しもう。",
-        cta: "今すぐ購入",
+        title: () => t.store.heroBanner.summerTitle(),
+        subtitle: () => t.store.heroBanner.summerSubtitle(),
+        cta: () => t.store.heroBanner.summerCta(),
         ctaLink: `${AppRoutePath.PRODUCTS}?sort=newest`,
         image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&h=900&fit=crop",
         align: "left",
@@ -28,9 +30,9 @@ const slides: Slide[] = [
     },
     {
         id: 2,
-        title: "最大50%OFF",
-        subtitle: "期間限定セール開催中。お見逃しなく。",
-        cta: "セールを見る",
+        title: () => t.store.heroBanner.saleTitle(),
+        subtitle: () => t.store.heroBanner.saleSubtitle(),
+        cta: () => t.store.heroBanner.saleCta(),
         ctaLink: `${AppRoutePath.PRODUCTS}?sale=true`,
         image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1600&h=900&fit=crop",
         align: "center",
@@ -38,9 +40,9 @@ const slides: Slide[] = [
     },
     {
         id: 3,
-        title: "NEW\nARRIVALS",
-        subtitle: "厳選された最新アイテムをチェック。",
-        cta: "コレクションを見る",
+        title: () => t.store.heroBanner.newArrivalsTitle(),
+        subtitle: () => t.store.heroBanner.newArrivalsSubtitle(),
+        cta: () => t.store.heroBanner.newArrivalsCta(),
         ctaLink: AppRoutePath.PRODUCTS,
         image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1600&h=900&fit=crop",
         align: "left",
@@ -49,6 +51,7 @@ const slides: Slide[] = [
 ];
 
 const HeroBanner: React.FC = () => {
+    useLanguage();
     const [current, setCurrent] = useState(0);
 
     const next = useCallback(() => {
@@ -79,10 +82,10 @@ const HeroBanner: React.FC = () => {
                 <h2
                     className={`type-giant whitespace-pre-line mb-5 ${isLight ? "text-primary" : "text-white"}`}
                 >
-                    {slide.title}
+                    {slide.title()}
                 </h2>
                 <p className={`text-base md:text-lg mb-8 max-w-lg ${isLight ? "text-primary/70" : "text-white/80"}`} style={{ fontFamily: 'var(--font-body)' }}>
-                    {slide.subtitle}
+                    {slide.subtitle()}
                 </p>
                 <Link
                     to={slide.ctaLink}
@@ -90,7 +93,7 @@ const HeroBanner: React.FC = () => {
                         isLight ? "bg-primary text-on-primary" : "bg-white text-primary"
                     }`}
                 >
-                    {slide.cta}
+                    {slide.cta()}
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="m5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </Link>
             </div>
@@ -104,7 +107,7 @@ const HeroBanner: React.FC = () => {
                         className={`h-[3px] transition-all duration-300 ${
                             i === current ? "w-8 bg-white" : "w-4 bg-white/40 hover:bg-white/60"
                         }`}
-                        aria-label={`スライド ${i + 1}`}
+                        aria-label={t.store.heroBanner.slideLabel({ index: i + 1 })}
                     />
                 ))}
             </div>

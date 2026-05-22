@@ -49,10 +49,10 @@ const normalizeApiErrorMessage = (message?: string): string => {
 
   const normalized = message.trim();
   const messageMap: Record<string, string> = {
-    "パスワードが正しくありません。": t.auth.loginError(),
-    "ユーザー情報が見つかりません。": t.auth.loginError(),
-    "Token情報が存在しません。": t.auth.sessionExpired(),
-    "招待リンクが無効または期限切れです": t.auth.changePassword.tokenExpired(),
+    "Incorrect password": t.auth.loginError(),
+    "User not found": t.auth.loginError(),
+    "Token not found": t.auth.sessionExpired(),
+    "Invitation link is invalid or expired": t.auth.changePassword.tokenExpired(),
   };
 
   return messageMap[normalized] ?? normalized;

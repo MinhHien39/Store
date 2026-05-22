@@ -24,7 +24,7 @@ const FACEBOOK_URL = "https://www.facebook.com/xh.456789";
 const MESSENGER_URL = "https://m.me/xh.456789";
 
 const ProductDetailPage: React.FC = () => {
-    useLanguage();
+    const { language } = useLanguage();
     const { config, action } = ProductDetailVM();
     const { isAuthenticated } = useAuthContext();
     const {
@@ -79,7 +79,7 @@ const ProductDetailPage: React.FC = () => {
         { label: t.store.product.sku(), value: sku },
     ].filter(Boolean) as { label: string; value: string }[];
     const renderStars = (rating: number, size: number = 16) => (
-        <span className="detail-stars" aria-label={`${rating} stars`}>
+        <span className="detail-stars" aria-label={t.store.product.rating_star({ count: rating })}>
             {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                     key={star}
@@ -144,7 +144,7 @@ const ProductDetailPage: React.FC = () => {
                         <div className="detail-rating-summary detail-rating-summary--compact">
                             {renderStars(averageRating)}
                             <span className="detail-rating-summary__score">{averageRating.toFixed(1)}</span>
-                            <span className="detail-rating-summary__count">({totalReviews} đánh giá)</span>
+                            <span className="detail-rating-summary__count">({t.store.product.review_count({ count: totalReviews })})</span>
                         </div>
 
                         {/* Price Card */}
@@ -175,7 +175,7 @@ const ProductDetailPage: React.FC = () => {
                             onClick={action.handleAddToCart}
                         >
                             {addedToCart ? (
-                                <><CheckCircle2 size={18} /> Đã thêm vào giỏ</>
+                                <><CheckCircle2 size={18} /> {t.store.product.added_to_cart()}</>
                             ) : (
                                 <><ShoppingCart size={18} /> {t.store.product.add_to_cart()}</>
                             )}
@@ -196,9 +196,9 @@ const ProductDetailPage: React.FC = () => {
                         {/* Trust badges */}
                         <div className="detail-trust-grid">
                             {[
-                                { icon: <Truck size={16} />, label: "Giao nhanh" },
-                                { icon: <ShieldCheck size={16} />, label: "An toàn" },
-                                { icon: <RotateCcw size={16} />, label: "Dễ đổi trả" },
+                                { icon: <Truck size={16} />, label: t.store.product.trust_fast_delivery() },
+                                { icon: <ShieldCheck size={16} />, label: t.store.product.trust_safe() },
+                                { icon: <RotateCcw size={16} />, label: t.store.product.trust_easy_returns() },
                             ].map((item) => (
                                 <div key={item.label} className="detail-trust-badge">
                                     {item.icon}
@@ -237,13 +237,13 @@ const ProductDetailPage: React.FC = () => {
                 <section className="detail-reviews-section">
                     <div className="detail-reviews-head">
                         <div>
-                            <span className="section-eyebrow">Reviews</span>
-                            <h2 className="section-title">Đánh giá sản phẩm</h2>
+                            <span className="section-eyebrow">{t.store.product.reviews_eyebrow()}</span>
+                            <h2 className="section-title">{t.store.product.reviews_title()}</h2>
                         </div>
                         <div className="detail-review-score">
                             <strong>{averageRating.toFixed(1)}</strong>
                             {renderStars(averageRating, 18)}
-                            <span>{totalReviews} đánh giá</span>
+                            <span>{t.store.product.review_count({ count: totalReviews })}</span>
                         </div>
                     </div>
 
@@ -253,7 +253,7 @@ const ProductDetailPage: React.FC = () => {
                             const percent = totalReviews > 0 ? Math.round((count / totalReviews) * 100) : 0;
                             return (
                                 <div key={rating} className="detail-rating-breakdown__row">
-                                    <span>{rating} sao</span>
+                                    <span>{t.store.product.rating_star({ count: rating })}</span>
                                     <div className="detail-rating-breakdown__track">
                                         <span style={{ width: `${percent}%` }} />
                                     </div>
@@ -278,7 +278,7 @@ const ProductDetailPage: React.FC = () => {
                                             type="button"
                                             className="detail-review-star-btn"
                                             onClick={() => action.setNewConfig({ reviewRating: star })}
-                                            aria-label={`Đánh giá ${star} sao`}
+                                            aria-label={t.store.product.rating_star({ count: star })}
                                         >
                                             <Star
                                                 size={24}
@@ -291,18 +291,18 @@ const ProductDetailPage: React.FC = () => {
                                     className="detail-review-textarea"
                                     value={reviewComment}
                                     onChange={(event) => action.setNewConfig({ reviewComment: event.target.value })}
-                                    placeholder="Viết nhận xét của bạn..."
+                                    placeholder={t.store.product.review_placeholder()}
                                     maxLength={2000}
                                 />
                                 <button className="btn btn-primary detail-review-submit" disabled={isSubmittingReview}>
                                     {isSubmittingReview ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                                    Gửi đánh giá
+                                    {t.store.product.submit_review()}
                                 </button>
                             </form>
                         ) : (
                             <div className="detail-review-login">
-                                <span>Đăng nhập để đánh giá sản phẩm này.</span>
-                                <Link to={AppRoutePath.LOGIN} className="btn btn-sm btn-outline">Đăng nhập</Link>
+                                <span>{t.store.product.login_to_review()}</span>
+                                <Link to={AppRoutePath.LOGIN} className="btn btn-sm btn-outline">{t.common.login()}</Link>
                             </div>
                         )}
                     </div>
@@ -313,14 +313,14 @@ const ProductDetailPage: React.FC = () => {
                                 <Loader2 size={22} className="animate-spin text-primary" />
                             </div>
                         ) : reviews.length === 0 ? (
-                            <div className="detail-review-empty">Chưa có đánh giá nào.</div>
+                            <div className="detail-review-empty">{t.store.product.no_reviews()}</div>
                         ) : (
                             reviews.map((review) => (
                                 <article key={review.id} className="detail-review-item">
                                     <div className="detail-review-item__head">
                                         <div>
-                                            <strong>{review.user_name || "Khách hàng"}</strong>
-                                            <span>{new Date(review.created_at).toLocaleDateString("vi-VN")}</span>
+                                            <strong>{review.user_name || t.common.customer()}</strong>
+                                            <span>{new Date(review.created_at).toLocaleDateString(language === "vi" ? "vi-VN" : "en-US")}</span>
                                         </div>
                                         {renderStars(review.rating)}
                                     </div>

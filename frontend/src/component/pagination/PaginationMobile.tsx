@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Paging } from '@/data';
 import "./PaginationMobile.css";
 import { AppConstant } from '@/core/utils';
+import { t } from '@/core/localized';
+import { useLanguage } from '@/provider/LanguageProvider';
 
 export interface PaginationProps {
     paging: Paging;
@@ -11,6 +13,7 @@ export interface PaginationProps {
 }
 
 const PaginationMobile: React.FC<PaginationProps> = (props) => {
+    useLanguage();
     const {
         paging,
         onPageChange,
@@ -94,14 +97,14 @@ const PaginationMobile: React.FC<PaginationProps> = (props) => {
                 onClick={goFirst}
                 disabled={currentPage === 1}
             >
-                最初へ
+                {t.common.first()}
             </button>
             <button
                 className="pagination-mobile-btn"
                 onClick={goPrev}
                 disabled={currentPage === 1}
             >
-                前へ
+                {t.common.previous()}
             </button>
 
             {pages.map((page, idx) => (
@@ -119,14 +122,14 @@ const PaginationMobile: React.FC<PaginationProps> = (props) => {
                 onClick={goNext}
                 disabled={currentPage === totalPages}
             >
-                次へ
+                {t.common.next()}
             </button>
             <button
                 className="pagination-mobile-btn"
                 onClick={goLast}
                 disabled={currentPage === totalPages}
             >
-                最後へ
+                {t.common.last()}
             </button>
         </div>
     );

@@ -7,9 +7,12 @@ import { OrderStatus } from "@/data/models/Order";
 import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import { Download, Loader2, ShoppingBag } from "lucide-react";
+import { t } from "@/core/localized";
+import { useLanguage } from "@/provider/LanguageProvider";
 import dayjs from "dayjs";
 
 const AdminOrderListPage: React.FC = () => {
+    useLanguage();
     const { config, action } = AdminOrderListVM();
 
     const formatCurrency = (value: number) =>
@@ -19,14 +22,14 @@ const AdminOrderListPage: React.FC = () => {
         <AdminLayout>
             <div className="page-header">
                 <div>
-                    <h2 className="page-title">Quản lý đơn hàng</h2>
+                    <h2 className="page-title">{t.admin.order.page_title()}</h2>
                     {!config.isLoading && (
-                        <p className="page-subtitle">{config.orders.length} đơn hàng</p>
+                        <p className="page-subtitle">{t.admin.order.items_count({ count: config.orders.length })}</p>
                     )}
                 </div>
                 <button className="btn btn-primary" onClick={action.onExportCsv}>
                     <Download size={16} />
-                    Export CSV
+                    {t.admin.order.export_csv()}
                 </button>
             </div>
 
@@ -38,7 +41,7 @@ const AdminOrderListPage: React.FC = () => {
                         config.statusFilter === null ? "btn-primary" : "btn-outline"
                     }`}
                 >
-                    Tất cả
+                    {t.admin.common.all()}
                 </button>
                 {OrderStatus.Values.map((s) => (
                     <button
@@ -60,8 +63,8 @@ const AdminOrderListPage: React.FC = () => {
             ) : config.orders.length === 0 ? (
                 <div className="empty-state">
                     <ShoppingBag size={48} className="empty-state-icon" />
-                    <h3 className="empty-state-title">Không có đơn hàng nào</h3>
-                    <p className="empty-state-desc">Chưa có đơn hàng phù hợp với bộ lọc</p>
+                    <h3 className="empty-state-title">{t.admin.order.empty_title()}</h3>
+                    <p className="empty-state-desc">{t.admin.order.empty_desc()}</p>
                 </div>
             ) : (
                 <div className="list-card">
@@ -70,11 +73,11 @@ const AdminOrderListPage: React.FC = () => {
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Người nhận</th>
-                                    <th>Tổng tiền</th>
-                                    <th>Trạng thái</th>
-                                    <th>Ngày đặt</th>
-                                    <th>Thao tác</th>
+                                    <th>{t.admin.order.col_recipient()}</th>
+                                    <th>{t.admin.order.col_total()}</th>
+                                    <th>{t.admin.order.col_status()}</th>
+                                    <th>{t.admin.order.col_created()}</th>
+                                    <th>{t.admin.order.col_actions()}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -102,7 +105,7 @@ const AdminOrderListPage: React.FC = () => {
                                                 to={AppRoutePath.ADMIN_ORDER_DETAIL.replace(":id", String(order.id))}
                                                 className="btn btn-sm btn-outline"
                                             >
-                                                Chi tiết
+                                                {t.admin.order.detail()}
                                             </Link>
                                         </td>
                                     </tr>

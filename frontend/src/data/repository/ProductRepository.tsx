@@ -2,7 +2,7 @@ import BaseRepository from './BaseRepository';
 import { ApiResult } from '@/core/api';
 import type { Product } from '@/data/models/Product';
 import type { ProductReview, ProductReviewListResponse } from '@/data/models/ProductReview';
-import type { ProductViewStats } from '@/data/models/ProductView';
+import type { ProductViewChartItem, ProductViewStats, ProductViewStatsSummary } from '@/data/models/ProductView';
 
 export interface ProductListResponse {
     items: Product[];
@@ -12,6 +12,8 @@ export interface ProductListResponse {
 export interface ProductViewStatsListResponse {
     items: ProductViewStats[];
     paging: Record<string, any>;
+    chart?: ProductViewChartItem[];
+    summary?: ProductViewStatsSummary;
 }
 
 export interface ProductCsvImportErrorItem {

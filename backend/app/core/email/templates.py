@@ -11,14 +11,14 @@ _TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "html")
 
 
 def _read_template(filename: str) -> str:
-    """テンプレートファイルを読み込む"""
+    """Read an HTML template file."""
     filepath = os.path.join(_TEMPLATE_DIR, filename)
     with open(filepath, "r", encoding="utf-8") as f:
         return f.read().strip()
 
 
 class EmailTemplate:
-    """メールテンプレートクラス"""
+    """Email template renderer."""
 
     # ------------------------------------------------------------------
     # Verification Email
@@ -28,9 +28,9 @@ class EmailTemplate:
     def get_verification_email_html(
         verification_code: str,
         user_name: Optional[str] = None,
-        role_name: str = "ユーザー"
+        role_name: str = "user"
     ) -> str:
-        greeting = f"、{user_name}様" if user_name else ""
+        greeting = f", {user_name}" if user_name else ""
         current_year = DateUtils.now().year
 
         return _read_template("verification_email.html").format(
@@ -49,7 +49,7 @@ class EmailTemplate:
         reset_password_url: str,
         user_name: Optional[str] = None
     ) -> str:
-        greeting = f"、{user_name}様" if user_name else ""
+        greeting = f", {user_name}" if user_name else ""
         current_year = DateUtils.now().year
 
         return _read_template("password_reset.html").format(
@@ -67,7 +67,7 @@ class EmailTemplate:
         redirect_url: str,
     ) -> str:
         current_year = str(DateUtils.now().year)
-        # CSS/JS の {} と衝突するため str.replace() を使用
+        # Use str.replace() to avoid conflicts with CSS/JS braces.
         html = _read_template("invitation_verify_success.html")
         html = html.replace("{redirect_url}", redirect_url)
         html = html.replace("{current_year}", current_year)

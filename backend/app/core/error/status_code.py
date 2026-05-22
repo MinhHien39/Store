@@ -7,11 +7,11 @@ class StatusCode(int, Enum):
     BAD_REQUEST: int = 400
     DATA_NOT_FOUND: int = 400
 
-    # 正常処理
+    # Success.
     OK: int = 200
 
-    # 例外エラー
+    # Exception error.
     INTERNAL_ERROR: int = 500
 
-    # レコードがヒットしない場合
+    # No matching record.
     DEFAULT_ERROR: int = 400
