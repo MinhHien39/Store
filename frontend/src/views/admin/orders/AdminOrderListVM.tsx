@@ -24,6 +24,7 @@ interface Action extends BaseAction<Config> {
     onPageChange: (page: number) => void;
     onFilterStatus: (status: number | null) => void;
     onUpdateStatus: (orderId: number, status: number) => void;
+    onExportCsv: () => void;
 }
 
 export const AdminOrderListVM: BaseViewModelFunc<Config, Action> = () => {
@@ -81,8 +82,30 @@ export const AdminOrderListVM: BaseViewModelFunc<Config, Action> = () => {
         }
     };
 
+    const onExportCsv = async () => {
+        globalUI.showLoading();
+        const params: Record<string, any> = {};
+        if (config.statusFilter !== null) params.status = config.statusFilter;
+        const result = await orderRepository.adminExportOrders(params);
+        globalUI.hideLoading();
+
+        if (result.type === ApiResultType.Success) {
+            const { blob, fileName } = result.data;
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = fileName || "orders.csv";
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+        } else {
+            globalUI.handleApiError(result.error);
+        }
+    };
+
     return {
         config,
-        action: { ...action, onPageChange, onFilterStatus, onUpdateStatus },
+        action: { ...action, onPageChange, onFilterStatus, onUpdateStatus, onExportCsv },
     };
 };

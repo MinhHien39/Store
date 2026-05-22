@@ -10,11 +10,13 @@ import ProductGallery from "@/component/product/ProductGallery";
 import {
     MessageCircle, Loader2, ChevronRight, ShoppingCart,
     CheckCircle2, Tag, Truck, ShieldCheck, RotateCcw, ArrowLeft,
+    Send, Star,
 } from "lucide-react";
 import { t } from "@/core/localized";
 import { useLanguage } from "@/provider/LanguageProvider";
 import { ADSENSE_SLOTS } from "@/core/adsense";
 import { formatVnd } from "@/core/utils/currency";
+import { useAuthContext } from "@/provider/AuthContextProvider";
 import { ProductDetailVM } from "./ProductDetailVM";
 import "./styles.css";
 
@@ -22,9 +24,22 @@ const FACEBOOK_URL = "https://www.facebook.com/xh.456789";
 const MESSENGER_URL = "https://m.me/xh.456789";
 
 const ProductDetailPage: React.FC = () => {
-    useLanguage();
+    const { language } = useLanguage();
     const { config, action } = ProductDetailVM();
-    const { product, related, isLoading, error, addedToCart } = config;
+    const { isAuthenticated } = useAuthContext();
+    const {
+        product,
+        related,
+        reviews,
+        reviewSummary,
+        reviewsLoading,
+        isLoading,
+        error,
+        addedToCart,
+        reviewRating,
+        reviewComment,
+        isSubmittingReview,
+    } = config;
 
     if (isLoading) {
         return (
@@ -56,11 +71,24 @@ const ProductDetailPage: React.FC = () => {
     const discount = hasSale ? Math.round((1 - salePrice / basePrice) * 100) : 0;
     const sku = `#${String(product.id).padStart(6, '0')}`;
     const price = salePrice ?? basePrice;
+    const averageRating = reviewSummary?.average_rating ?? 0;
+    const totalReviews = reviewSummary?.total_reviews ?? 0;
     const detailRows = [
         product.category_name && { label: t.store.product.category_label(), value: product.category_name },
         product.brand_name && { label: t.store.product.brand_label(), value: product.brand_name },
         { label: t.store.product.sku(), value: sku },
     ].filter(Boolean) as { label: string; value: string }[];
+    const renderStars = (rating: number, size: number = 16) => (
+        <span className="detail-stars" aria-label={t.store.product.rating_star({ count: rating })}>
+            {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                    key={star}
+                    size={size}
+                    className={star <= Math.round(rating) ? "detail-star detail-star--filled" : "detail-star"}
+                />
+            ))}
+        </span>
+    );
 
     return (
         <StoreLayout>
@@ -113,6 +141,12 @@ const ProductDetailPage: React.FC = () => {
                         <h1 className="type-title" style={{ wordBreak: "break-word" }}>{product.name}</h1>
                         <p className="detail-sku">{t.store.product.sku()}: {sku}</p>
 
+                        <div className="detail-rating-summary detail-rating-summary--compact">
+                            {renderStars(averageRating)}
+                            <span className="detail-rating-summary__score">{averageRating.toFixed(1)}</span>
+                            <span className="detail-rating-summary__count">({t.store.product.review_count({ count: totalReviews })})</span>
+                        </div>
+
                         {/* Price Card */}
                         <div className="detail-price-card">
                             <div className="detail-price-card__status">
@@ -141,7 +175,7 @@ const ProductDetailPage: React.FC = () => {
                             onClick={action.handleAddToCart}
                         >
                             {addedToCart ? (
-                                <><CheckCircle2 size={18} /> Đã thêm vào giỏ</>
+                                <><CheckCircle2 size={18} /> {t.store.product.added_to_cart()}</>
                             ) : (
                                 <><ShoppingCart size={18} /> {t.store.product.add_to_cart()}</>
                             )}
@@ -162,9 +196,9 @@ const ProductDetailPage: React.FC = () => {
                         {/* Trust badges */}
                         <div className="detail-trust-grid">
                             {[
-                                { icon: <Truck size={16} />, label: "Giao nhanh" },
-                                { icon: <ShieldCheck size={16} />, label: "An toàn" },
-                                { icon: <RotateCcw size={16} />, label: "Dễ đổi trả" },
+                                { icon: <Truck size={16} />, label: t.store.product.trust_fast_delivery() },
+                                { icon: <ShieldCheck size={16} />, label: t.store.product.trust_safe() },
+                                { icon: <RotateCcw size={16} />, label: t.store.product.trust_easy_returns() },
                             ].map((item) => (
                                 <div key={item.label} className="detail-trust-badge">
                                     {item.icon}
@@ -199,6 +233,103 @@ const ProductDetailPage: React.FC = () => {
                         </div>
                     </section>
                 )}
+
+                <section className="detail-reviews-section">
+                    <div className="detail-reviews-head">
+                        <div>
+                            <span className="section-eyebrow">{t.store.product.reviews_eyebrow()}</span>
+                            <h2 className="section-title">{t.store.product.reviews_title()}</h2>
+                        </div>
+                        <div className="detail-review-score">
+                            <strong>{averageRating.toFixed(1)}</strong>
+                            {renderStars(averageRating, 18)}
+                            <span>{t.store.product.review_count({ count: totalReviews })}</span>
+                        </div>
+                    </div>
+
+                    <div className="detail-rating-breakdown">
+                        {[5, 4, 3, 2, 1].map((rating) => {
+                            const count = reviewSummary?.rating_counts?.[rating] ?? 0;
+                            const percent = totalReviews > 0 ? Math.round((count / totalReviews) * 100) : 0;
+                            return (
+                                <div key={rating} className="detail-rating-breakdown__row">
+                                    <span>{t.store.product.rating_star({ count: rating })}</span>
+                                    <div className="detail-rating-breakdown__track">
+                                        <span style={{ width: `${percent}%` }} />
+                                    </div>
+                                    <strong>{count}</strong>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    <div className="detail-review-form">
+                        {isAuthenticated ? (
+                            <form
+                                onSubmit={(event) => {
+                                    event.preventDefault();
+                                    action.handleSubmitReview();
+                                }}
+                            >
+                                <div className="detail-review-form__stars">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <button
+                                            key={star}
+                                            type="button"
+                                            className="detail-review-star-btn"
+                                            onClick={() => action.setNewConfig({ reviewRating: star })}
+                                            aria-label={t.store.product.rating_star({ count: star })}
+                                        >
+                                            <Star
+                                                size={24}
+                                                className={star <= reviewRating ? "detail-star detail-star--filled" : "detail-star"}
+                                            />
+                                        </button>
+                                    ))}
+                                </div>
+                                <textarea
+                                    className="detail-review-textarea"
+                                    value={reviewComment}
+                                    onChange={(event) => action.setNewConfig({ reviewComment: event.target.value })}
+                                    placeholder={t.store.product.review_placeholder()}
+                                    maxLength={2000}
+                                />
+                                <button className="btn btn-primary detail-review-submit" disabled={isSubmittingReview}>
+                                    {isSubmittingReview ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                                    {t.store.product.submit_review()}
+                                </button>
+                            </form>
+                        ) : (
+                            <div className="detail-review-login">
+                                <span>{t.store.product.login_to_review()}</span>
+                                <Link to={AppRoutePath.LOGIN} className="btn btn-sm btn-outline">{t.common.login()}</Link>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="detail-review-list">
+                        {reviewsLoading ? (
+                            <div className="detail-review-empty">
+                                <Loader2 size={22} className="animate-spin text-primary" />
+                            </div>
+                        ) : reviews.length === 0 ? (
+                            <div className="detail-review-empty">{t.store.product.no_reviews()}</div>
+                        ) : (
+                            reviews.map((review) => (
+                                <article key={review.id} className="detail-review-item">
+                                    <div className="detail-review-item__head">
+                                        <div>
+                                            <strong>{review.user_name || t.common.customer()}</strong>
+                                            <span>{new Date(review.created_at).toLocaleDateString(language === "vi" ? "vi-VN" : "en-US")}</span>
+                                        </div>
+                                        {renderStars(review.rating)}
+                                    </div>
+                                    {review.comment && <p>{review.comment}</p>}
+                                </article>
+                            ))
+                        )}
+                    </div>
+                </section>
 
                 {/* Related products */}
                 {related.length > 0 && (

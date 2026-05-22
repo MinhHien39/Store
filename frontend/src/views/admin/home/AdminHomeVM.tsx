@@ -49,22 +49,6 @@ export const AdminHomeVM: BaseViewModelFunc<Config, Action> = () => {
                     title: t.admin_sidebar.dashboard(),
                     href: AppRoutePath.ADMIN_DASHBOARD
                 },
-                {
-                    title: t.admin_sidebar.company(),
-                    href: AppRoutePath.ADMIN_COMPANY
-                },
-                {
-                    title: t.admin_sidebar.companies(),
-                    href: AppRoutePath.ADMIN_COMPANIES,
-                },
-                {
-                    title: t.admin_sidebar.manager(),
-                    href: AppRoutePath.ADMIN_MANAGER
-                },
-                {
-                    title: t.admin_sidebar.managers(),
-                    href: AppRoutePath.ADMIN_MANAGERS,
-                }
             ],
             onLogout: onLogout
         }

@@ -315,6 +315,250 @@
     white-space: pre-line;
 }
 
+/* Reviews */
+.detail-rating-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    color: #64748b;
+}
+
+.detail-rating-summary--compact {
+    margin: -8px 0 var(--space-4);
+    font-size: 0.82rem;
+    font-weight: var(--font-extrabold);
+}
+
+.detail-rating-summary__score {
+    color: #0f172a;
+    font-weight: var(--font-black);
+}
+
+.detail-rating-summary__count {
+    color: #64748b;
+}
+
+.detail-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    line-height: 1;
+}
+
+.detail-star {
+    color: #cbd5e1;
+    fill: none;
+    stroke-width: 2.2;
+}
+
+.detail-star--filled {
+    color: #f59e0b;
+    fill: #f59e0b;
+}
+
+.detail-reviews-section {
+    margin-top: var(--space-8);
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--color-gray-200);
+    background-color: #fff;
+    padding: var(--space-7);
+}
+
+.detail-reviews-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-5);
+    margin-bottom: var(--space-5);
+}
+
+.detail-review-score {
+    display: flex;
+    min-width: 180px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    color: #64748b;
+    font-size: 0.82rem;
+    font-weight: var(--font-extrabold);
+}
+
+.detail-review-score strong {
+    font-size: 2rem;
+    line-height: 1;
+    color: #0f172a;
+    font-weight: 950;
+}
+
+.detail-rating-breakdown {
+    display: grid;
+    max-width: 560px;
+    gap: 8px;
+    margin-bottom: var(--space-6);
+}
+
+.detail-rating-breakdown__row {
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr) 32px;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.78rem;
+    font-weight: var(--font-extrabold);
+    color: #64748b;
+}
+
+.detail-rating-breakdown__track {
+    overflow: hidden;
+    height: 8px;
+    border-radius: var(--radius-full);
+    background-color: #e2e8f0;
+}
+
+.detail-rating-breakdown__track span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(to right, #f97316, #f59e0b);
+}
+
+.detail-rating-breakdown__row strong {
+    color: #0f172a;
+    text-align: right;
+}
+
+.detail-review-form {
+    margin-bottom: var(--space-6);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-gray-200);
+    background-color: var(--color-gray-50);
+    padding: var(--space-4);
+}
+
+.detail-review-form form {
+    display: grid;
+    gap: var(--space-3);
+}
+
+.detail-review-form__stars {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.detail-review-star-btn {
+    display: inline-flex;
+    width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    border: 1px solid transparent;
+    background-color: transparent;
+    transition: var(--transition-all);
+}
+
+.detail-review-star-btn:hover {
+    border-color: #fed7aa;
+    background-color: #fff7ed;
+}
+
+.detail-review-textarea {
+    width: 100%;
+    min-height: 112px;
+    resize: vertical;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-gray-200);
+    background-color: #fff;
+    padding: var(--space-3) var(--space-4);
+    color: #0f172a;
+    font-size: 0.92rem;
+    font-weight: var(--font-semibold);
+    line-height: 1.5;
+    outline: none;
+    transition: var(--transition-colors);
+}
+
+.detail-review-textarea:focus {
+    border-color: #fb923c;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+}
+
+.detail-review-submit {
+    justify-self: start;
+    min-height: 40px;
+    gap: var(--space-2);
+}
+
+.detail-review-login {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    color: #475569;
+    font-size: 0.9rem;
+    font-weight: var(--font-extrabold);
+}
+
+.detail-review-list {
+    display: grid;
+    gap: var(--space-3);
+}
+
+.detail-review-empty {
+    display: flex;
+    min-height: 72px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xl);
+    border: 1px dashed var(--color-gray-200);
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: var(--font-extrabold);
+}
+
+.detail-review-item {
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-gray-200);
+    background-color: #fff;
+    padding: var(--space-4);
+}
+
+.detail-review-item__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-2);
+}
+
+.detail-review-item__head div {
+    display: grid;
+    gap: 3px;
+}
+
+.detail-review-item__head strong {
+    color: #0f172a;
+    font-size: 0.92rem;
+    font-weight: var(--font-black);
+}
+
+.detail-review-item__head span {
+    color: #94a3b8;
+    font-size: 0.76rem;
+    font-weight: var(--font-extrabold);
+}
+
+.detail-review-item p {
+    margin: 0;
+    color: #475569;
+    font-size: 0.92rem;
+    font-weight: var(--font-semibold);
+    line-height: 1.65;
+    white-space: pre-line;
+}
+
 /* Related section */
 .detail-related {
     margin-top: var(--space-9);
@@ -382,4 +626,46 @@
 
 .detail-error__link:hover {
     color: var(--color-primary-hover);
+}
+
+@media (max-width: 1024px) {
+    .detail-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-related__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .detail-page {
+        padding-top: var(--space-4);
+    }
+
+    .detail-info,
+    .detail-desc-card,
+    .detail-reviews-section {
+        padding: var(--space-4);
+        border-radius: var(--radius-xl);
+    }
+
+    .detail-desc-card {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+    }
+
+    .detail-reviews-head,
+    .detail-review-item__head {
+        flex-direction: column;
+    }
+
+    .detail-review-score {
+        min-width: 0;
+        align-items: flex-start;
+    }
+
+    .detail-related__grid {
+        grid-template-columns: 1fr;
+    }
 }

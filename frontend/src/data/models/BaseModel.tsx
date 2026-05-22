@@ -8,19 +8,19 @@ export enum ModelActionMode {
 }
 
 abstract class BaseModel {
-    // 一意のIDを生成するためのフィールド
+    // Unique ID field.
     addressID = crypto.randomUUID();
-    // 一覧表示用の選択状態
+    // Selection state for list views.
     isSelected: boolean = false;
-    // 作成日時
+    // Created date.
     createdAt?: Date;
-    // 更新日時
+    // Updated date.
     updatedAt?: Date;
-    // 作成者
+    // Created by.
     createdBy?: string;
-    // 更新者
+    // Updated by.
     updatedBy?: string;
-    // モデルのアクションモード (追加、編集、削除など)
+    // Model action mode, such as add, edit, or delete.
     modelActionMode: ModelActionMode = ModelActionMode.NONE;
 
     abstract getKeyId(): string;

@@ -5,6 +5,8 @@ import {
     ic_close,
     ic_logo
 } from '@/assets/images';
+import { t } from '@/core/localized';
+import { useLanguage } from '@/provider/LanguageProvider';
 import "./AppBar.css";
 
 export type DrawerItem = {
@@ -26,6 +28,7 @@ export type AppBarConfig = {
 };
 
 const AppBar: React.FC<{ config: AppBarConfig }> = ({ config }) => {
+    useLanguage();
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -73,11 +76,11 @@ const AppBar: React.FC<{ config: AppBarConfig }> = ({ config }) => {
                 <div className="user-bar--user-info">
                     <div className="app-bar--username">
                         <span>{config.userName}</span>
-                        <span>ログイン中</span>
+                        <span>{t.common.loggedIn()}</span>
                     </div>
                     <button
                         className="app-bar--logout-button"
-                        onClick={() => config.onLogout()}>ログアウト
+                        onClick={() => config.onLogout()}>{t.common.logout()}
                     </button>
                 </div>
             </div>
@@ -162,7 +165,7 @@ const AppBar: React.FC<{ config: AppBarConfig }> = ({ config }) => {
                             onClick={() => {
                                 config.onLogout();
                                 setDrawerOpen(false);
-                            }}>ログアウト
+                            }}>{t.common.logout()}
                         </button>
                     </div>
                 </ul>

@@ -1,4 +1,8 @@
+from datetime import datetime
+from io import BytesIO
+
 from fastapi import Depends
+from fastapi.responses import StreamingResponse
 
 from app.core import SuccessResponse, BaseApiRouter, RequireAdminDep, RequireStoreUserDep
 from .schemas import CreateOrderRequest, UpdateOrderStatusRequest, OrderListQuery
@@ -51,6 +55,21 @@ async def get_all_orders(
     return SuccessResponse(data=data)
 
 
+@admin_router.get("/export-csv")
+async def export_orders_csv(
+    query: OrderListQuery = Depends(),
+    service: OrderService = Depends(get_order_read_service),
+):
+    csv_text = service.export_orders_csv(query=query)
+    filename = f"orders-{datetime.now().strftime('%Y%m%d-%H%M%S')}.csv"
+    stream = BytesIO(csv_text.encode("utf-8-sig"))
+    return StreamingResponse(
+        stream,
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
 @admin_router.get("/{order_id}")
 async def get_order_detail(
     order_id: int,
@@ -61,6 +80,7 @@ async def get_order_detail(
 
 
 @admin_router.put("/{order_id}/status")
+@admin_router.patch("/{order_id}/status")
 async def update_order_status(
     order_id: int,
     request: UpdateOrderStatusRequest,

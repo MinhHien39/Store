@@ -32,7 +32,7 @@ const CategoriesPage: React.FC = () => {
                     </div>
                     <h1 className="type-title">{t.store.nav.categories()}</h1>
                     <p className="section-subtitle">
-                        Chọn danh mục để xem nhanh các sản phẩm phù hợp.
+                        {t.store.categories.subtitle()}
                     </p>
                 </div>
             </section>

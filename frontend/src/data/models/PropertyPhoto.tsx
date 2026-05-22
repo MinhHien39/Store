@@ -1,22 +1,23 @@
 import BaseModel from "./BaseModel";
 import { AppConstant, DateFormat, DateUtils } from "@/core/utils";
+import { t } from "@/core/localized";
 
 export enum PropertyPhotoStatus {
-    UN_TAKE_PHOTO = 1, // 未撮影
-    UN_CONFIRM = 2,    // 未確認
-    APPROVED = 3,      // 承認済み
-    REJECTED = 4,      // 差し戻し
-    NEED_CONFIRM = 5,  // 要確認
+    UN_TAKE_PHOTO = 1, // Not photographed
+    UN_CONFIRM = 2,    // Unconfirmed
+    APPROVED = 3,      // Approved
+    REJECTED = 4,      // Rejected
+    NEED_CONFIRM = 5,  // Needs confirmation
 }
 
 export namespace PropertyPhotoStatus {
-    const LabelMap: Record<PropertyPhotoStatus, string> = {
-        [PropertyPhotoStatus.UN_TAKE_PHOTO]: "未撮影",
-        [PropertyPhotoStatus.UN_CONFIRM]: "未確認",
-        [PropertyPhotoStatus.APPROVED]: "承認済み",
-        [PropertyPhotoStatus.REJECTED]: "差し戻し",
-        [PropertyPhotoStatus.NEED_CONFIRM]: "要確認",
-    };
+    const labelEntries = (): Array<[PropertyPhotoStatus, string]> => [
+        [PropertyPhotoStatus.UN_TAKE_PHOTO, t.status.propertyPhoto.notShot()],
+        [PropertyPhotoStatus.UN_CONFIRM, t.status.propertyPhoto.unconfirmed()],
+        [PropertyPhotoStatus.APPROVED, t.status.propertyPhoto.approved()],
+        [PropertyPhotoStatus.REJECTED, t.status.propertyPhoto.rejected()],
+        [PropertyPhotoStatus.NEED_CONFIRM, t.status.propertyPhoto.needConfirm()],
+    ];
 
     export const StyleMap: Record<
         PropertyPhotoStatus,
@@ -69,12 +70,12 @@ export namespace PropertyPhotoStatus {
         Object.values(PropertyPhotoStatus).filter(v => typeof v === "number") as PropertyPhotoStatus[];
 
     export const getLabel = (status: PropertyPhotoStatus | number): string => {
-        return LabelMap[status as PropertyPhotoStatus] ?? "";
+        return labelEntries().find(([key]) => key === status)?.[1] ?? "";
     };
 
     export const fromLabel = (label: string): PropertyPhotoStatus | undefined => {
-        const entry = Object.entries(LabelMap).find(([_, v]) => v === label);
-        return entry ? Number(entry[0]) as PropertyPhotoStatus : undefined;
+        const entry = labelEntries().find(([_, value]) => value === label);
+        return entry?.[0];
     };
 
     export const getStyle = (status: PropertyPhotoStatus | number) => {
@@ -85,10 +86,10 @@ export namespace PropertyPhotoStatus {
 class PropertyPhoto extends BaseModel {
     id?: number;
 
-    // 会社ID
+    // Company ID.
     companyId?: number;
 
-    // 工事ID
+    // Property ID.
     propertyId?: number;
 
     // Template fields (dynamic key-value from property template)
@@ -100,28 +101,28 @@ class PropertyPhoto extends BaseModel {
     // Presigned URL (resolved by backend)
     fileUrl?: string;
 
-    // 職人名
+    // Worker name.
     workerName?: string;
 
-    // 扱いステータス (未撮影, 未確認, 承認済み, 差し戻し, 要確認)
+    // Handling status.
     status: number = PropertyPhotoStatus.UN_TAKE_PHOTO;
 
-    // 差し戻し理由
+    // Rejection reason.
     rejectionReason?: string;
 
-    // 表示番号（DB採番。挿入・削除時に再採番される）
+    // Display number assigned by the database.
     no: number;
 
-    // 挿入位置（一時的に保持、保存時に API へ送信、DB には保存しない）
+    // Temporary insertion position sent to the API when saving.
     insertAfterNo?: number;
 
     // Report S3 Path
     reportPath?: string;
 
-    // 画像アップロード日
+    // Image upload date.
     uploadedAt?: Date;
 
-    // 撮影テンプレートID (冗長に保持) Used for Manager
+    // Photo template ID retained for manager views.
     templateId?: number;
 
     getKeyId(): string {

@@ -6,6 +6,7 @@ import AppLocalStorage from '@/core/store/AppLocalStorage';
 import { LogUtils } from '@/core/utils';
 import { UserRole } from '@/data/models/User';
 import { AppRoutePath } from '@/application/AppRoutePath';
+import { t } from '@/core/localized';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -58,7 +59,7 @@ class AxiosClient {
 
                 if (!error.response) {
                     // Server Not Responding
-                    throw new ApiError(0, 'Server không phản hồi.');
+                    throw new ApiError(0, t.api.serverNoResponse());
                 }
 
                 const status = error.response.status;
@@ -80,7 +81,7 @@ class AxiosClient {
                 /* === More than 3 refresh attempts === */
                 if (this.refreshRetryCount >= MAX_REFRESH_RETRY) {
                     this.forceLogout();
-                    throw new ApiError(401, 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+                    throw new ApiError(401, t.auth.sessionExpired());
                 }
 
                 /* === Token already refreshed by a concurrent request === */
@@ -171,7 +172,7 @@ class AxiosClient {
 
     private static mapError(error: AxiosError): ApiError {
         const status = error.response?.status ?? 0;
-        const message = (error.response?.data as any)?.message ?? 'Đã xảy ra lỗi không xác định.';
+        const message = (error.response?.data as any)?.message ?? t.api.unknownError();
         return new ApiError(status, message);
     }
 }

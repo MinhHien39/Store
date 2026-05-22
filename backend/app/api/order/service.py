@@ -1,3 +1,6 @@
+import csv
+import io
+
 from sqlmodel import select
 from sqlalchemy import func
 
@@ -151,6 +154,66 @@ class OrderService(BaseService):
         paging = PagingHelper(query.page, query.per_page, total_count).create_meta()
         return PaginatedContent(items=items, paging=paging)
 
+    def export_orders_csv(self, query: OrderListQuery) -> str:
+        where_sql = [Order.is_deleted == False]
+        if query.status is not None:
+            where_sql.append(Order.status == query.status)
+
+        orders = self.db.exec(
+            select(Order)
+            .where(*where_sql)
+            .order_by(Order.created_at.desc(), Order.id.desc())
+        ).all()
+
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow([
+            "order_id",
+            "user_id",
+            "status",
+            "status_label",
+            "total_amount",
+            "item_count",
+            "shipping_name",
+            "shipping_phone",
+            "shipping_address",
+            "notes",
+            "items",
+            "created_at",
+            "updated_at",
+        ])
+
+        for order in orders:
+            items = self.db.exec(
+                select(OrderItem).where(
+                    OrderItem.order_id == order.id,
+                    OrderItem.is_deleted == False,
+                )
+            ).all()
+            item_parts = []
+            for item in items:
+                product = self.db.exec(select(Product).where(Product.id == item.product_id)).first()
+                product_name = product.name if product else f"Product #{item.product_id}"
+                item_parts.append(f"{product_name} x {item.quantity} @ {item.price}")
+
+            writer.writerow([
+                order.id,
+                order.user_id,
+                order.status,
+                self._status_label(order.status),
+                order.total_amount,
+                len(items),
+                order.shipping_name or "",
+                order.shipping_phone or "",
+                order.shipping_address or "",
+                order.notes or "",
+                " | ".join(item_parts),
+                order.created_at.isoformat() if order.created_at else "",
+                order.updated_at.isoformat() if order.updated_at else "",
+            ])
+
+        return output.getvalue()
+
     def get_order_detail_admin(self, order_id: int) -> dict:
         order = self.db.exec(
             select(Order).where(
@@ -181,6 +244,16 @@ class OrderService(BaseService):
         return self._get_order_detail(order_id)
 
     # --- Helpers ---
+
+    @staticmethod
+    def _status_label(status: int) -> str:
+        return {
+            1: "Pending",
+            2: "Confirmed",
+            3: "Shipping",
+            4: "Delivered",
+            5: "Cancelled",
+        }.get(status, "Unknown")
 
     def _order_to_json(self, order: Order) -> dict:
         data = order.to_json()

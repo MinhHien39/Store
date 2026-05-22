@@ -13,7 +13,7 @@ export class PropertyPhotoRequest extends BaseRequest {
     templateId?: number;
     attachTemplateId?: boolean = false;
     attachFileUrl?: boolean = true;
-    // 挿入位置：この no の直後に挿入（undefined = 末尾追加、0 = 先頭）
+    // Insert position: insert after this number; undefined appends, 0 prepends.
     insertAfterNo?: number;
 
     toRegisterParameter(): Record<string, any> {

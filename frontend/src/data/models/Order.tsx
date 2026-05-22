@@ -1,3 +1,5 @@
+import { t } from "@/core/localized";
+
 export interface OrderItem {
     id: number;
     order_id: number;
@@ -17,14 +19,6 @@ export enum OrderStatus {
 }
 
 export namespace OrderStatus {
-    const LabelMap: Record<OrderStatus, string> = {
-        [OrderStatus.PENDING]: "Chờ xác nhận",
-        [OrderStatus.CONFIRMED]: "Đã xác nhận",
-        [OrderStatus.SHIPPING]: "Đang giao",
-        [OrderStatus.DELIVERED]: "Đã giao",
-        [OrderStatus.CANCELLED]: "Đã hủy",
-    };
-
     const ColorMap: Record<OrderStatus, string> = {
         [OrderStatus.PENDING]: "text-yellow-600 bg-yellow-50",
         [OrderStatus.CONFIRMED]: "text-blue-600 bg-blue-50",
@@ -42,7 +36,20 @@ export namespace OrderStatus {
     ];
 
     export const getLabel = (status: OrderStatus | number): string => {
-        return LabelMap[status as OrderStatus] ?? "";
+        switch (status) {
+            case OrderStatus.PENDING:
+                return t.status.order.pending();
+            case OrderStatus.CONFIRMED:
+                return t.status.order.confirmed();
+            case OrderStatus.SHIPPING:
+                return t.status.order.shipping();
+            case OrderStatus.DELIVERED:
+                return t.status.order.delivered();
+            case OrderStatus.CANCELLED:
+                return t.status.order.cancelled();
+            default:
+                return "";
+        }
     };
 
     export const getColor = (status: OrderStatus | number): string => {

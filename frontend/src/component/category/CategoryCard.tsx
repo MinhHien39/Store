@@ -3,6 +3,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
+import { t } from "@/core/localized";
+import { useLanguage } from "@/provider/LanguageProvider";
 
 export interface Category {
     id: number;
@@ -16,6 +18,7 @@ interface CategoryCardProps {
 }
 
 const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
+    useLanguage();
     return (
         <Link to={`${AppRoutePath.CATEGORIES}/${category.id}`} className="group block relative overflow-hidden">
             <div className="aspect-[3/4] overflow-hidden bg-muted">
@@ -28,7 +31,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category }) => {
             </div>
             <div className="absolute bottom-0 left-0 right-0 p-5 md:p-8 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
                 <h3 className="text-white text-lg md:text-xl font-bold italic" style={{ fontFamily: 'var(--font-heading)' }}>{category.name}</h3>
-                <p className="type-label text-white/60 text-[10px] mt-1">{category.productCount}点の商品</p>
+                <p className="type-label text-white/60 text-[10px] mt-1">{t.store.product.items_count({ count: category.productCount })}</p>
             </div>
         </Link>
     );

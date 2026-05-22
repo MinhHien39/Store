@@ -75,11 +75,11 @@ export const CheckoutVM: BaseViewModelFunc<Config, Action> = () => {
 
     const validate = (): boolean => {
         const errs: Record<string, string> = {};
-        if (!config.form.shipping_name.trim()) errs.shipping_name = "Vui lòng nhập họ tên";
-        if (!config.form.shipping_phone.trim()) errs.shipping_phone = "Vui lòng nhập số điện thoại";
-        else if (config.form.shipping_phone.trim().length < 8) errs.shipping_phone = "Số điện thoại không hợp lệ";
-        if (!config.form.shipping_address.trim()) errs.shipping_address = "Vui lòng nhập địa chỉ giao hàng";
-        else if (config.form.shipping_address.trim().length < 5) errs.shipping_address = "Địa chỉ quá ngắn";
+        if (!config.form.shipping_name.trim()) errs.shipping_name = t.store.checkout.validation_name_required();
+        if (!config.form.shipping_phone.trim()) errs.shipping_phone = t.store.checkout.validation_phone_required();
+        else if (config.form.shipping_phone.trim().length < 8) errs.shipping_phone = t.store.checkout.validation_phone_invalid();
+        if (!config.form.shipping_address.trim()) errs.shipping_address = t.store.checkout.validation_address_required();
+        else if (config.form.shipping_address.trim().length < 5) errs.shipping_address = t.store.checkout.validation_address_short();
         if (Object.keys(errs).length > 0) {
             action.setNewConfig({ errors: errs });
             return false;

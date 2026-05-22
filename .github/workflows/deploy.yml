@@ -37,12 +37,22 @@ jobs:
             git -C "$REPO" reset --hard origin/deploy_prd
             echo "Code: $(git -C $REPO log -1 --oneline)"
 
-            echo "=== [2/3] Reload Gunicorn ==="
-            docker kill --signal=HUP store-backend-prd
-            sleep 3
-            echo "Gunicorn reloaded"
+            ENV_FILE="$REPO/environment/.env.prd"
+            DC="docker compose -f $REPO/compose.prd.yml --env-file $ENV_FILE"
 
-            echo "=== [3/3] Reload Nginx ==="
+            echo "=== [2/5] Run DB migrations ==="
+            $DC exec -T backend alembic upgrade head
+            echo "Migrations done"
+
+            echo "=== [3/5] Restart backend ==="
+            $DC restart backend
+            echo "Backend restarted"
+
+            echo "=== [4/5] Rebuild frontend ==="
+            $DC up -d --no-deps --build --force-recreate frontend
+            echo "Frontend rebuilt"
+
+            echo "=== [5/5] Reload Nginx ==="
             docker exec store-nginx-prd nginx -t
             docker exec store-nginx-prd nginx -s reload
             echo "Nginx reloaded"

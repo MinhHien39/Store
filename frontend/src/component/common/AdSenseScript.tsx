@@ -1,7 +1,16 @@
-import { ADSENSE_CLIENT, isAdsenseConfigured } from "@/core/adsense";
+"use client";
+
+import { useEffect, useState } from "react";
+import { ADSENSE_CLIENT, shouldLoadAdsOnClient } from "@/core/adsense";
 
 export default function AdSenseScript() {
-  if (!isAdsenseConfigured) {
+  const [canLoad, setCanLoad] = useState(false);
+
+  useEffect(() => {
+    setCanLoad(shouldLoadAdsOnClient());
+  }, []);
+
+  if (!canLoad) {
     return null;
   }
 

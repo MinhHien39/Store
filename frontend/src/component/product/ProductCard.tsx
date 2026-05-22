@@ -4,6 +4,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import { formatVnd } from "@/core/utils/currency";
+import { t } from "@/core/localized";
+import { useLanguage } from "@/provider/LanguageProvider";
 
 export interface Product {
     id: number;
@@ -22,6 +24,7 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+    useLanguage();
     const discount = product.originalPrice
         ? Math.round((1 - product.price / product.originalPrice) * 100)
         : 0;
@@ -48,7 +51,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 {/* Quick add - appears on hover */}
                 <div className="absolute bottom-0 left-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     <button className="type-label w-full bg-primary text-on-primary py-3.5 text-[11px] hover:bg-accent transition-colors duration-200">
-                        カートに追加
+                        {t.store.product.add_to_cart()}
                     </button>
                 </div>
             </div>

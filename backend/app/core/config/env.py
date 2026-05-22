@@ -18,7 +18,7 @@ def load_env() -> str:
     env_type = os.environ.get("ENV", "local")
     logger.info(f"Environment type: {env_type}")
 
-    # デフォルト開発・ロカル環境
+    # Default local development environment.
     # /root/environment/.env.local
     env_map = {
         "dev": ".env.dev",

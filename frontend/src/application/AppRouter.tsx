@@ -66,6 +66,8 @@ const pages = {
     AdminBrandsPage: React.lazy(() => import("@/views/admin/brands/AdminBrandsPage")),
     AdminOrderListPage: React.lazy(() => import("@/views/admin/orders/AdminOrderListPage")),
     AdminOrderDetailPage: React.lazy(() => import("@/views/admin/orders/AdminOrderDetailPage")),
+    AdminProductViewsPage: React.lazy(() => import("@/views/admin/product-views/AdminProductViewsPage")),
+    AdminProductReviewsPage: React.lazy(() => import("@/views/admin/product-reviews/AdminProductReviewsPage")),
     AdminCustomerListPage: React.lazy(() => import("@/views/admin/customers/AdminCustomerListPage")),
 };
 
@@ -242,6 +244,22 @@ const AppRoutes: React.FC = () => {
             element: <AdminGuard layout={(
                 <SuspenseWrapper>
                     <pages.AdminOrderDetailPage />
+                </SuspenseWrapper>
+            )} />
+        },
+        {
+            path: AppRoutePath.ADMIN_PRODUCT_VIEWS,
+            element: <AdminGuard layout={(
+                <SuspenseWrapper>
+                    <pages.AdminProductViewsPage />
+                </SuspenseWrapper>
+            )} />
+        },
+        {
+            path: AppRoutePath.ADMIN_PRODUCT_REVIEWS,
+            element: <AdminGuard layout={(
+                <SuspenseWrapper>
+                    <pages.AdminProductReviewsPage />
                 </SuspenseWrapper>
             )} />
         },

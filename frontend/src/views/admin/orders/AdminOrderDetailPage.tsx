@@ -8,9 +8,12 @@ import { Loader2, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import { getImageUrl } from "@/core/utils/currency";
+import { t } from "@/core/localized";
+import { useLanguage } from "@/provider/LanguageProvider";
 import dayjs from "dayjs";
 
 const AdminOrderDetailPage: React.FC = () => {
+    useLanguage();
     const { config, action } = AdminOrderDetailVM();
 
     const formatCurrency = (value: number) =>
@@ -34,7 +37,7 @@ const AdminOrderDetailPage: React.FC = () => {
                 to={AppRoutePath.ADMIN_ORDERS}
                 className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-primary mb-6 transition"
             >
-                <ArrowLeft size={16} /> Quay lại danh sách
+                <ArrowLeft size={16} /> {t.admin.order.back_to_list()}
             </Link>
 
             <div className="grid lg:grid-cols-3 gap-6">
@@ -42,7 +45,7 @@ const AdminOrderDetailPage: React.FC = () => {
                 <div className="lg:col-span-2 space-y-6">
                     <div className="card p-6">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="page-title">Đơn hàng #{order.id}</h2>
+                            <h2 className="page-title">{t.admin.order.order_number({ id: order.id })}</h2>
                             <select
                                 value={order.status}
                                 onChange={(e) => action.onUpdateStatus(Number(e.target.value))}
@@ -54,13 +57,13 @@ const AdminOrderDetailPage: React.FC = () => {
                             </select>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                            Ngày đặt: {dayjs(order.created_at).format("DD/MM/YYYY HH:mm")}
+                            {t.admin.order.order_date({ date: dayjs(order.created_at).format("DD/MM/YYYY HH:mm") })}
                         </p>
                     </div>
 
                     {/* Items */}
                     <div className="card p-6">
-                        <h3 className="font-bold text-base mb-5">Sản phẩm ({order.items?.length || 0})</h3>
+                        <h3 className="font-bold text-base mb-5">{t.admin.order.products_count({ count: order.items?.length || 0 })}</h3>
                         <div className="divide-y divide-border">
                             {order.items?.map((item) => (
                                 <div key={item.id} className="flex items-center gap-4 py-4">
@@ -73,10 +76,10 @@ const AdminOrderDetailPage: React.FC = () => {
                                     )}
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-semibold truncate">
-                                            {item.product_name || `SP #${item.product_id}`}
+                                            {item.product_name || t.admin.order.product_fallback({ id: item.product_id })}
                                         </p>
                                         <p className="text-xs text-muted-foreground mt-1">
-                                            SL: {item.quantity} × {formatCurrency(item.price)}
+                                            {t.admin.order.quantity_short()}: {item.quantity} × {formatCurrency(item.price)}
                                         </p>
                                     </div>
                                     <p className="text-sm font-bold">{formatCurrency(item.price * item.quantity)}</p>
@@ -84,7 +87,7 @@ const AdminOrderDetailPage: React.FC = () => {
                             ))}
                         </div>
                         <div className="border-t border-border mt-4 pt-4 flex justify-between items-center">
-                            <span className="font-bold">Tổng cộng</span>
+                            <span className="font-bold">{t.admin.order.total()}</span>
                             <span className="text-lg font-black text-primary">{formatCurrency(order.total_amount)}</span>
                         </div>
                     </div>
@@ -93,23 +96,23 @@ const AdminOrderDetailPage: React.FC = () => {
                 {/* Shipping Info */}
                 <div>
                     <div className="card p-6">
-                        <h3 className="font-bold text-base mb-5">Thông tin giao hàng</h3>
+                        <h3 className="font-bold text-base mb-5">{t.admin.order.shipping_info()}</h3>
                         <div className="space-y-4 text-sm">
                             <div>
-                                <p className="filter-label !mb-1">Người nhận</p>
+                                <p className="filter-label !mb-1">{t.admin.order.recipient()}</p>
                                 <p className="font-semibold">{order.shipping_name}</p>
                             </div>
                             <div>
-                                <p className="filter-label !mb-1">Điện thoại</p>
+                                <p className="filter-label !mb-1">{t.admin.order.phone()}</p>
                                 <p>{order.shipping_phone}</p>
                             </div>
                             <div>
-                                <p className="filter-label !mb-1">Địa chỉ</p>
+                                <p className="filter-label !mb-1">{t.admin.order.address()}</p>
                                 <p>{order.shipping_address}</p>
                             </div>
                             {order.notes && (
                                 <div>
-                                    <p className="filter-label !mb-1">Ghi chú</p>
+                                    <p className="filter-label !mb-1">{t.admin.order.notes()}</p>
                                     <p className="text-muted-foreground">{order.notes}</p>
                                 </div>
                             )}

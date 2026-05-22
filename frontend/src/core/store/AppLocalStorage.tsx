@@ -2,7 +2,7 @@ import { AppRoutePath } from '@/application/AppRoutePath';
 import User, { UserRole } from '@/data/models/User';
 import Token from '@/data/models/Token';
 
-import LocalStorageImpl, { LocalStorageKey } from './LocalStorageService';
+import LocalStorageImpl, { LocalStorageKey, LocalStorageService } from './LocalStorageService';
 import { JsonUtils, StringUtils } from '@/core/utils';
 
 const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'store';
@@ -11,7 +11,7 @@ const LEGACY_APP_NAMES = ['iretoru'];
 class AppLocalStorage {
     private static _instance: AppLocalStorage;
 
-    private localStorageService: LocalStorageImpl = LocalStorageImpl.getInstance();
+    private localStorageService: LocalStorageService = LocalStorageImpl.getInstance();
 
     private constructor() {
         // No-Op
@@ -35,22 +35,18 @@ class AppLocalStorage {
     }
 
     public getRoleIdFromUrl(): UserRole {
-        if (typeof window === 'undefined') return UserRole.MEMBER;
+        if (typeof window === 'undefined') return UserRole.STORE_USER;
         const paths = window.location.pathname.split('/').filter(Boolean);
 
         const admin = "admin";
-        const manager = "manager";
-        const member = "member";
 
-        const role = paths.find(p => [admin, manager, member].includes(p));
+        const role = paths.find(p => [admin].includes(p));
 
         switch (role) {
             case admin:
                 return UserRole.ADMIN;
-            case manager:
-                return UserRole.MANAGER;
             default:
-                return UserRole.MEMBER;
+                return UserRole.STORE_USER;
         }
     }
 
@@ -59,9 +55,7 @@ class AppLocalStorage {
         switch (role) {
             case UserRole.ADMIN:
                 return LocalStorageKey.ADMIN;
-            case UserRole.MANAGER:
-                return LocalStorageKey.MANAGER;
-            case UserRole.MEMBER:
+            case UserRole.STORE_USER:
                 return LocalStorageKey.MEMBER;
             default:
                 throw new Error('Invalid user role for local storage key');

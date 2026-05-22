@@ -1,17 +1,15 @@
-"""
-メール設定クラス
-"""
+"""Email configuration."""
 from fastapi_mail import ConnectionConfig
 
 from app.core import settings
 
 
 class EmailConfig:
-    """メール設定クラス"""
+    """Email configuration helper."""
     
     @staticmethod
     def get_connection_config() -> ConnectionConfig:
-        """FastMail接続設定を取得"""
+        """Build the FastMail connection configuration."""
         return ConnectionConfig(
             MAIL_USERNAME=settings.MAIL_USERNAME,
             MAIL_PASSWORD=settings.MAIL_PASSWORD,
@@ -26,5 +24,5 @@ class EmailConfig:
     
     @staticmethod
     def is_production() -> bool:
-        """本番環境かチェック"""
+        """Return whether the backend is running in production mode."""
         return settings.BACKEND_MODE.lower() in ("prd", "prod", "production")

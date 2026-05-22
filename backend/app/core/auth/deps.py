@@ -72,7 +72,7 @@ async def require_admin(
     
     # Check if user is admin
     if not token_payload.is_admin:
-        raise UnauthorizedException(message="管理者権限が必要です")
+        raise UnauthorizedException(message="Admin access required")
     
     logger.debug(f"Admin access granted for user_id={token_payload.user_id}, role_id={token_payload.role_id}")
     return token_payload

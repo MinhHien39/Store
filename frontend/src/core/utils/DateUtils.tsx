@@ -1,21 +1,6 @@
 import dayjs from 'dayjs';
 import LogUtils from './LogUtils';
 
-type Era = {
-    symbol: string; // "H"  Heisei
-    name: string;   // "平成"
-    start: string;  // YYYY-MM-DD
-    yearOffset: number; // 0
-};
-
-const eras: Era[] = [
-    { symbol: 'R', name: '令和', start: '2019-05-01', yearOffset: 2018 },
-    { symbol: 'H', name: '平成', start: '1989-01-08', yearOffset: 1988 },
-    { symbol: 'S', name: '昭和', start: '1926-12-25', yearOffset: 1925 },
-    { symbol: 'T', name: '大正', start: '1912-07-30', yearOffset: 1911 },
-    { symbol: 'M', name: '明治', start: '1868-01-25', yearOffset: 1867 },
-];
-
 // https://day.js.org/docs/en/display/format#list-of-localized-formats
 export enum DateFormat {
     API = 'YYYY-MM-DDTHH:mm:ss',
@@ -38,18 +23,17 @@ export enum DateFormat {
 
     YYYY_MM = 'YYYY/MM',
 
-    YYYY年MM月DD日 = 'YYYY年MM月DD日',
+    YYYY_MM_DD_TEXT = 'YYYY/MM/DD',
 
-    YYYY年MM月 = 'YYYY年MM月',
+    YYYY_MM_TEXT = 'YYYY/MM',
 
-    MM月DD日 = 'MM月DD日',
+    MM_DD_TEXT = 'MM/DD',
 
-    // 2023年07月05日 (水)"
-    MM月DD日DDD = 'MM月DD日 (ddd)',
+    MM_DD_DDD_TEXT = 'MM/DD (ddd)',
 
-    YYYY年MM月DD日DDD = 'YYYY年MM月DD日 (ddd)',
+    YYYY_MM_DD_DDD_TEXT = 'YYYY/MM/DD (ddd)',
 
-    YYYY年MM月DD日DDD_HHMMSS = 'YYYY年MM月DD日 (ddd) HH:mm:ss',
+    YYYY_MM_DD_DDD_HHMMSS_TEXT = 'YYYY/MM/DD (ddd) HH:mm:ss',
 
     M_D_DDD = 'M/D (ddd)',
 
@@ -60,7 +44,7 @@ export enum DateFormat {
 
 class DateUtils {
 
-    static LOCATE_DEFAULT = "ja";
+    static LOCATE_DEFAULT = "en";
 
     static isValidDate(date: any): boolean {
         return DateUtils.isInvalidDate(date) === false;
@@ -136,17 +120,7 @@ class DateUtils {
     static convertToWareki(date: string | Date): string {
         try {
             const targetDate = dayjs(date);
-
-            for (const era of eras) {
-                const eraStartDate = dayjs(era.start);
-                if (targetDate.isAfter(eraStartDate) || targetDate.isSame(eraStartDate)) {
-                    const yearInEra = targetDate.year() - era.yearOffset;
-                    const formattedYear = yearInEra === 1 ? '元' : yearInEra;
-                    return `${era.symbol}${formattedYear}.${targetDate.month() + 1}.${targetDate.date()}`;
-                }
-            }
-
-            return targetDate.format('YYYY年M月D日');
+            return targetDate.format('YYYY/M/D');
         }
         catch {
             return ""
@@ -160,7 +134,7 @@ class DateUtils {
         const years = now.diff(start, 'year');
         const months = now.diff(start.add(years, 'year'), 'month');
 
-        return `${years}年${months}カ月`;
+        return `${years} years ${months} months`;
     }
 
     static diffInJpFormat(startDate: Date | string, endDate: Date | string): string {
@@ -170,7 +144,7 @@ class DateUtils {
         const years = end.diff(start, 'year');
         const months = end.diff(start.add(years, 'year'), 'month');
 
-        return `${years}年${months}カ月`;
+        return `${years} years ${months} months`;
     }
 
     static diffInMonthsPlusTwo(startDate: Date | string, endDate: Date | string): number {

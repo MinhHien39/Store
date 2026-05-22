@@ -50,9 +50,9 @@ const CartPage: React.FC = () => {
                                         </div>
                                         <div className="cart-item__bottom">
                                             <div className="cart-qty">
-                                                <button onClick={() => action.updateQuantity(item.id, item.quantity - 1)} className="cart-qty__btn" aria-label="Giảm">−</button>
+                                                <button onClick={() => action.updateQuantity(item.id, item.quantity - 1)} className="cart-qty__btn" aria-label={t.common.decrease()}>−</button>
                                                 <span className="cart-qty__value">{item.quantity}</span>
-                                                <button onClick={() => action.updateQuantity(item.id, item.quantity + 1)} className="cart-qty__btn" aria-label="Tăng">+</button>
+                                                <button onClick={() => action.updateQuantity(item.id, item.quantity + 1)} className="cart-qty__btn" aria-label={t.common.increase()}>+</button>
                                             </div>
                                             <div className="cart-item__right">
                                                 <p className="cart-item__price">{formatVnd((item.sale_price ?? item.price) * item.quantity)}</p>

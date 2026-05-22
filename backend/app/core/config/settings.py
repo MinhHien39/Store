@@ -61,8 +61,13 @@ class Settings:
     S3_BUCKET_NAME: str = os.getenv("S3_BUCKET_NAME")
 
     # CORS
+    _default_cors_origins: str = (
+        "http://localhost:3000,http://localhost:3001"
+        if os.getenv("ENV", "local") == "local"
+        else ""
+    )
     CORS_ALLOWED_ORIGINS: list[str] = [
-        o.strip() for o in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if o.strip()
+        o.strip() for o in os.getenv("CORS_ALLOWED_ORIGINS", _default_cors_origins).split(",") if o.strip()
     ]
 
     # Lambda settings

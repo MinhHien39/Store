@@ -1,6 +1,6 @@
-"""
-メール送信サービス
-環境に応じて FastAPI-Mail (local) または AWS SES (production) を使用
+"""Email sending service.
+
+Uses FastAPI-Mail locally and AWS SES in production.
 """
 from typing import Optional
 from fastapi_mail import FastMail, MessageSchema, MessageType
@@ -12,13 +12,12 @@ from .config import EmailConfig
 
 
 class EmailService:
-    """メール送信サービスクラス"""
+    """Email sending service."""
     
     def __init__(self):
-        """初期化: SES クライアントを設定"""
+        """Initialize the SES client when production email is enabled."""
         self.ses_client = None
         
-        # 本番環境の場合は SES クライアントを初期化
         if EmailConfig.is_production():
             try:
                 self.ses_client = boto3.client(
@@ -36,7 +35,7 @@ class EmailService:
         subject: str,
         html_body: str,
     ) -> bool:
-        """FastAPI-Mail経由でメール送信 (Local環境用)"""
+        """Send email via FastAPI-Mail."""
         try:
             message = MessageSchema(
                 subject=subject,
@@ -62,7 +61,7 @@ class EmailService:
         subject: str,
         html_body: str,
     ) -> bool:
-        """AWS SES経由でメール送信 (Production環境用)"""
+        """Send email via AWS SES."""
         if not self.ses_client:
             logger.error("SES client not initialized")
             return await self._send_via_fastapi_mail(email, subject, html_body)
@@ -101,7 +100,7 @@ class EmailService:
         subject: str,
         html_body: str,
     ) -> bool:
-        """メール送信（環境に応じて自動選択）"""
+        """Send email with the configured provider."""
         if EmailConfig.is_production() and self.ses_client:
             return await self._send_via_ses(email, subject, html_body)
         else:
@@ -112,9 +111,9 @@ class EmailService:
         email: str,
         verification_code: str,
         user_name: Optional[str] = None,
-        role_name: str = "ユーザー"
+        role_name: str = "user"
     ) -> bool:
-        """認証メールを送信"""
+        """Send a verification email."""
         try:
             logger.info(f"Sending verification email to {email} with code {verification_code}")
             
@@ -126,7 +125,7 @@ class EmailService:
             
             success = await self.send_email(
                 email=email,
-                subject="【Store】メールアドレス認証コード",
+                subject="[Store] Email verification code",
                 html_body=html_body,
             )
             
@@ -145,7 +144,7 @@ class EmailService:
         reset_password_url: str,
         user_name: Optional[str] = None
     ) -> bool:
-        """パスワードリセットメールを送信"""
+        """Send a password reset email."""
         try:
             html_body = EmailTemplate.get_password_reset_email_html(
                 reset_password_url=reset_password_url,
@@ -154,7 +153,7 @@ class EmailService:
             
             success = await self.send_email(
                 email=email,
-                subject="【Store】パスワード再設定のお知らせ",
+                subject="[Store] Password reset",
                 html_body=html_body,
             )
             

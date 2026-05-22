@@ -146,7 +146,7 @@ const AdminDashboardPage: React.FC = () => {
                 return (
                     <div className="dash-chart">
                         <div className="dash-panel__header">
-                            <h3 className="dash-panel__title">{t.admin.dashboard.chart_title ? t.admin.dashboard.chart_title() : "7 ngày gần nhất"}</h3>
+                            <h3 className="dash-panel__title">{t.admin.dashboard.chart_title()}</h3>
                         </div>
                         <div className="dash-chart__legend">
                             <span className="dash-chart__dot dash-chart__dot--orders" />{t.admin.dashboard.total_orders()}

@@ -27,7 +27,7 @@ const BrandsPage: React.FC = () => {
                     </div>
                     <h1 className="type-title">{t.store.nav.brands()}</h1>
                     <p className="section-subtitle">
-                        Các thương hiệu được sắp xếp rõ ràng để bạn xem sản phẩm nhanh hơn.
+                        {t.store.brands.subtitle()}
                     </p>
                 </div>
             </section>
