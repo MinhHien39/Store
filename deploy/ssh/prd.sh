@@ -28,7 +28,6 @@ echo "  TARGET:  $TARGET"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 pull() {
-    sudo su
     echo "📥 Pulling latest code..."
     eval "$(ssh-agent -s)"
     ls ~/.ssh/
