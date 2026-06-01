@@ -619,83 +619,83 @@ const pageIcons: Record<PolicyPageKey, typeof Store> = {
 const pageThemes: Record<PolicyPageKey, Theme> = {
   about: {
     heroSurface:
-      "bg-[radial-gradient(circle_at_top_left,#fff7ed_0%,#ffffff_44%,#f8fafc_100%)]",
+      "bg-gradient-to-br from-amber-50/70 via-white to-slate-50/70",
     heroAccent:
-      "bg-[linear-gradient(135deg,rgba(251,146,60,0.18),rgba(14,165,233,0.10))]",
-    heroBorder: "border-amber-200/80",
-    badgeSurface: "bg-amber-100/90",
+      "bg-gradient-to-tr from-amber-500/15 via-orange-400/10 to-transparent",
+    heroBorder: "border-amber-200/60 shadow-[0_20px_50px_rgba(245,158,11,0.05)]",
+    badgeSurface: "bg-amber-100/80 text-amber-900 border border-amber-200/50",
     badgeText: "text-amber-900",
-    statSurface: "bg-white/80",
-    summarySurface: "bg-amber-50/70",
-    summaryBorder: "border-amber-200/80",
-    supportSurface: "bg-slate-950",
-    supportBorder: "border-slate-800",
-    sectionLine: "bg-amber-300",
-    sectionNumber: "bg-amber-100",
+    statSurface: "bg-white/80 border border-white/60",
+    summarySurface: "bg-amber-50/60 border border-amber-200/50",
+    summaryBorder: "border-amber-200/60",
+    supportSurface: "bg-gradient-to-br from-slate-900 via-slate-950 to-amber-950/80",
+    supportBorder: "border-amber-500/20",
+    sectionLine: "bg-amber-400",
+    sectionNumber: "bg-amber-100 border border-amber-200",
     sectionNumberText: "text-amber-900",
-    actionPrimary: "bg-slate-950 text-white hover:bg-slate-800",
+    actionPrimary: "bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 transform hover:-translate-y-0.5 transition-all duration-300",
     actionSecondary:
-      "border border-slate-300 bg-white text-slate-900 hover:border-slate-400 hover:bg-slate-50",
+      "border border-slate-200 bg-white/80 text-slate-800 hover:border-slate-300 hover:bg-slate-50 backdrop-blur shadow-sm transform hover:-translate-y-0.5 transition-all duration-300",
   },
   contact: {
     heroSurface:
-      "bg-[radial-gradient(circle_at_top_left,#eff6ff_0%,#ffffff_46%,#f8fafc_100%)]",
+      "bg-gradient-to-br from-sky-50/70 via-white to-slate-50/70",
     heroAccent:
-      "bg-[linear-gradient(135deg,rgba(59,130,246,0.18),rgba(16,185,129,0.10))]",
-    heroBorder: "border-sky-200/80",
-    badgeSurface: "bg-sky-100/90",
+      "bg-gradient-to-tr from-sky-500/15 via-blue-400/10 to-transparent",
+    heroBorder: "border-sky-200/60 shadow-[0_20px_50px_rgba(14,165,233,0.05)]",
+    badgeSurface: "bg-sky-100/80 text-sky-900 border border-sky-200/50",
     badgeText: "text-sky-900",
-    statSurface: "bg-white/82",
-    summarySurface: "bg-sky-50/80",
-    summaryBorder: "border-sky-200/80",
-    supportSurface: "bg-slate-950",
-    supportBorder: "border-slate-800",
-    sectionLine: "bg-sky-300",
-    sectionNumber: "bg-sky-100",
+    statSurface: "bg-white/80 border border-white/60",
+    summarySurface: "bg-sky-50/60 border border-sky-200/50",
+    summaryBorder: "border-sky-200/60",
+    supportSurface: "bg-gradient-to-br from-slate-900 via-slate-950 to-sky-950/80",
+    supportBorder: "border-sky-500/20",
+    sectionLine: "bg-sky-400",
+    sectionNumber: "bg-sky-100 border border-sky-200",
     sectionNumberText: "text-sky-900",
-    actionPrimary: "bg-sky-700 text-white hover:bg-sky-800",
+    actionPrimary: "bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white shadow-lg shadow-sky-500/20 hover:shadow-sky-500/30 transform hover:-translate-y-0.5 transition-all duration-300",
     actionSecondary:
-      "border border-sky-200 bg-white text-slate-900 hover:border-sky-300 hover:bg-sky-50",
+      "border border-slate-200 bg-white/80 text-slate-800 hover:border-slate-300 hover:bg-slate-50 backdrop-blur shadow-sm transform hover:-translate-y-0.5 transition-all duration-300",
   },
   privacyPolicy: {
     heroSurface:
-      "bg-[radial-gradient(circle_at_top_left,#ecfdf5_0%,#ffffff_46%,#f8fafc_100%)]",
+      "bg-gradient-to-br from-emerald-50/70 via-white to-slate-50/70",
     heroAccent:
-      "bg-[linear-gradient(135deg,rgba(16,185,129,0.18),rgba(14,165,233,0.10))]",
-    heroBorder: "border-emerald-200/80",
-    badgeSurface: "bg-emerald-100/90",
+      "bg-gradient-to-tr from-emerald-500/15 via-teal-400/10 to-transparent",
+    heroBorder: "border-emerald-200/60 shadow-[0_20px_50px_rgba(16,185,129,0.05)]",
+    badgeSurface: "bg-emerald-100/80 text-emerald-900 border border-emerald-200/50",
     badgeText: "text-emerald-900",
-    statSurface: "bg-white/82",
-    summarySurface: "bg-emerald-50/80",
-    summaryBorder: "border-emerald-200/80",
-    supportSurface: "bg-slate-950",
-    supportBorder: "border-slate-800",
-    sectionLine: "bg-emerald-300",
-    sectionNumber: "bg-emerald-100",
+    statSurface: "bg-white/80 border border-white/60",
+    summarySurface: "bg-emerald-50/60 border border-emerald-200/50",
+    summaryBorder: "border-emerald-200/60",
+    supportSurface: "bg-gradient-to-br from-slate-900 via-slate-950 to-emerald-950/80",
+    supportBorder: "border-emerald-500/20",
+    sectionLine: "bg-emerald-400",
+    sectionNumber: "bg-emerald-100 border border-emerald-200",
     sectionNumberText: "text-emerald-900",
-    actionPrimary: "bg-emerald-700 text-white hover:bg-emerald-800",
+    actionPrimary: "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transform hover:-translate-y-0.5 transition-all duration-300",
     actionSecondary:
-      "border border-emerald-200 bg-white text-slate-900 hover:border-emerald-300 hover:bg-emerald-50",
+      "border border-slate-200 bg-white/80 text-slate-800 hover:border-slate-300 hover:bg-slate-50 backdrop-blur shadow-sm transform hover:-translate-y-0.5 transition-all duration-300",
   },
   terms: {
     heroSurface:
-      "bg-[radial-gradient(circle_at_top_left,#fef2f2_0%,#ffffff_46%,#f8fafc_100%)]",
+      "bg-gradient-to-br from-rose-50/70 via-white to-slate-50/70",
     heroAccent:
-      "bg-[linear-gradient(135deg,rgba(239,68,68,0.16),rgba(245,158,11,0.10))]",
-    heroBorder: "border-rose-200/80",
-    badgeSurface: "bg-rose-100/90",
+      "bg-gradient-to-tr from-rose-500/15 via-purple-400/10 to-transparent",
+    heroBorder: "border-rose-200/60 shadow-[0_20px_50px_rgba(244,63,94,0.05)]",
+    badgeSurface: "bg-rose-100/80 text-rose-900 border border-rose-200/50",
     badgeText: "text-rose-900",
-    statSurface: "bg-white/82",
-    summarySurface: "bg-rose-50/80",
-    summaryBorder: "border-rose-200/80",
-    supportSurface: "bg-slate-950",
-    supportBorder: "border-slate-800",
-    sectionLine: "bg-rose-300",
-    sectionNumber: "bg-rose-100",
+    statSurface: "bg-white/80 border border-white/60",
+    summarySurface: "bg-rose-50/60 border border-rose-200/50",
+    summaryBorder: "border-rose-200/60",
+    supportSurface: "bg-gradient-to-br from-slate-900 via-slate-950 to-rose-950/80",
+    supportBorder: "border-rose-500/20",
+    sectionLine: "bg-rose-400",
+    sectionNumber: "bg-rose-100 border border-rose-200",
     sectionNumberText: "text-rose-900",
-    actionPrimary: "bg-rose-700 text-white hover:bg-rose-800",
+    actionPrimary: "bg-gradient-to-r from-rose-600 to-purple-600 hover:from-rose-500 hover:to-purple-500 text-white shadow-lg shadow-rose-500/20 hover:shadow-rose-500/30 transform hover:-translate-y-0.5 transition-all duration-300",
     actionSecondary:
-      "border border-rose-200 bg-white text-slate-900 hover:border-rose-300 hover:bg-rose-50",
+      "border border-slate-200 bg-white/80 text-slate-800 hover:border-slate-300 hover:bg-slate-50 backdrop-blur shadow-sm transform hover:-translate-y-0.5 transition-all duration-300",
   },
 };
 
@@ -727,173 +727,200 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
     [localeCopy.nav, page]
   );
 
-  const shellX = "px-5 sm:px-6 lg:px-10";
-  const shellY = "py-10 sm:py-12 lg:py-14";
-  const cardPadding = "p-6 sm:p-7 lg:p-8";
-  const compactCardPadding = "p-5 sm:p-6";
+  const shellX = "px-4 sm:px-6 lg:px-12";
+  const shellY = "py-12 sm:py-16 lg:py-20";
+  const cardPadding = "p-6 sm:p-8 lg:p-10";
+  const compactCardPadding = "p-6";
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#fffdf8_0%,#ffffff_28%,#f8fafc_100%)] text-slate-900">
-      <div className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/88 backdrop-blur">
-        <div className={`mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 ${shellX} py-4`}>
-          <div className="flex items-center gap-3">
+    <main className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,rgba(241,245,249,0.5)_0%,#ffffff_50%,#fafafa_100%)] text-slate-900 transition-all duration-500 selection:bg-slate-950 selection:text-white">
+      {/* Dynamic Background Mesh Grid */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute top-0 right-0 h-[600px] w-[600px] rounded-full bg-radial from-slate-200/40 to-transparent blur-[120px]" />
+        <div className="absolute top-1/4 left-10 h-[500px] w-[500px] rounded-full bg-radial from-slate-100/50 to-transparent blur-[100px]" />
+      </div>
+
+      {/* Header Area */}
+      <div className="sticky top-0 z-50 border-b border-slate-200/50 bg-white/70 backdrop-blur-xl transition-all duration-300">
+        <div className={`mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6 ${shellX} py-4`}>
+          <div className="flex items-center gap-4">
             <Link
               href={SITE_PATHS.home}
-              className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-[0_18px_40px_rgba(15,23,42,0.18)]"
+              className="group flex h-12 w-12 items-center justify-center rounded-xl bg-slate-950 text-white shadow-xl hover:scale-105 active:scale-95 transition-all duration-300"
             >
-              <Store size={20} />
+              <Store size={20} className="group-hover:rotate-6 transition-transform duration-300" />
             </Link>
             <div>
-              <p className="text-lg font-black tracking-tight text-slate-950">
+              <p className="text-xl font-black tracking-tight text-slate-950">
                 {SITE_NAME}
               </p>
-              <p className="text-sm text-slate-500">{localeCopy.brandTag}</p>
+              <p className="text-xs font-medium text-slate-500 tracking-wide">{localeCopy.brandTag}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-white px-2 py-2 shadow-sm">
-            <span className="pl-2 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-              {localeCopy.languageLabel}
-            </span>
+          <div className="flex items-center gap-1.5 bg-slate-100/80 border border-slate-200/60 rounded-xl p-1 shadow-sm backdrop-blur">
             <button
               type="button"
               onClick={() => setLanguage("vi")}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+              className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all duration-300 ${
                 language === "vi"
-                  ? "bg-slate-950 text-white"
-                  : "text-slate-600 hover:bg-slate-100"
+                  ? "bg-white text-slate-950 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              VI
+              Tiếng Việt
             </button>
             <button
               type="button"
               onClick={() => setLanguage("en")}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+              className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all duration-300 ${
                 language === "en"
-                  ? "bg-slate-950 text-white"
-                  : "text-slate-600 hover:bg-slate-100"
+                  ? "bg-white text-slate-950 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              EN
+              English
             </button>
           </div>
         </div>
       </div>
 
-      <section className="overflow-hidden border-b border-slate-200/80">
-        <div className={`mx-auto grid max-w-7xl gap-8 lg:gap-10 ${shellX} ${shellY} lg:grid-cols-[minmax(0,1.25fr)_360px]`}>
-          <div className={`relative overflow-hidden rounded-[36px] border ${theme.heroBorder} ${theme.heroSurface} ${cardPadding} shadow-[0_28px_90px_rgba(15,23,42,0.10)]`}>
-            <div className={`pointer-events-none absolute inset-y-0 right-0 w-[44%] blur-3xl ${theme.heroAccent}`} />
-
-            <div className="relative">
-              <div className="flex flex-wrap items-center gap-3">
-                <span
-                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.22em] ${theme.badgeSurface} ${theme.badgeText}`}
-                >
-                  <Sparkles size={14} />
-                  {pageCopy.eyebrow}
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-white">
-                  <PageIcon size={14} />
-                  {SITE_NAME}
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/75 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-slate-600 backdrop-blur">
-                  <Clock3 size={14} />
-                  {localeCopy.updatedLabel}: {localeCopy.updatedValue}
-                </span>
-              </div>
-
-              <div className="mt-7 max-w-4xl">
-                <h1 className="text-4xl font-black leading-[1.02] tracking-tight text-slate-950 md:text-[3.45rem]">
-                  {pageCopy.title}
-                </h1>
-                <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600 md:text-lg">
-                  {pageCopy.description}
-                </p>
-              </div>
-
-              <div className="mt-7 flex flex-wrap gap-3">
-                {pageCopy.badges.map((badge) => (
+      {/* Hero Banner Grid Section */}
+      <section className="relative overflow-hidden">
+        <div className={`mx-auto grid max-w-7xl gap-8 lg:gap-10 ${shellX} ${shellY} lg:grid-cols-[minmax(0,1.4fr)_380px]`}>
+          
+          {/* Main Hero Card */}
+          <div className={`relative overflow-hidden rounded-3xl border ${theme.heroBorder} ${theme.heroSurface} ${cardPadding} transition-all duration-500`}>
+            {/* Mesh accent */}
+            <div className={`pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full blur-3xl ${theme.heroAccent}`} />
+            
+            <div className="relative z-10 flex flex-col h-full justify-between">
+              <div>
+                <div className="flex flex-wrap items-center gap-2.5">
                   <span
-                    key={badge}
-                    className="rounded-full border border-slate-200 bg-white/82 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur"
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] shadow-sm ${theme.badgeSurface}`}
                   >
-                    {badge}
+                    <Sparkles size={12} className="animate-pulse" />
+                    {pageCopy.eyebrow}
                   </span>
-                ))}
+                  <span className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 border border-slate-800 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-sm">
+                    <PageIcon size={12} />
+                    {SITE_NAME}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white/90 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 shadow-sm">
+                    <Clock3 size={12} />
+                    {localeCopy.updatedLabel}: {localeCopy.updatedValue}
+                  </span>
+                </div>
+
+                <div className="mt-8 max-w-4xl">
+                  <h1 className="text-3xl font-black leading-[1.08] tracking-tight text-slate-950 sm:text-4xl md:text-5xl lg:text-[3.25rem]">
+                    {pageCopy.title}
+                  </h1>
+                  <p className="mt-6 max-w-3xl text-base leading-relaxed text-slate-600 md:text-lg">
+                    {pageCopy.description}
+                  </p>
+                </div>
+
+                <div className="mt-8 flex flex-wrap gap-3">
+                  {pageCopy.badges.map((badge) => (
+                    <div
+                      key={badge}
+                      className="group/badge inline-flex items-center gap-2 rounded-xl border border-slate-200/60 bg-white/95 px-4.5 py-2.5 text-xs font-bold text-slate-700 shadow-sm backdrop-blur transition-all duration-300 hover:scale-[1.03] hover:shadow-md hover:border-slate-300"
+                    >
+                      <div className={`h-1.5 w-1.5 rounded-full ${theme.sectionLine}`} />
+                      <span>{badge}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link
-                  href={SITE_PATHS.home}
-                  className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${theme.actionPrimary}`}
-                >
-                  {localeCopy.homeLink}
-                  <ArrowRight size={16} />
-                </Link>
-                <Link
-                  href={localeCopy.browseHref}
-                  className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${theme.actionSecondary}`}
-                >
-                  {localeCopy.browseLink}
-                  <ShoppingBag size={16} />
-                </Link>
-              </div>
+              <div className="mt-10">
+                {/* Stats Container with sleek glass layouts */}
+                <div className="grid gap-4 sm:grid-cols-3 border-t border-slate-200/60 pt-8">
+                  {pageCopy.stats.map((stat, sIdx) => (
+                    <div
+                      key={`${stat.value}-${stat.label}`}
+                      className={`group rounded-2xl ${theme.statSurface} p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]`}
+                    >
+                      <p className="text-3xl font-black tracking-tight text-slate-950 group-hover:scale-105 transition-transform duration-300 origin-left">
+                        {stat.value}
+                      </p>
+                      <p className="mt-2 text-xs font-extrabold uppercase tracking-wider text-slate-700">
+                        {stat.label}
+                      </p>
+                      <p className="mt-1 text-xs leading-relaxed text-slate-500">
+                        {stat.hint}
+                      </p>
+                    </div>
+                  ))}
+                </div>
 
-              <div className="mt-9 grid gap-3 sm:grid-cols-3">
-                {pageCopy.stats.map((stat) => (
-                  <div
-                    key={`${stat.value}-${stat.label}`}
-                    className={`rounded-[26px] border border-white/70 ${theme.statSurface} p-5 shadow-[0_16px_34px_rgba(15,23,42,0.06)] backdrop-blur`}
+                <div className="mt-8 flex flex-wrap gap-4">
+                  <Link
+                    href={SITE_PATHS.home}
+                    className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-all duration-300 hover:-translate-y-0.5 ${theme.actionPrimary}`}
                   >
-                    <p className="text-3xl font-black tracking-tight text-slate-950">
-                      {stat.value}
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-slate-700">
-                      {stat.label}
-                    </p>
-                    <p className="mt-1 text-sm leading-6 text-slate-500">
-                      {stat.hint}
-                    </p>
-                  </div>
-                ))}
+                    {localeCopy.homeLink}
+                    <ArrowRight size={16} />
+                  </Link>
+                  <Link
+                    href={localeCopy.browseHref}
+                    className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-all duration-300 hover:-translate-y-0.5 ${theme.actionSecondary}`}
+                  >
+                    {localeCopy.browseLink}
+                    <ShoppingBag size={16} />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="space-y-5">
-            <div className={`rounded-[32px] border border-slate-200 bg-white ${compactCardPadding} shadow-[0_20px_60px_rgba(15,23,42,0.08)]`}>
-              <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-500">
-                <LayoutPanelLeft size={15} />
+          {/* Sidebar Navigation Column */}
+          <div className="space-y-6">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-100/50 backdrop-blur">
+              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.25em] text-slate-400">
+                <LayoutPanelLeft size={14} className="text-slate-400" />
                 {localeCopy.navLabel}
               </div>
-              <nav className="mt-5 space-y-3">
-                {activeNav.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold transition ${
-                      item.active
-                        ? "bg-slate-950 text-white shadow-[0_16px_36px_rgba(15,23,42,0.18)]"
-                        : "border border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-white"
-                    }`}
-                  >
-                    <span>{item.label}</span>
-                    <ArrowRight size={16} />
-                  </Link>
-                ))}
+              <nav className="mt-6 space-y-2.5">
+                {activeNav.map((item) => {
+                  const NavIcon = pageIcons[item.key];
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`group flex items-center justify-between rounded-xl px-5 py-3.5 text-sm font-semibold transition-all duration-300 ${
+                        item.active
+                          ? "bg-slate-950 text-white shadow-lg shadow-slate-950/20 translate-x-1"
+                          : "border border-slate-200/80 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950 hover:shadow-sm"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <NavIcon size={16} className={item.active ? "text-white" : "text-slate-400 group-hover:text-slate-600"} />
+                        <span>{item.label}</span>
+                      </div>
+                      <ArrowRight size={16} className={`transition-transform duration-300 ${item.active ? "translate-x-0" : "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"}`} />
+                    </Link>
+                  );
+                })}
               </nav>
             </div>
 
-            <div className={`rounded-[32px] border ${theme.summaryBorder} ${theme.summarySurface} ${compactCardPadding}`}>
-              <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-700">
-                <BadgeCheck size={15} />
+            {/* Quick Facts Card */}
+            <div className={`rounded-3xl border ${theme.summaryBorder} ${theme.summarySurface} p-6 shadow-md`}>
+              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.25em] text-slate-700">
+                <BadgeCheck size={14} />
                 {localeCopy.quickFactsTitle}
               </div>
-              <div className="mt-4 space-y-3 text-sm leading-7 text-slate-700">
-                {localeCopy.quickFacts.map((fact) => (
-                  <p key={fact}>{fact}</p>
+              <div className="mt-5 space-y-4 text-[13px] leading-relaxed text-slate-700 font-medium">
+                {localeCopy.quickFacts.map((fact, idx) => (
+                  <div key={fact} className="flex gap-2.5">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-lg bg-slate-950/5 text-[10px] font-black">
+                      {idx + 1}
+                    </span>
+                    <p>{fact}</p>
+                  </div>
                 ))}
               </div>
             </div>
@@ -901,59 +928,57 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
         </div>
       </section>
 
-      <section className={`mx-auto grid max-w-7xl gap-8 lg:gap-10 ${shellX} py-10 sm:py-12 lg:grid-cols-[minmax(0,1fr)_320px] lg:py-16`}>
+      {/* Main Content Layout */}
+      <section className={`mx-auto grid max-w-7xl gap-8 lg:gap-12 ${shellX} py-12 lg:grid-cols-[minmax(0,1fr)_340px] lg:py-20 border-t border-slate-200/50`}>
         <div>
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.22em] text-slate-500">
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
                 {localeCopy.sectionLabel}
               </p>
-              <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-950">
+              <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
                 {pageCopy.summaryTitle}
               </h2>
             </div>
-            <p className="max-w-2xl text-sm leading-7 text-slate-500 md:text-base">
-              {pageCopy.description}
-            </p>
           </div>
 
-          <div className={`rounded-[32px] border border-slate-200 bg-white ${cardPadding} shadow-[0_18px_60px_rgba(15,23,42,0.06)]`}>
-            <div className="grid gap-4 md:grid-cols-3">
-              {pageCopy.summaryPoints.map((point) => (
-                <div
-                  key={point}
-                  className="rounded-[24px] border border-slate-200 bg-slate-50 p-5"
-                >
-                  <BookOpenText size={18} className="text-slate-500" />
-                  <p className="mt-3 text-sm leading-7 text-slate-700">{point}</p>
+          <div className="mb-8 grid gap-4 md:grid-cols-3">
+            {pageCopy.summaryPoints.map((point, index) => (
+              <div
+                key={point}
+                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-100/60"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-950 text-xs font-black text-white">
+                  {index + 1}
                 </div>
-              ))}
-            </div>
+                <p className="mt-4 text-sm font-semibold leading-7 text-slate-600">
+                  {point}
+                </p>
+              </div>
+            ))}
           </div>
 
-          <div className="mt-8 space-y-8">
+          <div className="space-y-5">
             {pageCopy.sections.map((section, index) => (
               <article
                 key={section.title}
-                className="grid gap-5 border-t border-slate-200 pt-8 sm:pt-9 md:grid-cols-[88px_minmax(0,1fr)]"
+                className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm shadow-slate-100/70 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md sm:p-7"
               >
-                <div className="flex items-start gap-3 md:block">
+                <div className="flex items-start gap-4">
                   <div
-                    className={`flex h-14 w-14 items-center justify-center rounded-2xl ${theme.sectionNumber} ${theme.sectionNumberText} text-lg font-black shadow-sm`}
+                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border font-black ${theme.sectionNumber} ${theme.sectionNumberText}`}
                   >
                     {index + 1}
                   </div>
-                  <div className={`mt-3 hidden h-20 w-[2px] ${theme.sectionLine} md:block`} />
-                </div>
-
-                <div>
-                  <h3 className="text-2xl font-black tracking-tight text-slate-950">
-                    {section.title}
-                  </h3>
-                  <div className="mt-4 space-y-4 text-[15px] leading-8 text-slate-600 md:text-base">
-                    {section.paragraphs.map((paragraph) => (
-                      <p key={paragraph}>{paragraph}</p>
-                    ))}
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-lg font-black tracking-tight text-slate-950 sm:text-xl">
+                      {section.title}
+                    </h3>
+                    <div className="mt-4 space-y-4 border-t border-slate-100 pt-4 text-sm leading-7 text-slate-600 sm:text-[15px]">
+                      {section.paragraphs.map((paragraph, pIdx) => (
+                        <p key={pIdx}>{paragraph}</p>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </article>
@@ -961,86 +986,101 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
           </div>
         </div>
 
-        <aside className="space-y-5 lg:sticky lg:top-28 lg:self-start">
-          <div className={`rounded-[32px] border ${theme.summaryBorder} bg-white ${compactCardPadding} shadow-[0_18px_60px_rgba(15,23,42,0.07)]`}>
-            <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-500">
-              <Sparkles size={15} />
-              {localeCopy.summaryLabel}
+        {/* Sidebar Support widgets */}
+        <aside className="space-y-6 lg:sticky lg:top-28 lg:self-start">
+          <div className="rounded-[28px] border border-slate-200 bg-white shadow-sm shadow-slate-100/60 overflow-hidden">
+            <div className="border-b border-slate-800 bg-[linear-gradient(135deg,#020617_0%,#0f172a_62%,#172554_100%)] px-6 py-6 text-white">
+              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.22em] text-emerald-200">
+                <MessageCircle size={14} className="text-emerald-300" />
+                {localeCopy.supportEyebrow}
+              </div>
+              <h3 className="mt-3 text-xl font-black tracking-tight text-white sm:text-2xl">
+                {pageCopy.supportTitle}
+              </h3>
+              <p className="mt-3 max-w-lg text-sm leading-7 text-slate-200">
+                {pageCopy.supportBody}
+              </p>
             </div>
-            <div className="mt-5 space-y-4">
-              {pageCopy.summaryPoints.map((point) => (
-                <div
-                  key={point}
-                  className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-7 text-slate-700"
-                >
-                  {point}
-                </div>
-              ))}
+
+            <div className="p-6">
+              <div className="space-y-3">
+                {pageCopy.supportChecklist.map((item) => (
+                  <div
+                    key={item}
+                    className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm leading-7 text-slate-700 shadow-sm shadow-slate-100/70"
+                  >
+                    <BadgeCheck size={16} className="mt-1 shrink-0 text-emerald-600" />
+                    <span className="font-semibold">{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                {localeCopy.supportLinks.map((item) => {
+                  const isMessenger = item.label.toLowerCase().includes("messenger");
+
+                  return (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`group flex items-center justify-between rounded-2xl border px-4 py-4 text-sm font-bold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md ${
+                        isMessenger
+                          ? "border-sky-200 bg-sky-50/80 text-sky-900 hover:border-sky-300"
+                          : "border-indigo-200 bg-indigo-50/70 text-indigo-900 hover:border-indigo-300"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`flex h-9 w-9 items-center justify-center rounded-xl text-xs font-black ${
+                            isMessenger
+                              ? "bg-white text-sky-700 shadow-sm"
+                              : "bg-white text-indigo-700 shadow-sm"
+                          }`}
+                        >
+                          {item.label.slice(0, 1)}
+                        </span>
+                        <div>
+                          <p>{item.label}</p>
+                          <p className="text-xs font-semibold text-slate-500">
+                            {isMessenger ? "Trò chuyện nhanh với cửa hàng" : "Xem page chính thức"}
+                          </p>
+                        </div>
+                      </div>
+                      <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-0.5" />
+                    </a>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          <div className={`rounded-[32px] border ${theme.supportBorder} ${theme.supportSurface} ${cardPadding} text-white shadow-[0_24px_70px_rgba(15,23,42,0.22)]`}>
-            <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-300">
-              <MessageCircle size={15} />
-              {localeCopy.supportEyebrow}
-            </div>
-            <h3 className="mt-4 text-2xl font-black tracking-tight">
-              {pageCopy.supportTitle}
-            </h3>
-            <p className="mt-3 text-sm leading-7 text-slate-300">
-              {pageCopy.supportBody}
-            </p>
-
-            <div className="mt-5 space-y-3 border-t border-white/10 pt-5">
-              {pageCopy.supportChecklist.map((item) => (
-                <div key={item} className="flex items-start gap-3 text-sm leading-7 text-slate-200">
-                  <BadgeCheck size={18} className="mt-1 shrink-0 text-emerald-300" />
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 space-y-3">
-              {localeCopy.supportLinks.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between rounded-2xl border border-white/12 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/14"
-                >
-                  <span>{item.label}</span>
-                  <ArrowRight size={16} />
-                </a>
-              ))}
-            </div>
-          </div>
-
-          <div className={`rounded-[32px] border border-slate-200 bg-slate-50 ${compactCardPadding}`}>
-            <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-500">
-              <Globe size={15} />
+          <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-6 shadow-sm shadow-slate-100/60">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.22em] text-slate-400">
+              <Globe size={14} />
               {localeCopy.footerNoteTitle}
             </div>
-            <p className="mt-4 text-sm leading-7 text-slate-700">
+            <p className="mt-4 text-sm leading-7 text-slate-600">
               {localeCopy.footerNote}
             </p>
-            <div className="mt-5 flex flex-wrap gap-3">
+            <div className="mt-5 grid grid-cols-2 gap-3">
               <a
                 href={FACEBOOK_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:border-slate-300 hover:bg-slate-100"
+                className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-xs font-black uppercase tracking-[0.18em] text-slate-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-100 hover:shadow-md"
               >
-                <Globe size={15} />
+                <Globe size={14} />
                 Facebook
               </a>
               <a
                 href={MESSENGER_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:border-slate-300 hover:bg-slate-100"
+                className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-xs font-black uppercase tracking-[0.18em] text-slate-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-100 hover:shadow-md"
               >
-                <Mail size={15} />
+                <Mail size={14} />
                 Messenger
               </a>
             </div>
