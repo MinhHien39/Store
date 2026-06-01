@@ -727,10 +727,15 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
     [localeCopy.nav, page]
   );
 
+  const shellX = "px-5 sm:px-6 lg:px-10";
+  const shellY = "py-10 sm:py-12 lg:py-14";
+  const cardPadding = "p-6 sm:p-7 lg:p-8";
+  const compactCardPadding = "p-5 sm:p-6";
+
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#fffdf8_0%,#ffffff_28%,#f8fafc_100%)] text-slate-900">
       <div className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/88 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-4 md:px-10">
+        <div className={`mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 ${shellX} py-4`}>
           <div className="flex items-center gap-3">
             <Link
               href={SITE_PATHS.home}
@@ -777,8 +782,8 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
       </div>
 
       <section className="overflow-hidden border-b border-slate-200/80">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-10 md:px-10 md:py-14 lg:grid-cols-[minmax(0,1.25fr)_360px]">
-          <div className={`relative overflow-hidden rounded-[36px] border ${theme.heroBorder} ${theme.heroSurface} px-6 py-8 shadow-[0_28px_90px_rgba(15,23,42,0.10)] md:px-8 md:py-10`}>
+        <div className={`mx-auto grid max-w-7xl gap-8 lg:gap-10 ${shellX} ${shellY} lg:grid-cols-[minmax(0,1.25fr)_360px]`}>
+          <div className={`relative overflow-hidden rounded-[36px] border ${theme.heroBorder} ${theme.heroSurface} ${cardPadding} shadow-[0_28px_90px_rgba(15,23,42,0.10)]`}>
             <div className={`pointer-events-none absolute inset-y-0 right-0 w-[44%] blur-3xl ${theme.heroAccent}`} />
 
             <div className="relative">
@@ -840,7 +845,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
                 {pageCopy.stats.map((stat) => (
                   <div
                     key={`${stat.value}-${stat.label}`}
-                    className={`rounded-[26px] border border-white/70 ${theme.statSurface} px-4 py-4 shadow-[0_16px_34px_rgba(15,23,42,0.06)] backdrop-blur`}
+                    className={`rounded-[26px] border border-white/70 ${theme.statSurface} p-5 shadow-[0_16px_34px_rgba(15,23,42,0.06)] backdrop-blur`}
                   >
                     <p className="text-3xl font-black tracking-tight text-slate-950">
                       {stat.value}
@@ -858,7 +863,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
           </div>
 
           <div className="space-y-5">
-            <div className="rounded-[32px] border border-slate-200 bg-white px-6 py-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+            <div className={`rounded-[32px] border border-slate-200 bg-white ${compactCardPadding} shadow-[0_20px_60px_rgba(15,23,42,0.08)]`}>
               <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-500">
                 <LayoutPanelLeft size={15} />
                 {localeCopy.navLabel}
@@ -881,7 +886,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
               </nav>
             </div>
 
-            <div className={`rounded-[32px] border ${theme.summaryBorder} ${theme.summarySurface} px-6 py-6`}>
+            <div className={`rounded-[32px] border ${theme.summaryBorder} ${theme.summarySurface} ${compactCardPadding}`}>
               <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-700">
                 <BadgeCheck size={15} />
                 {localeCopy.quickFactsTitle}
@@ -896,9 +901,9 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-10 px-6 py-12 md:px-10 md:py-16 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <section className={`mx-auto grid max-w-7xl gap-8 lg:gap-10 ${shellX} py-10 sm:py-12 lg:grid-cols-[minmax(0,1fr)_320px] lg:py-16`}>
         <div>
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.22em] text-slate-500">
                 {localeCopy.sectionLabel}
@@ -912,12 +917,12 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
             </p>
           </div>
 
-          <div className="rounded-[32px] border border-slate-200 bg-white px-6 py-6 shadow-[0_18px_60px_rgba(15,23,42,0.06)] md:px-8">
+          <div className={`rounded-[32px] border border-slate-200 bg-white ${cardPadding} shadow-[0_18px_60px_rgba(15,23,42,0.06)]`}>
             <div className="grid gap-4 md:grid-cols-3">
               {pageCopy.summaryPoints.map((point) => (
                 <div
                   key={point}
-                  className="rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4"
+                  className="rounded-[24px] border border-slate-200 bg-slate-50 p-5"
                 >
                   <BookOpenText size={18} className="text-slate-500" />
                   <p className="mt-3 text-sm leading-7 text-slate-700">{point}</p>
@@ -930,7 +935,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
             {pageCopy.sections.map((section, index) => (
               <article
                 key={section.title}
-                className="grid gap-5 border-t border-slate-200 pt-8 md:grid-cols-[88px_minmax(0,1fr)]"
+                className="grid gap-5 border-t border-slate-200 pt-8 sm:pt-9 md:grid-cols-[88px_minmax(0,1fr)]"
               >
                 <div className="flex items-start gap-3 md:block">
                   <div
@@ -957,7 +962,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
         </div>
 
         <aside className="space-y-5 lg:sticky lg:top-28 lg:self-start">
-          <div className={`rounded-[32px] border ${theme.summaryBorder} bg-white px-6 py-6 shadow-[0_18px_60px_rgba(15,23,42,0.07)]`}>
+          <div className={`rounded-[32px] border ${theme.summaryBorder} bg-white ${compactCardPadding} shadow-[0_18px_60px_rgba(15,23,42,0.07)]`}>
             <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-500">
               <Sparkles size={15} />
               {localeCopy.summaryLabel}
@@ -966,7 +971,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
               {pageCopy.summaryPoints.map((point) => (
                 <div
                   key={point}
-                  className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-7 text-slate-700"
+                  className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-7 text-slate-700"
                 >
                   {point}
                 </div>
@@ -974,7 +979,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
             </div>
           </div>
 
-          <div className={`rounded-[32px] border ${theme.supportBorder} ${theme.supportSurface} px-6 py-6 text-white shadow-[0_24px_70px_rgba(15,23,42,0.22)]`}>
+          <div className={`rounded-[32px] border ${theme.supportBorder} ${theme.supportSurface} ${cardPadding} text-white shadow-[0_24px_70px_rgba(15,23,42,0.22)]`}>
             <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-300">
               <MessageCircle size={15} />
               {localeCopy.supportEyebrow}
@@ -1011,7 +1016,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
             </div>
           </div>
 
-          <div className="rounded-[32px] border border-slate-200 bg-slate-50 px-6 py-6">
+          <div className={`rounded-[32px] border border-slate-200 bg-slate-50 ${compactCardPadding}`}>
             <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-500">
               <Globe size={15} />
               {localeCopy.footerNoteTitle}
