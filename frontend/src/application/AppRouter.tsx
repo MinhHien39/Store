@@ -7,6 +7,7 @@ import BaseLoading from '@/core/base/BaseLoading';
 import { useAuthContext } from '@/provider/AuthContextProvider';
 import { AppRoutePath } from './AppRoutePath';
 import { UserRole } from '@/data/models/User';
+import FirebaseRouteAnalytics from "@/component/common/FirebaseRouteAnalytics";
 
 export const SuspenseWrapper = ({
     children,
@@ -287,6 +288,7 @@ const AppRoutes: React.FC = () => {
 export const AppRouter: React.FC = () => {
     return (
         <BrowserRouter>
+            <FirebaseRouteAnalytics />
             <AppRoutes />
         </BrowserRouter>
     )

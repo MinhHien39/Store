@@ -11,6 +11,7 @@ import { useAppContext } from "@/provider/AppContextProvider";
 import { UserRole } from "@/data/models/User";
 import User from "@/data/models/User";
 import Token from "@/data/models/Token";
+import { trackLogin } from "@/core/firebaseAnalytics";
 
 interface Config extends BaseConfig {
     email: string;
@@ -42,6 +43,7 @@ export const LoginVM: BaseViewModelFunc<Config, Action> = () => {
         const result = await authRepository.login(config.email, config.password);
         action.setNewConfig({ isSubmitting: false });
         if (result.type === ApiResultType.Success) {
+            void trackLogin("password");
             const user = new User().fromJson({ ...result.data.user, role_id: UserRole.STORE_USER });
             const token = new Token().fromJson(result.data.token);
             appNavigation.afterLoginSuccess(user, token);

@@ -14,6 +14,7 @@ import { useAuthContext } from "@/provider/AuthContextProvider";
 import { useCart } from "@/provider/CartProvider";
 import type { Product } from "@/data/models/Product";
 import type { ProductReview, ProductReviewSummary } from "@/data/models/ProductReview";
+import { trackAddToCart, trackViewItem } from "@/core/firebaseAnalytics";
 
 interface Config extends BaseConfig {
     product: Product | null;
@@ -149,6 +150,7 @@ export const ProductDetailVM: BaseViewModelFunc<Config, Action> = () => {
             if (res.type === ApiResultType.Success) {
                 const product = res.data;
                 trackProductView(product.id);
+                void trackViewItem(product);
                 fetchReviews(product.id);
                 if (product.category_id) {
                     const relRes = await productRepository.getList({
@@ -183,6 +185,7 @@ export const ProductDetailVM: BaseViewModelFunc<Config, Action> = () => {
             image: product.main_image_url,
             category_name: product.category_name,
         });
+        void trackAddToCart(product);
         action.setNewConfig({ addedToCart: true });
         setTimeout(() => action.setNewConfig({ addedToCart: false }), 2000);
     };

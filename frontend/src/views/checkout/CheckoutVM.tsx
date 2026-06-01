@@ -10,6 +10,7 @@ import { ApiResultType } from "@/core/api";
 import { useAppContext } from "@/provider/AppContextProvider";
 import { useCart, CartItem } from "@/provider/CartProvider";
 import { t } from "@/core/localized";
+import { trackPurchase } from "@/core/firebaseAnalytics";
 
 interface CheckoutForm {
     shipping_name: string;
@@ -99,6 +100,12 @@ export const CheckoutVM: BaseViewModelFunc<Config, Action> = () => {
         });
         action.setNewConfig({ isSubmitting: false });
         if (res.type === ApiResultType.Success) {
+            void trackPurchase({
+                transactionId: String(res.data.id),
+                items,
+                total,
+                shipping,
+            });
             globalUI.showSuccessAlert(t.store.checkout.order_success());
             clearCart();
             action.setNewConfig({ orderSuccess: true, orderId: res.data.id });

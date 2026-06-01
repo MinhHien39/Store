@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import StoreLayout from "@/component/layout/StoreLayout";
@@ -9,12 +9,27 @@ import { useLanguage } from "@/provider/LanguageProvider";
 import { formatVnd } from "@/core/utils/currency";
 import { Loader2, ArrowLeft, ShieldCheck, Truck, CheckCircle2 } from "lucide-react";
 import { CheckoutVM } from "./CheckoutVM";
+import { trackBeginCheckout } from "@/core/firebaseAnalytics";
 import "./styles.css";
 
 const CheckoutPage: React.FC = () => {
     useLanguage();
     const { config, action } = CheckoutVM();
     const { form, errors, isSubmitting, orderSuccess, orderId, items, subtotal, shipping, total } = config;
+    const trackedSignature = useRef("");
+
+    useEffect(() => {
+        if (items.length === 0 || orderSuccess) return;
+
+        const signature = JSON.stringify({
+            ids: items.map((item) => `${item.id}:${item.quantity}`),
+            total,
+        });
+        if (trackedSignature.current === signature) return;
+        trackedSignature.current = signature;
+
+        void trackBeginCheckout(items, total);
+    }, [items, orderSuccess, total]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

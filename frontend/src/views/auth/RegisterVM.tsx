@@ -12,6 +12,7 @@ import { t } from "@/core/localized";
 import { UserRole } from "@/data/models/User";
 import User from "@/data/models/User";
 import Token from "@/data/models/Token";
+import { trackSignUp } from "@/core/firebaseAnalytics";
 
 interface Config extends BaseConfig {
     name: string;
@@ -55,6 +56,7 @@ export const RegisterVM: BaseViewModelFunc<Config, Action> = () => {
         });
         action.setNewConfig({ isSubmitting: false });
         if (result.type === ApiResultType.Success) {
+            void trackSignUp("password");
             globalUI.showSuccessAlert(t.store.register.success());
             const user = new User().fromJson({ ...result.data.user, role_id: UserRole.STORE_USER });
             const token = new Token().fromJson(result.data.token);

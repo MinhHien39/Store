@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import StoreLayout from "@/component/layout/StoreLayout";
@@ -24,6 +24,7 @@ import { useLanguage } from "@/provider/LanguageProvider";
 import { ADSENSE_SLOTS } from "@/core/adsense";
 import { formatVnd, getImageUrl, getProductPlaceholderImage } from "@/core/utils/currency";
 import { getCategoryIcon } from "@/core/utils/categoryIcon";
+import { trackViewItemList } from "@/core/firebaseAnalytics";
 import { HomeVM } from "./HomeVM";
 import "./styles.css";
 
@@ -46,6 +47,25 @@ const HomePage: React.FC = () => {
     const latestProducts = products.slice(0, 8);
     const heroProduct = latestProducts[0];
     const heroSideProducts = latestProducts.slice(1, 3);
+    const trackedSignature = useRef("");
+
+    useEffect(() => {
+        if (products.length === 0) return;
+
+        const signature = JSON.stringify({
+            featured: featuredProducts.map((product) => product.id),
+            latest: latestProducts.map((product) => product.id),
+        });
+        if (trackedSignature.current === signature) return;
+        trackedSignature.current = signature;
+
+        if (featuredProducts.length > 0) {
+            void trackViewItemList(featuredProducts, "home_featured", "Home Featured");
+        }
+        if (latestProducts.length > 0) {
+            void trackViewItemList(latestProducts, "home_latest", "Home Latest");
+        }
+    }, [products, featuredProducts, latestProducts]);
 
     return (
         <StoreLayout>
@@ -258,8 +278,16 @@ const HomePage: React.FC = () => {
                             </Link>
                         </div>
                         <div className="home-product-grid">
-                            {featuredProducts.map((product) => (
-                                <CatalogProductCard key={product.id} product={product} />
+                            {featuredProducts.map((product, index) => (
+                                <CatalogProductCard
+                                    key={product.id}
+                                    product={product}
+                                    analytics={{
+                                        itemListId: "home_featured",
+                                        itemListName: "Home Featured",
+                                        index: index + 1,
+                                    }}
+                                />
                             ))}
                         </div>
                     </div>
@@ -279,8 +307,16 @@ const HomePage: React.FC = () => {
                         </Link>
                     </div>
                     <div className="home-product-grid">
-                        {latestProducts.map((product) => (
-                            <CatalogProductCard key={product.id} product={product} />
+                        {latestProducts.map((product, index) => (
+                            <CatalogProductCard
+                                key={product.id}
+                                product={product}
+                                analytics={{
+                                    itemListId: "home_latest",
+                                    itemListName: "Home Latest",
+                                    index: index + 1,
+                                }}
+                            />
                         ))}
                     </div>
                 </div>

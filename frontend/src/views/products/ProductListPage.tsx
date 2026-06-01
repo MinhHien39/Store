@@ -31,6 +31,20 @@ const ProductListPage: React.FC = () => {
     const activeFilterCount = [keyword, categoryId, brandId].filter(Boolean).length;
     const selectedCategory = categories.find((c) => c.id === categoryId);
     const selectedBrand = brands.find((b) => b.id === brandId);
+    const itemListId = keyword
+        ? "search_results"
+        : categoryId
+            ? `category_${categoryId}`
+            : brandId
+                ? `brand_${brandId}`
+                : "all_products";
+    const itemListName = keyword
+        ? `Search: ${keyword}`
+        : selectedCategory?.name
+            ? `Category: ${selectedCategory.name}`
+            : selectedBrand?.name
+                ? `Brand: ${selectedBrand.name}`
+                : "All Products";
 
     const sortOptions = [
         { value: "newest", label: t.store.product.sort_newest() },
@@ -224,8 +238,16 @@ const ProductListPage: React.FC = () => {
                         ) : (
                             <>
                                 <div className="products-grid">
-                                    {products.map((product) => (
-                                        <CatalogProductCard key={product.id} product={product} />
+                                    {products.map((product, index) => (
+                                        <CatalogProductCard
+                                            key={product.id}
+                                            product={product}
+                                            analytics={{
+                                                itemListId,
+                                                itemListName,
+                                                index: index + 1,
+                                            }}
+                                        />
                                     ))}
                                 </div>
                                 {paging && (

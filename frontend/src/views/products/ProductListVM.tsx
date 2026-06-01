@@ -14,6 +14,7 @@ import type { Product } from "@/data/models/Product";
 import type { Category } from "@/data/models/Category";
 import type { Brand } from "@/data/models/Brand";
 import Paging from "@/data/models/Paging";
+import { trackSearchResults, trackViewItemList } from "@/core/firebaseAnalytics";
 
 interface Config extends BaseConfig {
     products: Product[];
@@ -42,6 +43,7 @@ export const ProductListVM: BaseViewModelFunc<Config, Action> = () => {
     const { productRepository, categoryRepository, brandRepository } = useAppContext();
     const [searchParams, setSearchParams] = useSearchParams();
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const trackedListingSignature = useRef<string>("");
 
     const keyword = searchParams.get("keyword") || "";
     const categoryId = searchParams.get("category_id") ? Number(searchParams.get("category_id")) : undefined;
@@ -94,11 +96,48 @@ export const ProductListVM: BaseViewModelFunc<Config, Action> = () => {
                 page,
                 per_page: perPage,
             });
+            const nextProducts =
+                res.type === ApiResultType.Success ? (res.data.items || []) : [];
             action.setNewConfig({
-                products: res.type === ApiResultType.Success ? (res.data.items || []) : [],
+                products: nextProducts,
                 paging: res.type === ApiResultType.Success ? new Paging().fromJson(res.data.paging || {}) : null,
                 isLoading: false,
             });
+
+            if (res.type !== ApiResultType.Success) return;
+
+            const itemListId = keyword
+                ? "search_results"
+                : categoryId
+                    ? `category_${categoryId}`
+                    : brandId
+                        ? `brand_${brandId}`
+                        : "all_products";
+            const itemListName = keyword
+                ? `Search: ${keyword}`
+                : categoryId
+                    ? `Category ${categoryId}`
+                    : brandId
+                        ? `Brand ${brandId}`
+                        : "All Products";
+            const signature = JSON.stringify({
+                itemListId,
+                keyword,
+                categoryId,
+                brandId,
+                sort,
+                page,
+                perPage,
+                ids: nextProducts.map((product) => product.id),
+            });
+
+            if (trackedListingSignature.current === signature) return;
+            trackedListingSignature.current = signature;
+
+            void trackViewItemList(nextProducts, itemListId, itemListName);
+            if (keyword) {
+                void trackSearchResults(keyword, nextProducts.length);
+            }
         };
         loadProducts();
     }, [keyword, categoryId, brandId, sort, page, perPage]);

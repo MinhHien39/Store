@@ -5,13 +5,19 @@ import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import type { Product } from "@/data/models/Product";
 import { formatVnd, getImageUrl, getProductPlaceholderImage, isBlankImageElement } from "@/core/utils/currency";
+import { trackSelectItem } from "@/core/firebaseAnalytics";
 import styles from "./CatalogProductCard.module.css";
 
 interface CatalogProductCardProps {
     product: Product;
+    analytics?: {
+        itemListId?: string;
+        itemListName?: string;
+        index?: number;
+    };
 }
 
-const CatalogProductCard: React.FC<CatalogProductCardProps> = ({ product }) => {
+const CatalogProductCard: React.FC<CatalogProductCardProps> = ({ product, analytics }) => {
     const [imageFailed, setImageFailed] = useState(false);
     const salePrice = product.sale_price;
     const basePrice = product.price;
@@ -26,6 +32,14 @@ const CatalogProductCard: React.FC<CatalogProductCardProps> = ({ product }) => {
         <Link
             to={`${AppRoutePath.PRODUCTS}/${product.id}`}
             className={styles.card}
+            onClick={() => {
+                void trackSelectItem(
+                    product,
+                    analytics?.itemListId,
+                    analytics?.itemListName,
+                    analytics?.index
+                );
+            }}
         >
             <div className={styles.imageFrame}>
                 {hasImage ? (

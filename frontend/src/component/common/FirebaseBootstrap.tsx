@@ -6,6 +6,7 @@ import {
   isFirebaseConfigured,
   shouldLoadFirebaseAnalyticsOnClient,
 } from "@/core/firebase";
+import { trackException } from "@/core/firebaseAnalytics";
 
 export default function FirebaseBootstrap() {
   useEffect(() => {
@@ -31,10 +32,30 @@ export default function FirebaseBootstrap() {
       }
     };
 
-    bootstrapFirebase();
+    const handleError = (event: ErrorEvent) => {
+      const message =
+        event.error instanceof Error
+          ? event.error.message
+          : event.message || "Unknown script error";
+      void trackException(`error:${message}`, false);
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      const reason =
+        event.reason instanceof Error
+          ? event.reason.message
+          : String(event.reason || "Unknown rejection");
+      void trackException(`unhandledrejection:${reason}`, false);
+    };
+
+    void bootstrapFirebase();
+    window.addEventListener("error", handleError);
+    window.addEventListener("unhandledrejection", handleUnhandledRejection);
 
     return () => {
       mounted = false;
+      window.removeEventListener("error", handleError);
+      window.removeEventListener("unhandledrejection", handleUnhandledRejection);
     };
   }, []);
 

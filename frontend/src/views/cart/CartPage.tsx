@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import StoreLayout from "@/component/layout/StoreLayout";
@@ -9,12 +9,27 @@ import { useLanguage } from "@/provider/LanguageProvider";
 import { formatVnd } from "@/core/utils/currency";
 import { ArrowLeft } from "lucide-react";
 import { CartVM } from "./CartVM";
+import { trackViewCart } from "@/core/firebaseAnalytics";
 import "./styles.css";
 
 const CartPage: React.FC = () => {
     useLanguage();
     const { config, action } = CartVM();
     const { items, subtotal, shipping, total } = config;
+    const trackedSignature = useRef("");
+
+    useEffect(() => {
+        if (items.length === 0) return;
+
+        const signature = JSON.stringify({
+            ids: items.map((item) => `${item.id}:${item.quantity}`),
+            total,
+        });
+        if (trackedSignature.current === signature) return;
+        trackedSignature.current = signature;
+
+        void trackViewCart(items, total);
+    }, [items, total]);
 
     return (
         <StoreLayout>
