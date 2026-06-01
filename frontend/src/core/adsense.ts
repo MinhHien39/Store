@@ -3,15 +3,21 @@ const TRUE_VALUES = new Set(["true", "1", "yes", "on"]);
 export const ADSENSE_CLIENT =
   process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT || "";
 
+const RAW_ADSENSE_ENABLED = (process.env.NEXT_PUBLIC_ADSENSE_ENABLED || "")
+  .trim()
+  .toLowerCase();
+
 export const ADSENSE_SLOTS = {
   home: process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_HOME_SLOT || "",
   productList: process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PRODUCT_LIST_SLOT || "",
   productDetail: process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_PRODUCT_DETAIL_SLOT || "",
 };
 
-export const ADSENSE_ENABLED = TRUE_VALUES.has(
-  (process.env.NEXT_PUBLIC_ADSENSE_ENABLED || "").toLowerCase()
-);
+export const hasAdsenseClient = ADSENSE_CLIENT.startsWith("ca-pub-");
+
+export const ADSENSE_ENABLED = RAW_ADSENSE_ENABLED
+  ? TRUE_VALUES.has(RAW_ADSENSE_ENABLED)
+  : hasAdsenseClient;
 
 export const ADSENSE_TEST_MODE = TRUE_VALUES.has(
   (process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_TEST_MODE || "").toLowerCase()
@@ -22,7 +28,7 @@ export const ADSENSE_SESSION_SLOT_LIMIT = Number(
 );
 
 export const isAdsenseConfigured = Boolean(
-  ADSENSE_ENABLED && ADSENSE_CLIENT && ADSENSE_CLIENT.startsWith("ca-pub-")
+  ADSENSE_ENABLED && hasAdsenseClient
 );
 
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1"]);
@@ -52,10 +58,15 @@ export const isBlockedAdsPath = (pathname: string): boolean =>
 export const isLikelyBotUserAgent = (userAgent: string): boolean =>
   BOT_USER_AGENT_PATTERN.test(userAgent);
 
-export const shouldLoadAdsOnClient = (): boolean => {
-  if (!isAdsenseConfigured || typeof window === "undefined") return false;
+export const shouldLoadAdsenseScriptOnClient = (): boolean => {
+  if (!hasAdsenseClient || typeof window === "undefined") return false;
   if (isLocalAdsHost(window.location.hostname)) return false;
   if (isBlockedAdsPath(window.location.pathname)) return false;
+  return true;
+};
+
+export const shouldLoadAdsOnClient = (): boolean => {
+  if (!shouldLoadAdsenseScriptOnClient() || !ADSENSE_ENABLED) return false;
   if (navigator.doNotTrack === "1") return false;
   if (isLikelyBotUserAgent(navigator.userAgent)) return false;
   return true;

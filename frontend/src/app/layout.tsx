@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { Rubik, Nunito_Sans } from "next/font/google";
 import AdSenseScript from "@/component/common/AdSenseScript";
-import { ADSENSE_CLIENT, isAdsenseConfigured } from "@/core/adsense";
+import { ADSENSE_CLIENT, hasAdsenseClient } from "@/core/adsense";
+import {
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_URL,
+} from "@/core/site";
 import "./globals.css";
 
 const rubik = Rubik({
@@ -19,10 +25,27 @@ const nunitoSans = Nunito_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Store",
-  description: "Your one-stop shop for the best products at great prices",
+  metadataBase: new URL(SITE_URL),
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    type: "website",
+    locale: "vi_VN",
+  },
   icons: {
     icon: "/favicon.png",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -34,7 +57,7 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <head>
-        {isAdsenseConfigured && (
+        {hasAdsenseClient && (
           <meta name="google-adsense-account" content={ADSENSE_CLIENT} />
         )}
         <AdSenseScript />

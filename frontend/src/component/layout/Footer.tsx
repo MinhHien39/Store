@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import { MessageCircle } from "lucide-react";
 import { t } from "@/core/localized";
+import { SITE_PATHS } from "@/core/site";
 import { useLanguage } from "@/provider/LanguageProvider";
 
 const FacebookIcon = ({ size = 24 }: { size?: number }) => (
@@ -55,6 +56,7 @@ const Footer: React.FC = () => {
                         <ul className="store-footer__col-list">
                             <li><a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" className="store-footer__col-link">{t.store.footer.facebook_page()}</a></li>
                             <li><a href={MESSENGER_URL} target="_blank" rel="noopener noreferrer" className="store-footer__col-link">{t.store.footer.messenger_contact()}</a></li>
+                            <li><a href={SITE_PATHS.contact} className="store-footer__col-link">Contact</a></li>
                             <li><span className="store-footer__col-text">{t.store.footer.business_hours()}</span></li>
                         </ul>
                     </div>
@@ -63,9 +65,9 @@ const Footer: React.FC = () => {
                     <div>
                         <h4 className="store-footer__col-title">{t.store.footer.company_col()}</h4>
                         <ul className="store-footer__col-list">
-                            <li><span className="store-footer__col-text">{t.store.footer.legal_notice()}</span></li>
-                            <li><span className="store-footer__col-text">{t.store.footer.privacy_policy()}</span></li>
-                            <li><span className="store-footer__col-text">{t.store.footer.terms()}</span></li>
+                            <li><a href={SITE_PATHS.about} className="store-footer__col-link">{t.store.footer.legal_notice()}</a></li>
+                            <li><a href={SITE_PATHS.privacyPolicy} className="store-footer__col-link">{t.store.footer.privacy_policy()}</a></li>
+                            <li><a href={SITE_PATHS.terms} className="store-footer__col-link">{t.store.footer.terms()}</a></li>
                         </ul>
                     </div>
                 </div>
