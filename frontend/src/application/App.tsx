@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import { AppRouter } from "./AppRouter";
 import { AppContextProvider } from '@/provider/AppContextProvider';
@@ -9,8 +9,13 @@ import { AuthContextProvider } from '@/provider/AuthContextProvider';
 import { GlobalUIProvider } from '@/provider/GlobalUIProvider';
 import { LanguageProvider } from '@/provider/LanguageProvider';
 import { CartProvider } from '@/provider/CartProvider';
+import { initVersionCheck } from "@/versionCheck";
 
 const App: React.FC = () => {
+  useEffect(() => {
+    initVersionCheck();
+  }, []);
+
   return (
     <LanguageProvider>
       <AppContextProvider>

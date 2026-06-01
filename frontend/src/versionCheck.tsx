@@ -3,9 +3,7 @@
 // ------------------------------------------------------------
 
 const VERSION_KEY = "app_version";
-// Version file URL, built using a Vite environment variable.
-// Make sure to define VITE_FRONT_END_DIR in your .env file.
-const VERSION_URL = `/${process.env.NEXT_PUBLIC_FRONT_END_DIR}/version.json`;
+const VERSION_URL = "/version.json";
 
 /**
  * Perform a hard reload of the application.
@@ -72,6 +70,7 @@ export async function checkAppVersion(): Promise<void> {
     if (current !== data.version) {
       console.log("New version detected:", current, "→", data.version);
       localStorage.setItem(VERSION_KEY, data.version);
+      await hardReload();
     } else {
       console.log("App is up-to-date:", current);
     }
@@ -113,9 +112,18 @@ export function initVersionCheck(): void {
     if (
       message.includes("ChunkLoadError") ||
       message.includes("Loading chunk") ||
-      message.includes("Failed to fetch dynamically imported module")
+      message.includes("Failed to fetch dynamically imported module") ||
+      message.includes("Failed to find Server Action")
     ) {
       console.warn("Chunk load failed → reloading...");
+      hardReload();
+    }
+  });
+
+  window.addEventListener("error", (event) => {
+    const message = (event as ErrorEvent).message || "";
+    if (message.includes("Failed to find Server Action")) {
+      console.warn("Server action mismatch detected → reloading...");
       hardReload();
     }
   });
