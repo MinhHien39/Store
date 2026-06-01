@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import StoreLayout from "@/component/layout/StoreLayout";
 import { t } from "@/core/localized";
+import { SITE_PATHS } from "@/core/site";
 import { useLanguage } from "@/provider/LanguageProvider";
 import { RegisterVM } from "./RegisterVM";
 import "./styles.css";
@@ -130,9 +131,9 @@ const RegisterPage: React.FC = () => {
                                 <input type="checkbox" className="auth-checkbox" required />
                                 <span className="auth-terms__text">
                                     {t.store.register.terms_agree()}{" "}
-                                    <Link to="#" className="auth-terms__link">{t.store.register.terms_link()}</Link>
+                                    <a href={SITE_PATHS.terms} className="auth-terms__link">{t.store.register.terms_link()}</a>
                                     {" "}&{" "}
-                                    <Link to="#" className="auth-terms__link">{t.store.register.privacy_link()}</Link>
+                                    <a href={SITE_PATHS.privacyPolicy} className="auth-terms__link">{t.store.register.privacy_link()}</a>
                                 </span>
                             </label>
 
