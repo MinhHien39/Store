@@ -5,14 +5,17 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   BadgeCheck,
+  BookOpenText,
+  Clock3,
   Globe,
+  LayoutPanelLeft,
   Mail,
   MessageCircle,
   Scale,
   ShieldCheck,
+  ShoppingBag,
   Sparkles,
   Store,
-  Waypoints,
 } from "lucide-react";
 import { SITE_NAME, SITE_PATHS } from "@/core/site";
 
@@ -28,14 +31,24 @@ interface Section {
   paragraphs: string[];
 }
 
+interface Stat {
+  value: string;
+  label: string;
+  hint: string;
+}
+
 interface PageCopy {
   eyebrow: string;
   title: string;
   description: string;
   badges: string[];
+  summaryTitle: string;
+  summaryPoints: string[];
+  stats: Stat[];
   sections: Section[];
   supportTitle: string;
   supportBody: string;
+  supportChecklist: string[];
 }
 
 interface LocaleCopy {
@@ -50,31 +63,59 @@ interface LocaleCopy {
   homeLink: string;
   browseLink: string;
   browseHref: string;
+  footerNoteTitle: string;
   footerNote: string;
+  updatedLabel: string;
+  updatedValue: string;
+  sectionLabel: string;
+  summaryLabel: string;
   pages: Record<PolicyPageKey, PageCopy>;
+}
+
+interface Theme {
+  heroSurface: string;
+  heroAccent: string;
+  heroBorder: string;
+  badgeSurface: string;
+  badgeText: string;
+  statSurface: string;
+  summarySurface: string;
+  summaryBorder: string;
+  supportSurface: string;
+  supportBorder: string;
+  sectionLine: string;
+  sectionNumber: string;
+  sectionNumberText: string;
+  actionPrimary: string;
+  actionSecondary: string;
 }
 
 const copy: Record<SupportedLanguage, LocaleCopy> = {
   vi: {
     brandTag: "Thông tin minh bạch cho khách hàng",
-    navLabel: "Điều hướng thông tin",
+    navLabel: "Bộ trang thông tin",
     languageLabel: "Ngôn ngữ",
     homeLink: "Về trang chủ",
     browseLink: "Xem sản phẩm",
     browseHref: SITE_PATHS.products,
-    supportEyebrow: "Hỗ trợ",
+    supportEyebrow: "Hỗ trợ trực tiếp",
     supportLinks: [
       { label: "Messenger", href: MESSENGER_URL },
       { label: "Facebook", href: FACEBOOK_URL },
     ],
-    quickFactsTitle: "Điểm nổi bật",
+    quickFactsTitle: "Vì sao các trang này đáng tin hơn",
     quickFacts: [
-      "Các trang này bám theo luồng đăng ký, đăng nhập, đặt hàng và theo dõi sản phẩm đang có trong hệ thống.",
-      "Thông tin được viết rõ ràng để người dùng dễ hiểu và để bộ phận kiểm duyệt có thể đọc nhanh.",
-      "Liên kết điều hướng, hỗ trợ và chính sách đều là URL thật, không dùng liên kết giả hoặc placeholder.",
+      "Nội dung được viết lại dựa trên luồng thật đang có trong source và storefront hiện tại.",
+      "Toàn bộ liên kết điều hướng, hỗ trợ và trang chính sách đều là route thật, không dùng placeholder.",
+      "Bản tiếng Việt có dấu đầy đủ và bản tiếng Anh đi cùng cùng một cấu trúc để người dùng lẫn reviewer đọc nhanh hơn.",
     ],
+    footerNoteTitle: "Thông tin cần thấy rõ",
     footerNote:
-      "Nếu bạn cần xác nhận thêm về đơn hàng, quyền riêng tư hoặc cách liên hệ hỗ trợ, TMH Store sẽ ưu tiên phản hồi qua các kênh chính thức trên website.",
+      "TMH Store ưu tiên trải nghiệm minh bạch: người dùng nhìn thấy kênh liên hệ thật, hiểu website thu thập gì, và biết điều gì xảy ra khi gửi đơn hoặc cần hỗ trợ.",
+    updatedLabel: "Cập nhật",
+    updatedValue: "01/06/2026",
+    sectionLabel: "Nội dung chi tiết",
+    summaryLabel: "Tóm tắt nhanh",
     nav: [
       { key: "about", label: "Giới thiệu", href: SITE_PATHS.about },
       { key: "contact", label: "Liên hệ", href: SITE_PATHS.contact },
@@ -84,76 +125,119 @@ const copy: Record<SupportedLanguage, LocaleCopy> = {
     pages: {
       about: {
         eyebrow: "Giới thiệu",
-        title: "TMH Store tập trung vào trải nghiệm mua sắm rõ ràng, nhanh và đáng tin.",
+        title: "TMH Store được trình bày như một storefront gọn, rõ và đủ đáng tin để khách hàng biết mình đang mua ở đâu.",
         description:
-          "Trang này tóm tắt cách TMH Store vận hành website, cách chúng tôi trình bày danh mục sản phẩm và định hướng hỗ trợ khách hàng trước và sau mua.",
-        badges: ["Danh mục rõ ràng", "Thông tin minh bạch", "Hỗ trợ qua Messenger"],
+          "Trang này cho thấy website vận hành ra sao, vì sao cách trình bày sản phẩm được tối ưu cho việc đọc nhanh, và TMH Store hỗ trợ người dùng bằng những kênh nào trước và sau khi mua.",
+        badges: ["Danh mục rõ ràng", "Route thật", "Hỗ trợ qua Messenger"],
+        summaryTitle: "TMH Store ưu tiên điều gì",
+        summaryPoints: [
+          "Giữ bố cục đơn giản để người dùng xem sản phẩm mà không phải đoán bước tiếp theo.",
+          "Đưa thông tin giá, mô tả và kênh liên hệ vào những vị trí dễ thấy trên cả mobile lẫn desktop.",
+          "Dùng các trang chính sách như một phần của trải nghiệm thật, không phải lớp nội dung đối phó.",
+        ],
+        stats: [
+          { value: "3", label: "nhóm nội dung chính", hint: "giới thiệu, hỗ trợ, chính sách" },
+          { value: "2", label: "kênh hỗ trợ thật", hint: "Facebook và Messenger" },
+          { value: "100%", label: "route công khai", hint: "mọi link đều điều hướng được" },
+        ],
         sections: [
           {
             title: "TMH Store là gì",
             paragraphs: [
-              "TMH Store được xây dựng như một cửa hàng trực tuyến giúp người dùng xem sản phẩm, so sánh thông tin và gửi yêu cầu mua hàng một cách gọn gàng, dễ hiểu.",
-              "Mục tiêu của chúng tôi là giảm cảm giác rối khi mua sắm online bằng cách giữ bố cục rõ ràng, hiển thị giá dễ quét và đưa kênh liên hệ lên những vị trí dễ thấy.",
+              "TMH Store được xây dựng như một cửa hàng trực tuyến giúp người dùng xem sản phẩm, so sánh thông tin và gửi yêu cầu mua hàng theo cách gọn gàng, dễ hiểu.",
+              "Thay vì làm người dùng lạc giữa quá nhiều lớp nội dung, website ưu tiên điều hướng rõ, nhịp đọc dễ theo và vị trí liên hệ luôn hiện diện.",
             ],
           },
           {
             title: "Những gì website hiện hỗ trợ",
             paragraphs: [
               "Người dùng có thể đăng ký tài khoản, đăng nhập, xem lịch sử đơn hàng, thêm sản phẩm vào giỏ hàng và gửi thông tin giao hàng để tạo đơn.",
-              "Website cũng ghi nhận lượt xem sản phẩm và dữ liệu truy cập cơ bản để cải thiện cách tổ chức sản phẩm, điều hướng và hiệu quả vận hành.",
+              "Website cũng ghi nhận lượt xem sản phẩm và dữ liệu truy cập cơ bản để cải thiện cách sắp xếp sản phẩm, chất lượng điều hướng và hiệu quả vận hành.",
             ],
           },
           {
-            title: "Cách chúng tôi hỗ trợ khách hàng",
+            title: "Cách TMH Store hỗ trợ khách hàng",
             paragraphs: [
-              "Kênh hỗ trợ hiện tại của TMH Store là Facebook và Messenger. Những kênh này được dùng để tư vấn trước khi mua, xác nhận đơn và xử lý các câu hỏi sau bán hàng.",
-              "Khi cần làm rõ thông tin về sản phẩm, tồn kho hoặc thời gian giao hàng, chúng tôi sẽ liên hệ lại bằng đúng thông tin mà khách hàng đã cung cấp trong quá trình đặt hàng.",
+              "Kênh hỗ trợ hiện tại của TMH Store là Facebook và Messenger. Đây là nơi người dùng có thể hỏi trước khi mua, xác nhận đơn hoặc xử lý các vướng mắc sau khi đặt hàng.",
+              "Khi cần làm rõ sản phẩm, tồn kho hay thời gian giao nhận, cửa hàng sẽ phản hồi qua đúng những kênh liên hệ đã công bố trên website.",
             ],
           },
         ],
-        supportTitle: "Cần trao đổi thêm về sản phẩm hoặc đơn hàng?",
+        supportTitle: "Muốn nói chuyện trực tiếp với cửa hàng?",
         supportBody:
-          "Bạn có thể chuyển thẳng sang trang Liên hệ hoặc nhắn qua Messenger để được hỗ trợ nhanh hơn.",
+          "Bạn có thể chuyển sang Liên hệ hoặc mở Messenger ngay để nhận hỗ trợ nhanh hơn cho sản phẩm, đơn hàng và thông tin giao nhận.",
+        supportChecklist: [
+          "Tư vấn trước khi mua",
+          "Xác nhận đơn và thông tin nhận hàng",
+          "Hỗ trợ sau bán hàng qua kênh chính thức",
+        ],
       },
       contact: {
         eyebrow: "Liên hệ",
-        title: "Bạn có thể liên hệ TMH Store bất cứ khi nào cần tư vấn, xác nhận đơn hoặc hỗ trợ sau mua.",
+        title: "Người dùng có thể chạm tới TMH Store nhanh, rõ và không phải đi qua những đường dẫn mơ hồ.",
         description:
-          "Trang này mô tả các kênh liên hệ đang được công bố trên website và cách chúng tôi sử dụng chúng để hỗ trợ khách hàng.",
+          "Trang này gom lại các kênh liên hệ đang được công bố trên website và giải thích cách chúng được dùng để hỗ trợ tư vấn, xác nhận đơn và theo dõi xử lý sau khi mua.",
         badges: ["Messenger trực tiếp", "Facebook page", "Hỗ trợ trước và sau mua"],
+        summaryTitle: "Điểm quan trọng của trang liên hệ",
+        summaryPoints: [
+          "Kênh hỗ trợ được hiển thị nhất quán giữa header, footer và các trang công khai.",
+          "Không có nút liên hệ giả hoặc điều hướng đánh lạc hướng người dùng.",
+          "Mọi liên kết đều trỏ tới đúng kênh mà storefront thực sự đang dùng.",
+        ],
+        stats: [
+          { value: "2", label: "kênh liên hệ công khai", hint: "Facebook và Messenger" },
+          { value: "24/7", label: "truy cập kênh hỗ trợ", hint: "luôn mở được từ website" },
+          { value: "1", label: "nguồn hỗ trợ thống nhất", hint: "dùng cùng bộ link trên site" },
+        ],
         sections: [
           {
             title: "Kênh liên hệ chính",
             paragraphs: [
-              "Hiện tại TMH Store hỗ trợ khách hàng chủ yếu qua Facebook Page và Messenger. Đây là hai kênh được đặt ở header, footer và tài khoản người dùng để khách có thể truy cập nhanh trên cả điện thoại lẫn máy tính.",
-              "Các kênh này được dùng để tư vấn sản phẩm, xác nhận thông tin giao hàng, hỗ trợ thay đổi đơn và tiếp nhận phản hồi sau khi nhận hàng.",
+              "Hiện tại TMH Store hỗ trợ khách hàng chủ yếu qua Facebook Page và Messenger. Hai kênh này được đặt ở những vị trí dễ thấy để người dùng truy cập nhanh trên cả điện thoại lẫn máy tính.",
+              "Đây là các kênh dành cho tư vấn sản phẩm, xác nhận thông tin giao hàng, hỗ trợ thay đổi đơn và tiếp nhận phản hồi sau mua.",
             ],
           },
           {
             title: "Khi nào nên liên hệ",
             paragraphs: [
-              "Bạn nên liên hệ khi cần kiểm tra thêm về thông số sản phẩm, thương hiệu, giá bán, khả năng còn hàng hoặc muốn xác nhận lại thông tin trước khi gửi đơn.",
-              "Sau khi đặt hàng, khách hàng cũng có thể dùng các kênh này để theo dõi tiến độ xử lý, bổ sung ghi chú hoặc xử lý các vấn đề phát sinh liên quan đến đơn.",
+              "Bạn nên liên hệ khi cần kiểm tra thông số sản phẩm, giá bán, tình trạng còn hàng hoặc muốn xác nhận lại thông tin trước khi gửi đơn.",
+              "Sau khi đặt hàng, khách hàng cũng có thể dùng các kênh này để theo dõi tiến độ xử lý, bổ sung ghi chú hoặc xử lý các tình huống phát sinh liên quan đến đơn.",
             ],
           },
           {
-            title: "Cam kết phản hồi",
+            title: "Cam kết về điều hướng hỗ trợ",
             paragraphs: [
-              "TMH Store cố gắng giữ thông tin liên hệ dễ thấy, không gây hiểu nhầm và không dẫn người dùng đến các trang điều hướng giả.",
-              "Nếu website bổ sung email hỗ trợ hoặc hotline trong tương lai, thông tin sẽ được cập nhật tại chính trang này và trong footer của website.",
+              "TMH Store cố gắng giữ đường dẫn liên hệ rõ ràng, dễ nhận biết và không dẫn người dùng tới các đích giả hoặc nội dung gây hiểu nhầm.",
+              "Nếu website bổ sung email hỗ trợ hoặc hotline trong tương lai, thông tin sẽ được cập nhật ngay trên trang này và khu vực chân trang.",
             ],
           },
         ],
-        supportTitle: "Muốn chuyển sang kênh hỗ trợ ngay?",
+        supportTitle: "Mở kênh hỗ trợ ngay",
         supportBody:
-          "Các liên kết bên cạnh sẽ mở trực tiếp Facebook hoặc Messenger, đúng với những gì đang hiển thị trên storefront hiện tại.",
+          "Các liên kết hỗ trợ bên phải dùng đúng URL đang được công bố trên storefront, nên người dùng không bị tách sang một hệ thống khác.",
+        supportChecklist: [
+          "Hỏi thông tin sản phẩm trước khi mua",
+          "Xác nhận lại địa chỉ, số điện thoại, ghi chú",
+          "Theo dõi hoặc xử lý vấn đề sau khi đặt hàng",
+        ],
       },
       privacyPolicy: {
         eyebrow: "Chính sách bảo mật",
-        title: "TMH Store thu thập dữ liệu ở mức cần thiết để vận hành tài khoản, xử lý đơn hàng và cải thiện trải nghiệm sử dụng.",
+        title: "TMH Store chỉ thu thập dữ liệu ở mức cần thiết để vận hành tài khoản, xử lý đơn hàng và cải thiện trải nghiệm xem sản phẩm.",
         description:
-          "Nội dung dưới đây bám theo đúng luồng dữ liệu hiện có trong source: đăng ký tài khoản, đăng nhập, đặt hàng, xem sản phẩm và liên hệ hỗ trợ.",
+          "Nội dung dưới đây bám theo luồng dữ liệu thực tế hiện có trong source: đăng ký tài khoản, đăng nhập, đặt hàng, xem sản phẩm và liên hệ hỗ trợ qua các kênh công khai.",
         badges: ["Tài khoản", "Đơn hàng", "Dữ liệu truy cập cơ bản"],
+        summaryTitle: "Tóm tắt nhanh về dữ liệu",
+        summaryPoints: [
+          "Thông tin người dùng chủ yếu đến từ form đăng ký, đăng nhập và checkout.",
+          "Dữ liệu kỹ thuật được dùng để hiểu cách website được truy cập và cải thiện hiệu năng hiển thị.",
+          "TMH Store không bán dữ liệu cá nhân và chỉ dùng trong phạm vi vận hành, hỗ trợ hoặc nghĩa vụ pháp lý hợp lệ.",
+        ],
+        stats: [
+          { value: "2", label: "nguồn dữ liệu chính", hint: "tài khoản và checkout" },
+          { value: "1", label: "mục tiêu cốt lõi", hint: "vận hành cửa hàng an toàn hơn" },
+          { value: "0", label: "mua bán dữ liệu", hint: "không bán thông tin cá nhân" },
+        ],
         sections: [
           {
             title: "Thông tin người dùng có thể cung cấp",
@@ -166,20 +250,20 @@ const copy: Record<SupportedLanguage, LocaleCopy> = {
             title: "Dữ liệu kỹ thuật và hành vi sử dụng",
             paragraphs: [
               "Hệ thống có thể ghi nhận một số dữ liệu kỹ thuật như địa chỉ IP, user agent, referrer, thiết bị, múi giờ, kích thước màn hình, đường dẫn đã xem và thời điểm xem sản phẩm.",
-              "Những dữ liệu này giúp chúng tôi hiểu người dùng tương tác với trang sản phẩm ra sao, từ đó cải thiện bố cục, danh mục, hiệu năng và chất lượng hỗ trợ.",
+              "Những dữ liệu này giúp TMH Store hiểu người dùng tương tác với site ra sao, từ đó cải thiện điều hướng, hiệu năng và chất lượng hỗ trợ.",
             ],
           },
           {
             title: "Mục đích sử dụng dữ liệu",
             paragraphs: [
-              "Thông tin được sử dụng để tạo và duy trì tài khoản người dùng, xác thực đăng nhập, lưu phiên truy cập, xử lý đơn hàng, xác nhận giao hàng và phản hồi yêu cầu hỗ trợ.",
-              "TMH Store cũng có thể sử dụng dữ liệu tổng hợp để đánh giá mức độ quan tâm tới sản phẩm, cách điều hướng trên site và hiệu quả trình bày nội dung.",
+              "Thông tin được dùng để tạo và duy trì tài khoản, xác thực đăng nhập, lưu phiên truy cập, xử lý đơn hàng, xác nhận giao hàng và phản hồi yêu cầu hỗ trợ.",
+              "TMH Store cũng có thể dùng dữ liệu tổng hợp để đánh giá mức độ quan tâm tới sản phẩm, cách người dùng di chuyển trên site và hiệu quả trình bày nội dung.",
             ],
           },
           {
             title: "Cookie, phiên đăng nhập và bảo mật",
             paragraphs: [
-              "Website dùng cookie và token phiên để giữ trạng thái đăng nhập, làm mới phiên và hỗ trợ các khu vực yêu cầu xác thực như tài khoản và đơn hàng.",
+              "Website sử dụng cookie và token phiên để giữ trạng thái đăng nhập, làm mới phiên và hỗ trợ các khu vực yêu cầu xác thực như tài khoản và đơn hàng.",
               "Chúng tôi giới hạn quyền truy cập nội bộ đối với dữ liệu tài khoản và đơn hàng, đồng thời áp dụng các biện pháp kỹ thuật hợp lý để giảm rủi ro truy cập trái phép hoặc thất thoát dữ liệu.",
             ],
           },
@@ -191,16 +275,32 @@ const copy: Record<SupportedLanguage, LocaleCopy> = {
             ],
           },
         ],
-        supportTitle: "Muốn yêu cầu điều chỉnh thông tin?",
+        supportTitle: "Cần điều chỉnh hoặc xác minh thông tin?",
         supportBody:
-          "Bạn có thể liên hệ qua Messenger hoặc Facebook để xác nhận thông tin tài khoản, đơn hàng hoặc yêu cầu hỗ trợ liên quan đến dữ liệu đã cung cấp.",
+          "Messenger và Facebook vẫn là hai đường nhanh nhất để xác nhận thông tin tài khoản, đơn hàng hoặc yêu cầu hỗ trợ liên quan đến dữ liệu đã cung cấp.",
+        supportChecklist: [
+          "Yêu cầu cập nhật thông tin đơn hàng",
+          "Xác nhận lại dữ liệu đã gửi qua checkout",
+          "Liên hệ qua kênh chính thức để được hỗ trợ",
+        ],
       },
       terms: {
         eyebrow: "Điều khoản sử dụng",
-        title: "Các điều khoản này mô tả cách người dùng sử dụng TMH Store, gửi yêu cầu mua hàng và tương tác với nội dung trên website.",
+        title: "Các điều khoản này mô tả rõ cách người dùng sử dụng TMH Store, gửi yêu cầu mua hàng và tương tác với nội dung trên website.",
         description:
-          "Nội dung được viết theo đúng tính năng đang có: tài khoản người dùng, thông tin sản phẩm, giỏ hàng, checkout, xác nhận đơn và hỗ trợ qua nền tảng bên thứ ba.",
+          "Nội dung được viết theo đúng những gì storefront hiện có: tài khoản người dùng, thông tin sản phẩm, giỏ hàng, checkout, xác nhận đơn và hỗ trợ qua nền tảng bên thứ ba.",
         badges: ["Quy tắc sử dụng", "Thông tin sản phẩm", "Quy trình đơn hàng"],
+        summaryTitle: "Điều người dùng cần nắm nhanh",
+        summaryPoints: [
+          "Việc dùng website đồng nghĩa với việc chấp nhận các điều khoản và chính sách liên quan.",
+          "Thông tin sản phẩm và tồn kho luôn được cố gắng cập nhật, nhưng có thể cần xác nhận lại trước khi xử lý đơn.",
+          "TMH Store có quyền từ chối các hành vi giả mạo, truy cập trái phép hoặc gây ảnh hưởng đến hoạt động bình thường của website.",
+        ],
+        stats: [
+          { value: "5", label: "nhóm nội dung cốt lõi", hint: "tài khoản, sản phẩm, đơn hàng, điều hướng, nền tảng ngoài" },
+          { value: "1", label: "quy trình xác nhận đơn", hint: "có thể cần bước đối chiếu thêm" },
+          { value: "0", label: "chấp nhận hành vi giả mạo", hint: "không cho phép" },
+        ],
         sections: [
           {
             title: "Phạm vi áp dụng",
@@ -238,9 +338,14 @@ const copy: Record<SupportedLanguage, LocaleCopy> = {
             ],
           },
         ],
-        supportTitle: "Cần xác nhận thêm trước khi gửi đơn?",
+        supportTitle: "Muốn xác nhận rõ trước khi gửi đơn?",
         supportBody:
-          "Bạn có thể xem thêm trang Liên hệ hoặc nhắn trực tiếp cho cửa hàng để làm rõ sản phẩm, giá và tình trạng đơn hàng.",
+          "Bạn có thể dùng trang Liên hệ hoặc nhắn thẳng cho cửa hàng để làm rõ sản phẩm, giá, tình trạng còn hàng và thông tin giao nhận trước khi checkout.",
+        supportChecklist: [
+          "Kiểm tra lại thông tin sản phẩm và giá",
+          "Hỏi tình trạng tồn kho trước khi đặt",
+          "Làm rõ quy trình xác nhận đơn nếu cần",
+        ],
       },
     },
   },
@@ -251,19 +356,24 @@ const copy: Record<SupportedLanguage, LocaleCopy> = {
     homeLink: "Back to home",
     browseLink: "Browse products",
     browseHref: SITE_PATHS.products,
-    supportEyebrow: "Support",
+    supportEyebrow: "Direct support",
     supportLinks: [
       { label: "Messenger", href: MESSENGER_URL },
       { label: "Facebook", href: FACEBOOK_URL },
     ],
-    quickFactsTitle: "Highlights",
+    quickFactsTitle: "Why these pages feel more credible",
     quickFacts: [
-      "These pages are aligned with the actual account, login, checkout and product-view flows already implemented in the app.",
-      "The copy is written for both visitors and reviewers, with clear sections and direct language instead of placeholder policy text.",
-      "Navigation, support links and policy URLs are all real routes so visitors are never pushed into misleading dead ends.",
+      "The copy is based on real storefront and source-code flows rather than generic placeholder policy text.",
+      "Navigation, support actions and policy links all point to real destinations that are already live on the site.",
+      "Vietnamese and English share the same structure so both visitors and reviewers can scan the information quickly.",
     ],
+    footerNoteTitle: "What should be obvious",
     footerNote:
-      "If you need additional clarification about orders, privacy or support channels, TMH Store prioritises responses through the official contact paths shown on the website.",
+      "TMH Store aims to make support paths, privacy expectations and order handling clear enough that customers never need to guess what happens next.",
+    updatedLabel: "Updated",
+    updatedValue: "June 1, 2026",
+    sectionLabel: "Detailed sections",
+    summaryLabel: "Quick summary",
     nav: [
       { key: "about", label: "About", href: SITE_PATHS.about },
       { key: "contact", label: "Contact", href: SITE_PATHS.contact },
@@ -273,76 +383,119 @@ const copy: Record<SupportedLanguage, LocaleCopy> = {
     pages: {
       about: {
         eyebrow: "About",
-        title: "TMH Store is built around a shopping experience that feels clear, fast and trustworthy.",
+        title: "TMH Store is presented as a storefront that feels clean, understandable and trustworthy from the first screen.",
         description:
-          "This page explains how TMH Store operates, how products are presented on the site and how support is handled before and after purchase.",
-        badges: ["Clear catalogue", "Transparent information", "Messenger support"],
+          "This page explains how the website works, why products are organised for quick scanning and how TMH Store supports people before and after they place an order.",
+        badges: ["Clear catalogue", "Real routes", "Messenger support"],
+        summaryTitle: "What TMH Store prioritises",
+        summaryPoints: [
+          "Simple navigation so visitors can browse products without guessing the next step.",
+          "Visible pricing, product context and support paths across both desktop and mobile views.",
+          "Policy pages that behave like part of the real experience, not decorative compliance filler.",
+        ],
+        stats: [
+          { value: "3", label: "core content layers", hint: "about, support and policies" },
+          { value: "2", label: "live support channels", hint: "Facebook and Messenger" },
+          { value: "100%", label: "public routes", hint: "every key link is usable" },
+        ],
         sections: [
           {
             title: "What TMH Store is",
             paragraphs: [
-              "TMH Store is designed as an online storefront where people can browse products, compare information and submit purchase requests without unnecessary friction.",
-              "The goal is to reduce confusion during online shopping by keeping layouts readable, pricing easy to scan and support channels visible throughout the site.",
+              "TMH Store is designed as an online storefront where visitors can browse products, compare information and submit purchase requests without unnecessary friction.",
+              "Instead of burying people under too many layers, the site focuses on readable layouts, straightforward paths and support options that remain visible.",
             ],
           },
           {
             title: "What the website currently supports",
             paragraphs: [
               "Visitors can create an account, sign in, review order history, add items to the cart and submit shipping details through the checkout flow.",
-              "The platform also records product views and basic technical signals so we can improve organisation, navigation and the usefulness of product pages.",
+              "The platform also records product views and basic traffic data so product organisation, navigation quality and storefront usefulness can keep improving.",
             ],
           },
           {
-            title: "How support works",
+            title: "How TMH Store supports customers",
             paragraphs: [
-              "TMH Store currently supports customers through Facebook and Messenger. These channels are used for product questions, order confirmation and post-purchase assistance.",
-              "When additional clarification is needed around stock, delivery timing or product details, we may reply using the contact information submitted during checkout.",
+              "TMH Store currently supports customers through Facebook and Messenger. These are the channels used for product questions, order confirmation and post-purchase support.",
+              "When extra clarification is needed around stock, delivery timing or product details, the store responds through the same contact paths already shown on the website.",
             ],
           },
         ],
-        supportTitle: "Need help with a product or an order?",
+        supportTitle: "Need to speak with the store directly?",
         supportBody:
-          "You can jump to the Contact page or open Messenger directly for faster assistance.",
+          "You can jump to Contact or open Messenger right away for faster help with products, orders and delivery details.",
+        supportChecklist: [
+          "Pre-purchase product guidance",
+          "Order confirmation and delivery details",
+          "Post-sale support through official channels",
+        ],
       },
       contact: {
         eyebrow: "Contact",
-        title: "You can contact TMH Store whenever you need product advice, order confirmation or post-purchase support.",
+        title: "Visitors can reach TMH Store quickly and clearly, without being pushed through vague or misleading paths.",
         description:
-          "This page outlines the support channels currently published on the website and how they are used to assist customers.",
+          "This page gathers the support channels currently published on the website and explains how they are used for product advice, order confirmation and post-purchase follow-up.",
         badges: ["Direct Messenger", "Facebook page", "Pre and post-sale support"],
+        summaryTitle: "What matters on this contact page",
+        summaryPoints: [
+          "Support channels are displayed consistently across the header, footer and public pages.",
+          "There are no fake support buttons or dead-end contact routes.",
+          "Every contact action points to the same channels the storefront is already using.",
+        ],
+        stats: [
+          { value: "2", label: "public contact channels", hint: "Facebook and Messenger" },
+          { value: "24/7", label: "channel access", hint: "available from the website at any time" },
+          { value: "1", label: "consistent source of support", hint: "the same links across the site" },
+        ],
         sections: [
           {
             title: "Primary contact channels",
             paragraphs: [
-              "TMH Store currently supports customers mainly through Facebook Page and Messenger. These channels appear in the header, footer and customer account area so they stay easy to reach on both desktop and mobile.",
-              "They are used for product advice, shipping confirmation, order adjustments and follow-up support after purchase.",
+              "TMH Store currently supports customers mainly through Facebook Page and Messenger. These channels are placed where people can reach them quickly on both mobile and desktop.",
+              "They are used for product advice, shipping confirmation, order adjustments and post-purchase follow-up.",
             ],
           },
           {
             title: "When to reach out",
             paragraphs: [
-              "You should contact us if you need extra details about a product, brand, pricing, stock availability or if you want to confirm information before placing an order.",
-              "After an order is submitted, these channels can also be used to ask about processing status, add notes or resolve delivery-related issues.",
+              "You should contact the store if you need more detail about a product, pricing, stock availability or if you want to confirm information before placing an order.",
+              "After an order is submitted, the same channels can be used to ask about processing progress, add notes or resolve delivery-related issues.",
             ],
           },
           {
-            title: "Response commitment",
+            title: "Support navigation commitment",
             paragraphs: [
-              "TMH Store aims to keep support paths visible and easy to understand, without misleading navigation or fake destination pages.",
-              "If additional channels such as email support or a hotline are introduced later, this page and the footer will be updated accordingly.",
+              "TMH Store aims to keep contact paths clear, visible and free from misleading destinations.",
+              "If new channels such as support email or a hotline are added later, this page and the footer will be updated to reflect them.",
             ],
           },
         ],
-        supportTitle: "Want to open a support channel now?",
+        supportTitle: "Open a support channel now",
         supportBody:
-          "The links in the sidebar open the same Facebook and Messenger paths already exposed across the storefront.",
+          "The support links in the side column use the exact public URLs already exposed across the storefront, so visitors are not pushed into a disconnected workflow.",
+        supportChecklist: [
+          "Ask product questions before ordering",
+          "Confirm address, phone number or notes",
+          "Follow up on issues after an order is placed",
+        ],
       },
       privacyPolicy: {
         eyebrow: "Privacy Policy",
-        title: "TMH Store collects only the data needed to run accounts, process orders and improve how the website works.",
+        title: "TMH Store only collects the information needed to run accounts, process orders and improve how product pages and navigation perform.",
         description:
-          "The sections below are based on the real flows present in the source code: account registration, sign-in, checkout, product views and support contact.",
+          "The sections below reflect the real data paths present in the codebase today: account registration, sign-in, checkout, product views and support contact.",
         badges: ["Accounts", "Orders", "Basic traffic data"],
+        summaryTitle: "Privacy at a glance",
+        summaryPoints: [
+          "Most user data comes directly from registration, sign-in and checkout forms.",
+          "Technical data is used to understand access patterns and improve storefront performance and usability.",
+          "TMH Store does not sell personal data and uses information only for operations, support and valid legal obligations.",
+        ],
+        stats: [
+          { value: "2", label: "primary data sources", hint: "accounts and checkout" },
+          { value: "1", label: "core objective", hint: "operate the store more safely" },
+          { value: "0", label: "data resale", hint: "no personal information sales" },
+        ],
         sections: [
           {
             title: "Information you may provide",
@@ -355,14 +508,14 @@ const copy: Record<SupportedLanguage, LocaleCopy> = {
             title: "Technical and usage data",
             paragraphs: [
               "The system may also record technical information such as IP address, user agent, referrer, device details, time zone, screen size, viewed path and product view time.",
-              "This helps us understand how visitors move through the storefront and how product pages can be improved for clarity, performance and support quality.",
+              "This helps TMH Store understand how visitors move through the site, which in turn improves navigation, performance and support quality.",
             ],
           },
           {
             title: "Why the data is used",
             paragraphs: [
-              "The data is used to create and maintain customer accounts, support sign-in, manage sessions, process orders, confirm shipping and respond to support requests.",
-              "TMH Store may also use aggregated usage information to understand interest in products, identify navigation bottlenecks and improve the way products are organised and displayed.",
+              "The data is used to create and maintain accounts, support sign-in, manage sessions, process orders, confirm shipping and respond to support requests.",
+              "TMH Store may also use aggregated usage information to understand product interest, spot navigation bottlenecks and improve how content is organised.",
             ],
           },
           {
@@ -376,20 +529,36 @@ const copy: Record<SupportedLanguage, LocaleCopy> = {
             title: "Sharing and support requests",
             paragraphs: [
               "TMH Store does not sell personal information. Data is shared only where needed to operate infrastructure, process orders or comply with valid legal obligations.",
-              "If you need to correct or discuss account or order data, you can contact us through the official support channels shown on the website.",
+              "If you need to correct or discuss account or order data, you can contact the store through the official support channels shown on the website.",
             ],
           },
         ],
-        supportTitle: "Need help updating your information?",
+        supportTitle: "Need to update or verify your information?",
         supportBody:
-          "Messenger and Facebook remain the fastest paths for account, order and privacy-related support requests.",
+          "Messenger and Facebook remain the fastest paths for account, order and privacy-related support requests on the current storefront.",
+        supportChecklist: [
+          "Request account or order-data clarification",
+          "Confirm information submitted at checkout",
+          "Use official public channels for privacy support",
+        ],
       },
       terms: {
         eyebrow: "Terms of Use",
-        title: "These terms explain how visitors use TMH Store, submit purchase requests and interact with the content available on the website.",
+        title: "These terms clearly describe how visitors use TMH Store, submit purchase requests and interact with the information published on the site.",
         description:
-          "The content is tailored to the current feature set: user accounts, product listings, cart, checkout, order confirmation and third-party support channels.",
+          "The content is tailored to the actual storefront feature set: user accounts, product listings, cart, checkout, order confirmation and third-party support channels.",
         badges: ["Usage rules", "Product information", "Order handling"],
+        summaryTitle: "What visitors should know quickly",
+        summaryPoints: [
+          "Using the site means accepting these terms and the related policies linked from it.",
+          "Product information and stock are kept as current as possible, but may still require confirmation before an order is processed.",
+          "TMH Store may refuse impersonation, unauthorised access and behaviour that disrupts the normal operation of the storefront.",
+        ],
+        stats: [
+          { value: "5", label: "core policy areas", hint: "accounts, products, orders, navigation and external platforms" },
+          { value: "1", label: "order confirmation path", hint: "may include an extra verification step" },
+          { value: "0", label: "tolerance for fake activity", hint: "not accepted" },
+        ],
         sections: [
           {
             title: "Scope",
@@ -427,9 +596,14 @@ const copy: Record<SupportedLanguage, LocaleCopy> = {
             ],
           },
         ],
-        supportTitle: "Need clarification before placing an order?",
+        supportTitle: "Need clarification before checkout?",
         supportBody:
-          "You can review the Contact page or message the store directly to confirm product, pricing and order details before checkout.",
+          "You can use the Contact page or message the store directly to confirm product details, pricing, stock and delivery expectations before placing an order.",
+        supportChecklist: [
+          "Double-check product details and pricing",
+          "Confirm stock before ordering",
+          "Clarify order handling when needed",
+        ],
       },
     },
   },
@@ -440,6 +614,89 @@ const pageIcons: Record<PolicyPageKey, typeof Store> = {
   contact: MessageCircle,
   privacyPolicy: ShieldCheck,
   terms: Scale,
+};
+
+const pageThemes: Record<PolicyPageKey, Theme> = {
+  about: {
+    heroSurface:
+      "bg-[radial-gradient(circle_at_top_left,#fff7ed_0%,#ffffff_44%,#f8fafc_100%)]",
+    heroAccent:
+      "bg-[linear-gradient(135deg,rgba(251,146,60,0.18),rgba(14,165,233,0.10))]",
+    heroBorder: "border-amber-200/80",
+    badgeSurface: "bg-amber-100/90",
+    badgeText: "text-amber-900",
+    statSurface: "bg-white/80",
+    summarySurface: "bg-amber-50/70",
+    summaryBorder: "border-amber-200/80",
+    supportSurface: "bg-slate-950",
+    supportBorder: "border-slate-800",
+    sectionLine: "bg-amber-300",
+    sectionNumber: "bg-amber-100",
+    sectionNumberText: "text-amber-900",
+    actionPrimary: "bg-slate-950 text-white hover:bg-slate-800",
+    actionSecondary:
+      "border border-slate-300 bg-white text-slate-900 hover:border-slate-400 hover:bg-slate-50",
+  },
+  contact: {
+    heroSurface:
+      "bg-[radial-gradient(circle_at_top_left,#eff6ff_0%,#ffffff_46%,#f8fafc_100%)]",
+    heroAccent:
+      "bg-[linear-gradient(135deg,rgba(59,130,246,0.18),rgba(16,185,129,0.10))]",
+    heroBorder: "border-sky-200/80",
+    badgeSurface: "bg-sky-100/90",
+    badgeText: "text-sky-900",
+    statSurface: "bg-white/82",
+    summarySurface: "bg-sky-50/80",
+    summaryBorder: "border-sky-200/80",
+    supportSurface: "bg-slate-950",
+    supportBorder: "border-slate-800",
+    sectionLine: "bg-sky-300",
+    sectionNumber: "bg-sky-100",
+    sectionNumberText: "text-sky-900",
+    actionPrimary: "bg-sky-700 text-white hover:bg-sky-800",
+    actionSecondary:
+      "border border-sky-200 bg-white text-slate-900 hover:border-sky-300 hover:bg-sky-50",
+  },
+  privacyPolicy: {
+    heroSurface:
+      "bg-[radial-gradient(circle_at_top_left,#ecfdf5_0%,#ffffff_46%,#f8fafc_100%)]",
+    heroAccent:
+      "bg-[linear-gradient(135deg,rgba(16,185,129,0.18),rgba(14,165,233,0.10))]",
+    heroBorder: "border-emerald-200/80",
+    badgeSurface: "bg-emerald-100/90",
+    badgeText: "text-emerald-900",
+    statSurface: "bg-white/82",
+    summarySurface: "bg-emerald-50/80",
+    summaryBorder: "border-emerald-200/80",
+    supportSurface: "bg-slate-950",
+    supportBorder: "border-slate-800",
+    sectionLine: "bg-emerald-300",
+    sectionNumber: "bg-emerald-100",
+    sectionNumberText: "text-emerald-900",
+    actionPrimary: "bg-emerald-700 text-white hover:bg-emerald-800",
+    actionSecondary:
+      "border border-emerald-200 bg-white text-slate-900 hover:border-emerald-300 hover:bg-emerald-50",
+  },
+  terms: {
+    heroSurface:
+      "bg-[radial-gradient(circle_at_top_left,#fef2f2_0%,#ffffff_46%,#f8fafc_100%)]",
+    heroAccent:
+      "bg-[linear-gradient(135deg,rgba(239,68,68,0.16),rgba(245,158,11,0.10))]",
+    heroBorder: "border-rose-200/80",
+    badgeSurface: "bg-rose-100/90",
+    badgeText: "text-rose-900",
+    statSurface: "bg-white/82",
+    summarySurface: "bg-rose-50/80",
+    summaryBorder: "border-rose-200/80",
+    supportSurface: "bg-slate-950",
+    supportBorder: "border-slate-800",
+    sectionLine: "bg-rose-300",
+    sectionNumber: "bg-rose-100",
+    sectionNumberText: "text-rose-900",
+    actionPrimary: "bg-rose-700 text-white hover:bg-rose-800",
+    actionSecondary:
+      "border border-rose-200 bg-white text-slate-900 hover:border-rose-300 hover:bg-rose-50",
+  },
 };
 
 export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
@@ -459,6 +716,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
   const localeCopy = copy[language];
   const pageCopy = localeCopy.pages[page];
   const PageIcon = pageIcons[page];
+  const theme = pageThemes[page];
 
   const activeNav = useMemo(
     () =>
@@ -470,13 +728,13 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
   );
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#fffaf2_0%,#fff 30%,#f7fafc_100%)] text-slate-900">
-      <div className="border-b border-slate-200 bg-white/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4 md:px-10">
+    <main className="min-h-screen bg-[linear-gradient(180deg,#fffdf8_0%,#ffffff_28%,#f8fafc_100%)] text-slate-900">
+      <div className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/88 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-4 md:px-10">
           <div className="flex items-center gap-3">
             <Link
               href={SITE_PATHS.home}
-              className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-[0_18px_40px_rgba(15,23,42,0.16)]"
+              className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-[0_18px_40px_rgba(15,23,42,0.18)]"
             >
               <Store size={20} />
             </Link>
@@ -497,7 +755,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
               onClick={() => setLanguage("vi")}
               className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
                 language === "vi"
-                  ? "bg-slate-900 text-white"
+                  ? "bg-slate-950 text-white"
                   : "text-slate-600 hover:bg-slate-100"
               }`}
             >
@@ -508,7 +766,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
               onClick={() => setLanguage("en")}
               className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
                 language === "en"
-                  ? "bg-slate-900 text-white"
+                  ? "bg-slate-950 text-white"
                   : "text-slate-600 hover:bg-slate-100"
               }`}
             >
@@ -518,61 +776,91 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
         </div>
       </div>
 
-      <section className="mx-auto max-w-6xl px-6 pb-10 pt-10 md:px-10 md:pb-14 md:pt-14">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="rounded-[32px] border border-slate-200 bg-[radial-gradient(circle_at_top_left,#fff7ed_0%,#ffffff_48%,#f8fafc_100%)] px-6 py-7 shadow-[0_28px_80px_rgba(15,23,42,0.10)] md:px-8 md:py-9">
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-amber-800">
-                <Sparkles size={14} />
-                {pageCopy.eyebrow}
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-white">
-                <PageIcon size={14} />
-                {SITE_NAME}
-              </span>
-            </div>
+      <section className="overflow-hidden border-b border-slate-200/80">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-10 md:px-10 md:py-14 lg:grid-cols-[minmax(0,1.25fr)_360px]">
+          <div className={`relative overflow-hidden rounded-[36px] border ${theme.heroBorder} ${theme.heroSurface} px-6 py-8 shadow-[0_28px_90px_rgba(15,23,42,0.10)] md:px-8 md:py-10`}>
+            <div className={`pointer-events-none absolute inset-y-0 right-0 w-[44%] blur-3xl ${theme.heroAccent}`} />
 
-            <div className="mt-7 max-w-4xl">
-              <h1 className="text-4xl font-black leading-tight tracking-tight text-slate-950 md:text-[3.4rem] md:leading-[1.02]">
-                {pageCopy.title}
-              </h1>
-              <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600 md:text-lg">
-                {pageCopy.description}
-              </p>
-            </div>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              {pageCopy.badges.map((badge) => (
+            <div className="relative">
+              <div className="flex flex-wrap items-center gap-3">
                 <span
-                  key={badge}
-                  className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm"
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-black uppercase tracking-[0.22em] ${theme.badgeSurface} ${theme.badgeText}`}
                 >
-                  {badge}
+                  <Sparkles size={14} />
+                  {pageCopy.eyebrow}
                 </span>
-              ))}
-            </div>
+                <span className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-white">
+                  <PageIcon size={14} />
+                  {SITE_NAME}
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/75 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-slate-600 backdrop-blur">
+                  <Clock3 size={14} />
+                  {localeCopy.updatedLabel}: {localeCopy.updatedValue}
+                </span>
+              </div>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href={SITE_PATHS.home}
-                className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-              >
-                {localeCopy.homeLink}
-                <ArrowRight size={16} />
-              </Link>
-              <Link
-                href={localeCopy.browseHref}
-                className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-slate-400 hover:bg-slate-50"
-              >
-                {localeCopy.browseLink}
-              </Link>
+              <div className="mt-7 max-w-4xl">
+                <h1 className="text-4xl font-black leading-[1.02] tracking-tight text-slate-950 md:text-[3.45rem]">
+                  {pageCopy.title}
+                </h1>
+                <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600 md:text-lg">
+                  {pageCopy.description}
+                </p>
+              </div>
+
+              <div className="mt-7 flex flex-wrap gap-3">
+                {pageCopy.badges.map((badge) => (
+                  <span
+                    key={badge}
+                    className="rounded-full border border-slate-200 bg-white/82 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur"
+                  >
+                    {badge}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link
+                  href={SITE_PATHS.home}
+                  className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${theme.actionPrimary}`}
+                >
+                  {localeCopy.homeLink}
+                  <ArrowRight size={16} />
+                </Link>
+                <Link
+                  href={localeCopy.browseHref}
+                  className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${theme.actionSecondary}`}
+                >
+                  {localeCopy.browseLink}
+                  <ShoppingBag size={16} />
+                </Link>
+              </div>
+
+              <div className="mt-9 grid gap-3 sm:grid-cols-3">
+                {pageCopy.stats.map((stat) => (
+                  <div
+                    key={`${stat.value}-${stat.label}`}
+                    className={`rounded-[26px] border border-white/70 ${theme.statSurface} px-4 py-4 shadow-[0_16px_34px_rgba(15,23,42,0.06)] backdrop-blur`}
+                  >
+                    <p className="text-3xl font-black tracking-tight text-slate-950">
+                      {stat.value}
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-slate-700">
+                      {stat.label}
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-slate-500">
+                      {stat.hint}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          <aside className="space-y-5">
-            <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+          <div className="space-y-5">
+            <div className="rounded-[32px] border border-slate-200 bg-white px-6 py-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
               <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-500">
-                <Waypoints size={15} />
+                <LayoutPanelLeft size={15} />
                 {localeCopy.navLabel}
               </div>
               <nav className="mt-5 space-y-3">
@@ -582,7 +870,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
                     href={item.href}
                     className={`flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold transition ${
                       item.active
-                        ? "bg-slate-900 text-white shadow-[0_16px_40px_rgba(15,23,42,0.18)]"
+                        ? "bg-slate-950 text-white shadow-[0_16px_36px_rgba(15,23,42,0.18)]"
                         : "border border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-white"
                     }`}
                   >
@@ -593,8 +881,8 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
               </nav>
             </div>
 
-            <div className="rounded-[28px] border border-emerald-200 bg-[linear-gradient(180deg,#ecfdf5_0%,#ffffff_100%)] p-6">
-              <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-emerald-700">
+            <div className={`rounded-[32px] border ${theme.summaryBorder} ${theme.summarySurface} px-6 py-6`}>
+              <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-700">
                 <BadgeCheck size={15} />
                 {localeCopy.quickFactsTitle}
               </div>
@@ -604,89 +892,155 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
                 ))}
               </div>
             </div>
-          </aside>
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-16 md:px-10 md:pb-20">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
-          <div className="space-y-5">
-            {pageCopy.sections.map((section) => (
+      <section className="mx-auto grid max-w-7xl gap-10 px-6 py-12 md:px-10 md:py-16 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div>
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-black uppercase tracking-[0.22em] text-slate-500">
+                {localeCopy.sectionLabel}
+              </p>
+              <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-950">
+                {pageCopy.summaryTitle}
+              </h2>
+            </div>
+            <p className="max-w-2xl text-sm leading-7 text-slate-500 md:text-base">
+              {pageCopy.description}
+            </p>
+          </div>
+
+          <div className="rounded-[32px] border border-slate-200 bg-white px-6 py-6 shadow-[0_18px_60px_rgba(15,23,42,0.06)] md:px-8">
+            <div className="grid gap-4 md:grid-cols-3">
+              {pageCopy.summaryPoints.map((point) => (
+                <div
+                  key={point}
+                  className="rounded-[24px] border border-slate-200 bg-slate-50 px-4 py-4"
+                >
+                  <BookOpenText size={18} className="text-slate-500" />
+                  <p className="mt-3 text-sm leading-7 text-slate-700">{point}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-8 space-y-8">
+            {pageCopy.sections.map((section, index) => (
               <article
                 key={section.title}
-                className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.07)] md:p-8"
+                className="grid gap-5 border-t border-slate-200 pt-8 md:grid-cols-[88px_minmax(0,1fr)]"
               >
-                <h2 className="text-2xl font-black tracking-tight text-slate-950">
-                  {section.title}
-                </h2>
-                <div className="mt-4 space-y-4 text-[15px] leading-8 text-slate-600 md:text-base">
-                  {section.paragraphs.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
+                <div className="flex items-start gap-3 md:block">
+                  <div
+                    className={`flex h-14 w-14 items-center justify-center rounded-2xl ${theme.sectionNumber} ${theme.sectionNumberText} text-lg font-black shadow-sm`}
+                  >
+                    {index + 1}
+                  </div>
+                  <div className={`mt-3 hidden h-20 w-[2px] ${theme.sectionLine} md:block`} />
+                </div>
+
+                <div>
+                  <h3 className="text-2xl font-black tracking-tight text-slate-950">
+                    {section.title}
+                  </h3>
+                  <div className="mt-4 space-y-4 text-[15px] leading-8 text-slate-600 md:text-base">
+                    {section.paragraphs.map((paragraph) => (
+                      <p key={paragraph}>{paragraph}</p>
+                    ))}
+                  </div>
                 </div>
               </article>
             ))}
           </div>
-
-          <aside className="space-y-5">
-            <div className="rounded-[28px] border border-amber-200 bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_100%)] p-6">
-              <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-amber-800">
-                <MessageCircle size={15} />
-                {localeCopy.supportEyebrow}
-              </div>
-              <h3 className="mt-4 text-xl font-black tracking-tight text-slate-950">
-                {pageCopy.supportTitle}
-              </h3>
-              <p className="mt-3 text-sm leading-7 text-slate-700">
-                {pageCopy.supportBody}
-              </p>
-              <div className="mt-5 space-y-3">
-                {localeCopy.supportLinks.map((item) => (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-2xl border border-amber-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 transition hover:border-amber-300 hover:bg-amber-50"
-                  >
-                    <span>{item.label}</span>
-                    <ArrowRight size={16} />
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-[28px] border border-slate-200 bg-slate-900 p-6 text-white shadow-[0_24px_70px_rgba(15,23,42,0.22)]">
-              <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-300">
-                <Globe size={15} />
-                {SITE_NAME}
-              </div>
-              <p className="mt-4 text-sm leading-7 text-slate-200">
-                {localeCopy.footerNote}
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <a
-                  href={FACEBOOK_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/16"
-                >
-                  <Globe size={15} />
-                  Facebook
-                </a>
-                <a
-                  href={MESSENGER_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/16"
-                >
-                  <Mail size={15} />
-                  Messenger
-                </a>
-              </div>
-            </div>
-          </aside>
         </div>
+
+        <aside className="space-y-5 lg:sticky lg:top-28 lg:self-start">
+          <div className={`rounded-[32px] border ${theme.summaryBorder} bg-white px-6 py-6 shadow-[0_18px_60px_rgba(15,23,42,0.07)]`}>
+            <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-500">
+              <Sparkles size={15} />
+              {localeCopy.summaryLabel}
+            </div>
+            <div className="mt-5 space-y-4">
+              {pageCopy.summaryPoints.map((point) => (
+                <div
+                  key={point}
+                  className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-7 text-slate-700"
+                >
+                  {point}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className={`rounded-[32px] border ${theme.supportBorder} ${theme.supportSurface} px-6 py-6 text-white shadow-[0_24px_70px_rgba(15,23,42,0.22)]`}>
+            <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-300">
+              <MessageCircle size={15} />
+              {localeCopy.supportEyebrow}
+            </div>
+            <h3 className="mt-4 text-2xl font-black tracking-tight">
+              {pageCopy.supportTitle}
+            </h3>
+            <p className="mt-3 text-sm leading-7 text-slate-300">
+              {pageCopy.supportBody}
+            </p>
+
+            <div className="mt-5 space-y-3 border-t border-white/10 pt-5">
+              {pageCopy.supportChecklist.map((item) => (
+                <div key={item} className="flex items-start gap-3 text-sm leading-7 text-slate-200">
+                  <BadgeCheck size={18} className="mt-1 shrink-0 text-emerald-300" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 space-y-3">
+              {localeCopy.supportLinks.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between rounded-2xl border border-white/12 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/14"
+                >
+                  <span>{item.label}</span>
+                  <ArrowRight size={16} />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[32px] border border-slate-200 bg-slate-50 px-6 py-6">
+            <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-slate-500">
+              <Globe size={15} />
+              {localeCopy.footerNoteTitle}
+            </div>
+            <p className="mt-4 text-sm leading-7 text-slate-700">
+              {localeCopy.footerNote}
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <a
+                href={FACEBOOK_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:border-slate-300 hover:bg-slate-100"
+              >
+                <Globe size={15} />
+                Facebook
+              </a>
+              <a
+                href={MESSENGER_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:border-slate-300 hover:bg-slate-100"
+              >
+                <Mail size={15} />
+                Messenger
+              </a>
+            </div>
+          </div>
+        </aside>
       </section>
     </main>
   );
