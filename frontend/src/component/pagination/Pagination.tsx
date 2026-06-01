@@ -4,34 +4,45 @@ import "./Pagination.css";
 import { AppConstant } from '@/core/utils';
 import { t } from '@/core/localized';
 import { useLanguage } from '@/provider/LanguageProvider';
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface PaginationProps {
-    paging: Paging;
+    paging?: Paging | null;
+    currentPage?: number;
+    perPage?: number;
+    totalCount?: number;
+    totalPages?: number;
     onPageChange: (page: number) => void;
     onPerPageChange?: (perPage: number) => void;
     maxVisiblePages?: number;
     style?: React.CSSProperties;
+    fixedBottom?: boolean;
+    showPerPage?: boolean;
 }
 
 const Pagination: React.FC<{ props: PaginationProps }> = ({ props }) => {
     useLanguage();
     const {
         paging,
+        currentPage: currentPageProp,
+        perPage: perPageProp,
+        totalCount: totalCountProp,
+        totalPages: totalPagesProp,
         onPageChange,
         onPerPageChange,
-        maxVisiblePages = 10,
-        style
+        maxVisiblePages = 7,
+        style,
+        fixedBottom = false,
+        showPerPage = Boolean(onPerPageChange),
     } = props;
 
-
-    if (paging === null || paging === undefined) {
-        return null;
-    }
-
-    const currentPage = paging.currentPage || AppConstant.CURRENT_PAGE_DEFAULT;
-    const perPage = paging.perPage || AppConstant.PER_PAGE_DEFAULT;
-    const totalCount = paging.totalCount ?? 0;
-    const totalPages = paging.totalPages ?? 0;
+    const hasPaginationInput = Boolean(paging || currentPageProp !== undefined || totalPagesProp !== undefined);
+    const currentPage = currentPageProp ?? paging?.currentPage ?? AppConstant.CURRENT_PAGE_DEFAULT;
+    const perPage = perPageProp ?? paging?.perPage ?? AppConstant.PER_PAGE_DEFAULT;
+    const totalCount = totalCountProp ?? paging?.totalCount ?? 0;
+    const totalPages = totalPagesProp ?? paging?.totalPages ?? (perPage > 0 ? Math.ceil(totalCount / perPage) : 1);
+    const pageStartItem = totalCount === 0 ? 0 : (currentPage - 1) * perPage + 1;
+    const pageEndItem = Math.min(totalCount, currentPage * perPage);
 
     const [perPageInput, setPerPageInput] = useState(perPage);
 
@@ -39,9 +50,13 @@ const Pagination: React.FC<{ props: PaginationProps }> = ({ props }) => {
         setPerPageInput(perPage);
     }, [perPage]);
 
+    if (!hasPaginationInput) {
+        return null;
+    }
+
     const isHidden = totalCount === 0 || currentPage <= 0;
     if (isHidden) {
-        return null; // Hide pagination if no data or only one page
+        return null;
     }
 
     const generatePages = () => {
@@ -82,10 +97,6 @@ const Pagination: React.FC<{ props: PaginationProps }> = ({ props }) => {
         if (page !== currentPage) _onPageChange(page as number);
     };
 
-    const goFirst = () => {
-        if (currentPage !== 1) _onPageChange(1);
-    };
-
     const goPrev = () => {
         if (currentPage > 1) _onPageChange(currentPage - 1);
     };
@@ -94,11 +105,8 @@ const Pagination: React.FC<{ props: PaginationProps }> = ({ props }) => {
         if (currentPage < totalPages) _onPageChange(currentPage + 1);
     };
 
-    const goLast = () => {
-        if (currentPage !== totalPages) _onPageChange(totalPages);
-    };
-
     const _onPageChange = (page: number) => {
+        if (page < 1 || page > totalPages) return;
         onPageChange(page);
     };
 
@@ -109,64 +117,67 @@ const Pagination: React.FC<{ props: PaginationProps }> = ({ props }) => {
     };
 
     return (
-        <div className="pagination-container" style={{ ...style }}>
-            <select
-                value={perPageInput}
-                onChange={(e) => {
-                    const value = parseInt(e.target.value);
-                    _onPerPageChange(value);
-                }}
-                className="pagination-per-page-select"
+        <>
+            {fixedBottom && <div className="pagination-fixed-spacer" aria-hidden="true" />}
+            <div
+                className={`pagination-container ${fixedBottom ? "pagination-container--fixed" : ""}`}
+                style={{ ...style }}
             >
-                {[5, 10, 20, 50, 100, 200].map((option) => (
-                    <option key={option} value={option}>
-                        {option}
-                    </option>
-                ))}
-            </select>
+                {showPerPage && (
+                    <select
+                        value={perPageInput}
+                        onChange={(e) => {
+                            const value = parseInt(e.target.value);
+                            setPerPageInput(value);
+                            _onPerPageChange(value);
+                        }}
+                        className="pagination-per-page-select"
+                        aria-label="Items per page"
+                    >
+                        {[5, 10, 20, 50, 100, 200].map((option) => (
+                            <option key={option} value={option}>
+                                {option}
+                            </option>
+                        ))}
+                    </select>
+                )}
 
-            <button
-                className="pagination-btn"
-                onClick={goFirst}
-                disabled={currentPage === 1}
-            >
-                {t.common.first()}
-            </button>
-            <button
-                className="pagination-btn"
-                onClick={goPrev}
-                disabled={currentPage === 1}
-            >
-                {t.common.previous()}
-            </button>
+                <div className="pagination-range">
+                    {pageStartItem.toLocaleString("vi-VN")}-{pageEndItem.toLocaleString("vi-VN")} / {totalCount.toLocaleString("vi-VN")}
+                </div>
 
-            {pages.map((page, idx) => (
                 <button
-                    key={idx}
-                    className={`pagination-btn ${page === currentPage ? "active" : ""
-                        } ${page === "..." ? "ellipsis" : ""}`}
-                    onClick={() => handlePageClick(page)}
-                    disabled={page === "..."}
+                    className="pagination-btn pagination-btn--icon"
+                    onClick={goPrev}
+                    disabled={currentPage === 1}
+                    aria-label={t.common.previous()}
                 >
-                    {Number.isNaN(page) ? '' : page}
+                    <ChevronLeft size={16} />
                 </button>
-            ))}
 
-            <button
-                className="pagination-btn"
-                onClick={goNext}
-                disabled={currentPage === totalPages}
-            >
-                {t.common.next()}
-            </button>
-            <button
-                className="pagination-btn"
-                onClick={goLast}
-                disabled={currentPage === totalPages}
-            >
-                {t.common.last()}
-            </button>
-        </div>
+                <div className="pagination-pages">
+                    {pages.map((page, idx) => (
+                        <button
+                            key={`${page}-${idx}`}
+                            className={`pagination-btn ${page === currentPage ? "active" : ""} ${page === "..." ? "ellipsis" : ""}`}
+                            onClick={() => handlePageClick(page)}
+                            disabled={page === "..."}
+                        >
+                            {page}
+                        </button>
+                    ))}
+                </div>
+
+                <button
+                    className="pagination-btn pagination-btn--icon"
+                    onClick={goNext}
+                    disabled={currentPage === totalPages}
+                    aria-label={t.common.next()}
+                >
+                    <ChevronRight size={16} />
+                </button>
+            </div>
+        </>
     );
 };
 

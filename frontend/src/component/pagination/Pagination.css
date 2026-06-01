@@ -1,73 +1,179 @@
 .pagination-container {
+    position: relative;
+    z-index: 20;
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
+    width: fit-content;
+    max-width: calc(100vw - 28px);
+    gap: 8px;
     justify-content: center;
     align-items: center;
+    margin: 22px auto 0;
+    border: 1px solid rgba(226, 232, 240, 0.96);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    padding: 8px;
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.14);
+    backdrop-filter: blur(16px);
+    animation: paginationLift 460ms ease both;
+}
+
+.pagination-container--fixed {
+    position: fixed;
+    left: 50%;
+    bottom: max(18px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
     margin: 0;
 }
 
+@media (min-width: 1024px) {
+    .admin-layout--open .pagination-container--fixed {
+        left: calc(272px + (100vw - 272px) / 2);
+    }
+}
+
+.pagination-fixed-spacer {
+    height: 76px;
+}
+
+.pagination-pages {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pagination-range {
+    min-width: 116px;
+    padding: 0 10px;
+    color: var(--color-muted-foreground);
+    font-size: 0.82rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
 .pagination-btn {
-    min-width: 2.25rem;
-    height: 2.25rem;
-    padding: 0 0.5rem;
-    border: none;
-    background-color: #e0e0e0;
-    color: #333;
-    border-radius: 0.25rem;
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--color-foreground);
+    border-radius: 999px;
     cursor: pointer;
     font-size: 0.875rem;
+    font-weight: 800;
+    line-height: 1;
+    transition: transform 180ms ease, background-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+
+.pagination-btn--icon {
+    flex: 0 0 auto;
 }
 
 .pagination-btn:hover:not(:disabled) {
-    background-color: #bdbdbd;
+    transform: translateY(-1px);
+    background: var(--color-soft);
+    color: var(--color-primary);
 }
 
 .pagination-btn:disabled {
-    background-color: #f5f5f5;
-    color: #aaa;
+    color: var(--color-border-heavy, #cbd5e1);
     cursor: not-allowed;
 }
 
 .pagination-btn.active {
-    background-color: var(--primary-color, #6200ea);
+    background: var(--color-primary);
     color: white;
-    font-weight: bold;
+    box-shadow: 0 10px 22px rgba(249, 115, 22, 0.32);
 }
 
 .pagination-btn.ellipsis {
     cursor: default;
-    background-color: transparent;
-    color: #555;
+    width: 24px;
+    color: var(--color-muted-foreground);
 }
 
 
 .pagination-per-page-select {
-    padding: 0.25rem;
-    font-size: 0.875rem;
-    border: 1px solid #ccc;
-    border-radius: 0.25rem;
+    height: 36px;
+    min-width: 58px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-card);
+    color: var(--color-foreground);
+    padding: 0 10px;
     text-align: center;
+    font-size: 0.82rem;
+    font-weight: 800;
+    outline: none;
+}
+
+.pagination-per-page-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.12);
+}
+
+@keyframes paginationLift {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.pagination-container--fixed {
+    animation-name: paginationFixedLift;
+}
+
+@keyframes paginationFixedLift {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 14px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
 }
 
 /*  Mobile */
 @media (max-width: 768px) {
     .pagination-container {
-        gap: 0.25rem;
-        flex-wrap: wrap;
+        width: calc(100vw - 28px);
+        justify-content: center;
+        border-radius: 14px;
+        overflow-x: auto;
     }
 
     .pagination-btn {
-        min-width: 2rem;
-        height: 2rem;
-        padding: 0 0.4rem;
+        width: 34px;
+        height: 34px;
         font-size: 0.8rem;
+        flex: 0 0 auto;
+    }
+
+    .pagination-pages {
+        gap: 4px;
+    }
+
+    .pagination-range {
+        display: none;
     }
 
     .pagination-per-page-select {
-        padding: 0.2rem;
+        height: 34px;
         font-size: 0.8rem;
-        min-width: 3.5rem;
+        flex: 0 0 auto;
     }
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .pagination-container {
+        animation: none;
+        transition: none;
+    }
+}

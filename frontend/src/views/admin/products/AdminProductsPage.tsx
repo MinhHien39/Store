@@ -18,6 +18,24 @@ const AdminProductsPage: React.FC = () => {
         isModalOpen, isModalLoading, editItem, isSaving,
         categories, brands, form, formErrors, mainImagePreview, subImages, isImporting,
     } = config;
+    const categoryNameById = React.useMemo(
+        () => new Map(categories.map((category) => [category.id, category.name])),
+        [categories],
+    );
+    const brandNameById = React.useMemo(
+        () => new Map(brands.map((brand) => [brand.id, brand.name])),
+        [brands],
+    );
+    const getCategoryLabel = (product: typeof products[number]) => (
+        product.category_name
+        || (product.category_id ? categoryNameById.get(product.category_id) : undefined)
+        || (product.category_id ? `#${product.category_id}` : "-")
+    );
+    const getBrandLabel = (product: typeof products[number]) => (
+        product.brand_name
+        || (product.brand_id ? brandNameById.get(product.brand_id) : undefined)
+        || (product.brand_id ? `#${product.brand_id}` : "-")
+    );
 
     return (
         <AdminLayout>
@@ -98,7 +116,11 @@ const AdminProductsPage: React.FC = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {products.map((p) => (
+                                {products.map((p) => {
+                                    const categoryLabel = getCategoryLabel(p);
+                                    const brandLabel = getBrandLabel(p);
+
+                                    return (
                                     <tr key={p.id}>
                                         <td>
                                             <div className="admin-product-cell">
@@ -121,11 +143,29 @@ const AdminProductsPage: React.FC = () => {
                                                         <Package size={18} />
                                                     </span>
                                                 )}
-                                                <span className="admin-product-cell__name">{p.name}</span>
+                                                <span className="admin-product-cell__content">
+                                                    <span className="admin-product-cell__name">{p.name}</span>
+                                                    <span className="admin-product-cell__meta">
+                                                        <span className="admin-relation-badge admin-relation-badge--category">
+                                                            {categoryLabel}
+                                                        </span>
+                                                        <span className="admin-relation-badge admin-relation-badge--brand">
+                                                            {brandLabel}
+                                                        </span>
+                                                    </span>
+                                                </span>
                                             </div>
                                         </td>
-                                        <td className="admin-table__muted">{p.category_name}</td>
-                                        <td className="admin-table__muted">{p.brand_name}</td>
+                                        <td>
+                                            <span className="admin-relation-badge admin-relation-badge--category">
+                                                {categoryLabel}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span className="admin-relation-badge admin-relation-badge--brand">
+                                                {brandLabel}
+                                            </span>
+                                        </td>
                                         <td style={{ textAlign: 'right' }}>
                                             {p.sale_price ? (
                                                 <div>
@@ -152,7 +192,8 @@ const AdminProductsPage: React.FC = () => {
                                             </div>
                                         </td>
                                     </tr>
-                                ))}
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
@@ -162,7 +203,6 @@ const AdminProductsPage: React.FC = () => {
                                 paging,
                                 onPageChange: action.handlePageChange,
                                 onPerPageChange: action.handlePerPageChange,
-                                style: { padding: "16px" },
                             }}
                         />
                     )}

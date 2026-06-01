@@ -234,7 +234,6 @@ const ProductListPage: React.FC = () => {
                                             paging,
                                             onPageChange: action.handlePageChange,
                                             onPerPageChange: action.handlePerPageChange,
-                                            style: { marginTop: 28 },
                                         }}
                                     />
                                 )}

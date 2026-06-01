@@ -7,8 +7,8 @@ export interface ProductImage {
 
 export interface Product {
     id: number;
-    category_id: number;
-    brand_id: number;
+    category_id: number | null;
+    brand_id: number | null;
     name: string;
     slug: string;
     short_description: string;

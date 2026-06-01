@@ -174,8 +174,8 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
         action.setNewConfig({
             editItem: product,
             form: {
-                category_id: String(product.category_id),
-                brand_id: String(product.brand_id),
+                category_id: product.category_id ? String(product.category_id) : '',
+                brand_id: product.brand_id ? String(product.brand_id) : '',
                 name: product.name,
                 short_description: product.short_description,
                 description: product.description,
@@ -197,8 +197,8 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
             const p = prodRes.data;
             action.setNewConfig({
                 form: {
-                    category_id: String(p.category_id),
-                    brand_id: String(p.brand_id),
+                    category_id: p.category_id ? String(p.category_id) : '',
+                    brand_id: p.brand_id ? String(p.brand_id) : '',
                     name: p.name,
                     short_description: p.short_description,
                     description: p.description,
@@ -456,6 +456,7 @@ export const AdminProductsVM: BaseViewModelFunc<Config, Action> = () => {
     useEffect(() => {
         action.onDidMount();
         loadProducts();
+        loadCategoriesAndBrands();
         return () => {
             action.onWillUnmount();
             if (debounceRef.current) clearTimeout(debounceRef.current);

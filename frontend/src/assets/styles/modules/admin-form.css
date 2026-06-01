@@ -382,6 +382,46 @@
     max-width: 200px;
 }
 
+.admin-product-cell__content {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.admin-product-cell__meta {
+    display: flex;
+    min-width: 0;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.admin-relation-badge {
+    display: inline-flex;
+    max-width: 190px;
+    align-items: center;
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-relation-badge--category {
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    background: rgba(37, 99, 235, 0.08);
+    color: #1d4ed8;
+}
+
+.admin-relation-badge--brand {
+    border: 1px solid rgba(15, 118, 110, 0.2);
+    background: rgba(15, 118, 110, 0.08);
+    color: #0f766e;
+}
+
 /* ── Table text helpers ── */
 .admin-table__muted {
     color: #64748b;

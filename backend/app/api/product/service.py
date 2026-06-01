@@ -260,11 +260,45 @@ class ProductService(BaseService):
 
         return None
 
-    def _to_item(self, product: Product) -> ProductListItem:
+    def _build_relation_name_maps_for_products(
+        self,
+        products: list[Product],
+    ) -> tuple[dict[int, str], dict[int, str]]:
+        category_ids = sorted({product.category_id for product in products if product.category_id is not None})
+        brand_ids = sorted({product.brand_id for product in products if product.brand_id is not None})
+
+        categories_by_id: dict[int, str] = {}
+        brands_by_id: dict[int, str] = {}
+
+        if category_ids:
+            categories = self.db.exec(
+                select(Category).where(col(Category.id).in_(category_ids), Category.is_deleted == False)
+            ).all()
+            categories_by_id = {category.id: category.name for category in categories if category.id is not None}
+
+        if brand_ids:
+            brands = self.db.exec(
+                select(Brand).where(col(Brand.id).in_(brand_ids), Brand.is_deleted == False)
+            ).all()
+            brands_by_id = {brand.id: brand.name for brand in brands if brand.id is not None}
+
+        return categories_by_id, brands_by_id
+
+    def _to_item(
+        self,
+        product: Product,
+        categories_by_id: dict[int, str] | None = None,
+        brands_by_id: dict[int, str] | None = None,
+    ) -> ProductListItem:
+        categories_by_id = categories_by_id or {}
+        brands_by_id = brands_by_id or {}
+
         return ProductListItem(
             id=product.id,
             category_id=product.category_id,
             brand_id=product.brand_id,
+            category_name=categories_by_id.get(product.category_id) if product.category_id is not None else None,
+            brand_name=brands_by_id.get(product.brand_id) if product.brand_id is not None else None,
             name=product.name,
             slug=product.slug,
             short_description=product.short_description,
@@ -318,7 +352,8 @@ class ProductService(BaseService):
         stmt = stmt.offset(offset).limit(limit)
 
         products = self.db.exec(stmt).all()
-        items = [self._to_item(p) for p in products]
+        categories_by_id, brands_by_id = self._build_relation_name_maps_for_products(products)
+        items = [self._to_item(p, categories_by_id, brands_by_id) for p in products]
         paging = PagingHelper(query.page, query.per_page, total_count).create_meta()
 
         return PaginatedContent(items=items, paging=paging)
@@ -361,7 +396,8 @@ class ProductService(BaseService):
         stmt = stmt.offset(offset).limit(limit)
 
         products = self.db.exec(stmt).all()
-        items = [self._to_item(p) for p in products]
+        categories_by_id, brands_by_id = self._build_relation_name_maps_for_products(products)
+        items = [self._to_item(p, categories_by_id, brands_by_id) for p in products]
         paging = PagingHelper(query.page, query.per_page, total_count).create_meta()
 
         return PaginatedContent(items=items, paging=paging)

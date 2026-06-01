@@ -22,7 +22,7 @@ import {
 import { t } from "@/core/localized";
 import { useLanguage } from "@/provider/LanguageProvider";
 import { ADSENSE_SLOTS } from "@/core/adsense";
-import { formatVnd, getImageUrl } from "@/core/utils/currency";
+import { formatVnd, getImageUrl, getProductPlaceholderImage } from "@/core/utils/currency";
 import { getCategoryIcon } from "@/core/utils/categoryIcon";
 import { HomeVM } from "./HomeVM";
 import "./styles.css";
@@ -138,16 +138,24 @@ const HomePage: React.FC = () => {
                             </div>
 
                             <div className="home-hero__side-grid">
-                                {heroSideProducts.map((product) => (
-                                    <Link key={product.id} to={`${AppRoutePath.PRODUCTS}/${product.id}`} className="home-hero__side-card">
-                                        <img src={getImageUrl(product.main_image_url)} alt={product.name} className="home-hero__side-img" />
-                                        <div className="home-hero__side-info">
-                                            <p className="home-hero__side-name">{product.name}</p>
-                                            <p className="home-hero__side-brand">{product.brand_name}</p>
-                                            <p className="home-hero__side-price">{formatVnd(product.sale_price ?? product.price)}</p>
-                                        </div>
-                                    </Link>
-                                ))}
+                                {heroSideProducts.map((product) => {
+                                    const sideImageUrl = getImageUrl(product.main_image_url);
+
+                                    return (
+                                        <Link key={product.id} to={`${AppRoutePath.PRODUCTS}/${product.id}`} className="home-hero__side-card">
+                                            <img
+                                                src={sideImageUrl || getProductPlaceholderImage(product.name)}
+                                                alt={product.name ?? ""}
+                                                className="home-hero__side-img"
+                                            />
+                                            <div className="home-hero__side-info">
+                                                <p className="home-hero__side-name">{product.name}</p>
+                                                <p className="home-hero__side-brand">{product.brand_name}</p>
+                                                <p className="home-hero__side-price">{formatVnd(product.sale_price ?? product.price)}</p>
+                                            </div>
+                                        </Link>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>

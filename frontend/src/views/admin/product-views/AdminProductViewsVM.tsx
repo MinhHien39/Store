@@ -11,12 +11,16 @@ import { ApiResultType } from "@/core/api";
 import { useAppContext } from "@/provider/AppContextProvider";
 import type { ProductViewChartItem, ProductViewStats, ProductViewStatsSummary } from "@/data/models/ProductView";
 
+const PRODUCT_VIEW_PAGE_SIZE = 8;
+
 interface Config extends BaseConfig {
     stats: ProductViewStats[];
     chart: ProductViewChartItem[];
     summary: ProductViewStatsSummary;
     isLoading: boolean;
     page: number;
+    perPage: number;
+    totalItems: number;
     totalPages: number;
     keyword: string;
     month: string;
@@ -50,6 +54,8 @@ export const AdminProductViewsVM: BaseViewModelFunc<Config, Action> = () => {
             },
             isLoading: true,
             page: 1,
+            perPage: PRODUCT_VIEW_PAGE_SIZE,
+            totalItems: 0,
             totalPages: 1,
             keyword: "",
             month: "",
@@ -71,7 +77,7 @@ export const AdminProductViewsVM: BaseViewModelFunc<Config, Action> = () => {
             deviceType: filters.deviceType ?? config.deviceType,
         };
         action.setNewConfig({ isLoading: true });
-        const params: Record<string, any> = { page, per_page: 20 };
+        const params: Record<string, any> = { page, per_page: PRODUCT_VIEW_PAGE_SIZE };
         if (nextFilters.keyword.trim()) params.keyword = nextFilters.keyword.trim();
         if (nextFilters.month) params.month = Number(nextFilters.month);
         if (nextFilters.year) params.year = Number(nextFilters.year);
@@ -94,6 +100,8 @@ export const AdminProductViewsVM: BaseViewModelFunc<Config, Action> = () => {
                     tablet_views: 0,
                 },
                 page,
+                perPage: result.data.paging?.per_page || PRODUCT_VIEW_PAGE_SIZE,
+                totalItems: result.data.paging?.total_count || result.data.items?.length || 0,
                 totalPages: result.data.paging?.total_pages || 1,
                 ...nextFilters,
                 isLoading: false,

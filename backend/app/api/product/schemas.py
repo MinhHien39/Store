@@ -17,6 +17,8 @@ class ProductListItem(BaseModel):
     id: int
     category_id: int | None = None
     brand_id: int | None = None
+    category_name: str | None = None
+    brand_name: str | None = None
     name: str
     slug: str | None = None
     short_description: str | None = None

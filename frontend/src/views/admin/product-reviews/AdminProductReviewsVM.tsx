@@ -12,12 +12,16 @@ import { useAppContext } from "@/provider/AppContextProvider";
 import type { ProductReview } from "@/data/models/ProductReview";
 import { t } from "@/core/localized";
 
+const PRODUCT_REVIEW_PAGE_SIZE = 20;
+
 interface Config extends BaseConfig {
     reviews: ProductReview[];
     isLoading: boolean;
     isDeleting: boolean;
     deleteId: number | null;
     page: number;
+    perPage: number;
+    totalItems: number;
     totalPages: number;
     keyword: string;
     statusFilter: number | null;
@@ -43,6 +47,8 @@ export const AdminProductReviewsVM: BaseViewModelFunc<Config, Action> = () => {
             isDeleting: false,
             deleteId: null,
             page: 1,
+            perPage: PRODUCT_REVIEW_PAGE_SIZE,
+            totalItems: 0,
             totalPages: 1,
             keyword: "",
             statusFilter: null,
@@ -55,7 +61,8 @@ export const AdminProductReviewsVM: BaseViewModelFunc<Config, Action> = () => {
         status: number | null = config.statusFilter,
     ) => {
         action.setNewConfig({ isLoading: true });
-        const params: Record<string, any> = { page, per_page: 20 };
+        const perPage = config.perPage || PRODUCT_REVIEW_PAGE_SIZE;
+        const params: Record<string, any> = { page, per_page: perPage };
         if (keyword.trim()) params.keyword = keyword.trim();
         if (status !== null) params.status = status;
 
@@ -66,6 +73,8 @@ export const AdminProductReviewsVM: BaseViewModelFunc<Config, Action> = () => {
                 page,
                 keyword,
                 statusFilter: status,
+                perPage: result.data.paging?.per_page || perPage,
+                totalItems: result.data.paging?.total_count || result.data.items?.length || 0,
                 totalPages: result.data.paging?.total_pages || 1,
                 isLoading: false,
             });

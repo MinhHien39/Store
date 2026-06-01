@@ -3,7 +3,7 @@
 import React from "react";
 import AdminLayout from "@/component/layout/AdminLayout";
 import { ArrowLeft, Upload, X, Loader2, GripVertical } from "lucide-react";
-import { getImageUrl } from "@/core/utils/currency";
+import { getImageUrl, getProductPlaceholderImage } from "@/core/utils/currency";
 import { t } from "@/core/localized";
 import { useLanguage } from "@/provider/LanguageProvider";
 import { AdminProductFormVM } from "./AdminProductFormVM";
@@ -163,22 +163,26 @@ const AdminProductFormPage: React.FC = () => {
                     <div className="admin-form__section">
                         <h3 className="admin-form__section-title">{t.admin.product.label_sub_images()}</h3>
                         <div className="admin-form__sub-images">
-                            {subImages.map((img, idx) => (
-                                <div key={img.id} className="admin-form__sub-image">
-                                    <img src={getImageUrl(img.image_url)} alt={`Sub ${idx + 1}`} />
-                                    <div className="admin-form__sub-image-actions">
-                                        {idx > 0 && (
-                                            <button type="button" onClick={() => action.moveSubImage(idx, idx - 1)} className="admin-form__sub-image-btn admin-form__sub-image-btn--move" aria-label={t.common.edit()}>
-                                                <GripVertical size={12} />
+                            {subImages.map((img, idx) => {
+                                const previewUrl = getImageUrl(img.image_url) || getProductPlaceholderImage(form.name);
+
+                                return (
+                                    <div key={img.id} className="admin-form__sub-image">
+                                        <img src={previewUrl} alt={`Sub ${idx + 1}`} />
+                                        <div className="admin-form__sub-image-actions">
+                                            {idx > 0 && (
+                                                <button type="button" onClick={() => action.moveSubImage(idx, idx - 1)} className="admin-form__sub-image-btn admin-form__sub-image-btn--move" aria-label={t.common.edit()}>
+                                                    <GripVertical size={12} />
+                                                </button>
+                                            )}
+                                            <button type="button" onClick={() => action.removeSubImage(img.id)} className="admin-form__sub-image-btn admin-form__sub-image-btn--remove" aria-label={t.common.delete()}>
+                                                <X size={12} />
                                             </button>
-                                        )}
-                                        <button type="button" onClick={() => action.removeSubImage(img.id)} className="admin-form__sub-image-btn admin-form__sub-image-btn--remove" aria-label={t.common.delete()}>
-                                            <X size={12} />
-                                        </button>
+                                        </div>
+                                        <span className="admin-form__sub-image-order">{img.sort_order}</span>
                                     </div>
-                                    <span className="admin-form__sub-image-order">{img.sort_order}</span>
-                                </div>
-                            ))}
+                                );
+                            })}
                             <label className="admin-form__upload-zone admin-form__upload-zone--sm">
                                 <Upload size={20} className="admin-form__upload-icon" />
                                 <span className="admin-form__upload-text">{t.admin.product.add_sub_images()}</span>

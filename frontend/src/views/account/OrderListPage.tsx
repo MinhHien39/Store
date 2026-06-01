@@ -4,6 +4,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import StoreLayout from "@/component/layout/StoreLayout";
+import Pagination from "@/component/pagination/Pagination";
 import { Loader2, Package, ChevronRight } from "lucide-react";
 import { OrderStatus } from "@/data/models/Order";
 import { OrderListVM } from "./OrderListVM";
@@ -14,7 +15,7 @@ import dayjs from "dayjs";
 const OrderListPage: React.FC = () => {
     useLanguage();
     const { config, action } = OrderListVM();
-    const { orders, isLoading, page, totalPages } = config;
+    const { orders, isLoading, page, perPage, totalItems, totalPages } = config;
 
     const formatCurrency = (value: number) =>
         new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(value);
@@ -63,18 +64,17 @@ const OrderListPage: React.FC = () => {
                         </div>
                     )}
 
-                    {totalPages > 1 && (
-                        <div className="flex items-center justify-center gap-2 mt-8">
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                                <button
-                                    key={p}
-                                    onClick={() => action.onPageChange(p)}
-                                    className={`w-9 h-9 rounded-lg text-sm font-semibold transition ${p === page ? "bg-primary text-white" : "bg-muted hover:bg-primary/10"}`}
-                                >
-                                    {p}
-                                </button>
-                            ))}
-                        </div>
+                    {totalItems > 0 && (
+                        <Pagination
+                            props={{
+                                currentPage: page,
+                                perPage,
+                                totalCount: totalItems,
+                                totalPages,
+                                onPageChange: action.onPageChange,
+                                showPerPage: false,
+                            }}
+                        />
                     )}
                 </div>
             </div>

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import AdminLayout from "@/component/layout/AdminLayout";
+import Pagination from "@/component/pagination/Pagination";
 import { AdminProductReviewsVM } from "./AdminProductReviewsVM";
 import { AppRoutePath } from "@/application/AppRoutePath";
 import { Link } from "react-router-dom";
@@ -41,7 +42,7 @@ const AdminProductReviewsPage: React.FC = () => {
                 <div>
                     <h2 className="page-title">{t.admin.productReview.page_title()}</h2>
                     {!config.isLoading && (
-                        <p className="page-subtitle">{t.admin.productReview.items_count({ count: config.reviews.length })}</p>
+                        <p className="page-subtitle">{t.admin.productReview.items_count({ count: config.totalItems })}</p>
                     )}
                 </div>
             </div>
@@ -160,18 +161,17 @@ const AdminProductReviewsPage: React.FC = () => {
                 </div>
             )}
 
-            {config.totalPages > 1 && (
-                <div className="flex justify-center gap-2 mt-6">
-                    {Array.from({ length: config.totalPages }, (_, i) => i + 1).map((page) => (
-                        <button
-                            key={page}
-                            onClick={() => action.onPageChange(page)}
-                            className={`btn btn-sm min-w-[36px] ${page === config.page ? "btn-primary" : "btn-outline"}`}
-                        >
-                            {page}
-                        </button>
-                    ))}
-                </div>
+            {config.totalItems > 0 && (
+                <Pagination
+                    props={{
+                        currentPage: config.page,
+                        perPage: config.perPage,
+                        totalCount: config.totalItems,
+                        totalPages: config.totalPages,
+                        onPageChange: action.onPageChange,
+                        showPerPage: false,
+                    }}
+                />
             )}
 
             {config.deleteId !== null && (

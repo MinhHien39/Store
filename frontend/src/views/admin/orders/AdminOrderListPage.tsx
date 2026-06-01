@@ -2,6 +2,7 @@
 
 import React from "react";
 import AdminLayout from "@/component/layout/AdminLayout";
+import Pagination from "@/component/pagination/Pagination";
 import { AdminOrderListVM } from "./AdminOrderListVM";
 import { OrderStatus } from "@/data/models/Order";
 import { Link } from "react-router-dom";
@@ -24,7 +25,7 @@ const AdminOrderListPage: React.FC = () => {
                 <div>
                     <h2 className="page-title">{t.admin.order.page_title()}</h2>
                     {!config.isLoading && (
-                        <p className="page-subtitle">{t.admin.order.items_count({ count: config.orders.length })}</p>
+                        <p className="page-subtitle">{t.admin.order.items_count({ count: config.totalItems })}</p>
                     )}
                 </div>
                 <button className="btn btn-primary" onClick={action.onExportCsv}>
@@ -117,20 +118,17 @@ const AdminOrderListPage: React.FC = () => {
             )}
 
             {/* Pagination */}
-            {config.totalPages > 1 && (
-                <div className="flex justify-center gap-2 mt-6">
-                    {Array.from({ length: config.totalPages }, (_, i) => i + 1).map((p) => (
-                        <button
-                            key={p}
-                            onClick={() => action.onPageChange(p)}
-                            className={`btn btn-sm min-w-[36px] ${
-                                p === config.page ? "btn-primary" : "btn-outline"
-                            }`}
-                        >
-                            {p}
-                        </button>
-                    ))}
-                </div>
+            {config.totalItems > 0 && (
+                <Pagination
+                    props={{
+                        currentPage: config.page,
+                        perPage: config.perPage,
+                        totalCount: config.totalItems,
+                        totalPages: config.totalPages,
+                        onPageChange: action.onPageChange,
+                        showPerPage: false,
+                    }}
+                />
             )}
         </AdminLayout>
     );

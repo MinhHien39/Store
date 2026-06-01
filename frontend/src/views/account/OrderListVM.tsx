@@ -12,10 +12,14 @@ import { ApiResultType } from "@/core/api";
 import { useAppContext } from "@/provider/AppContextProvider";
 import type { Order } from "@/data/models/Order";
 
+const ORDER_PAGE_SIZE = 10;
+
 interface Config extends BaseConfig {
     orders: Order[];
     isLoading: boolean;
     page: number;
+    perPage: number;
+    totalItems: number;
     totalPages: number;
 }
 
@@ -33,17 +37,22 @@ export const OrderListVM: BaseViewModelFunc<Config, Action> = () => {
             orders: [],
             isLoading: true,
             page: 1,
+            perPage: ORDER_PAGE_SIZE,
+            totalItems: 0,
             totalPages: 1,
         }
     );
 
     const fetchOrders = async (page: number = 1) => {
         action.setNewConfig({ isLoading: true });
-        const result = await orderRepository.getMyOrders({ page, per_page: 10 });
+        const perPage = config.perPage || ORDER_PAGE_SIZE;
+        const result = await orderRepository.getMyOrders({ page, per_page: perPage });
         if (result.type === ApiResultType.Success) {
             action.setNewConfig({
                 orders: result.data.items || [],
                 page,
+                perPage: result.data.paging?.per_page || perPage,
+                totalItems: result.data.paging?.total_count || result.data.items?.length || 0,
                 totalPages: result.data.paging?.total_pages || 1,
                 isLoading: false,
             });
