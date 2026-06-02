@@ -32,6 +32,7 @@ type CartLike = Pick<
 >;
 
 let analyticsInstancePromise: Promise<unknown | null> | null = null;
+let analyticsDisabled = false;
 
 const sanitizeParams = (params: AnalyticsParams = {}): Record<string, unknown> =>
     Object.fromEntries(
@@ -39,18 +40,33 @@ const sanitizeParams = (params: AnalyticsParams = {}): Record<string, unknown> =
     );
 
 const getClientAnalytics = async (): Promise<unknown | null> => {
+    if (analyticsDisabled) return null;
     if (!shouldLoadFirebaseAnalyticsOnClient()) return null;
     if (analyticsInstancePromise) return analyticsInstancePromise;
 
     analyticsInstancePromise = (async () => {
-        const app = getFirebaseApp();
-        if (!app) return null;
+        try {
+            const app = getFirebaseApp();
+            if (!app) return null;
 
-        const { getAnalytics, isSupported } = await import("firebase/analytics");
-        if (!(await isSupported())) return null;
+            const { getAnalytics, isSupported } = await import("firebase/analytics");
+            if (!(await isSupported())) return null;
 
-        return getAnalytics(app);
-    })().catch(() => null);
+            return getAnalytics(app);
+        } catch (error) {
+            analyticsDisabled = true;
+            if (process.env.NODE_ENV !== "production") {
+                console.warn("Firebase analytics disabled after init failure.", error);
+            }
+            return null;
+        }
+    })().catch((error) => {
+        analyticsDisabled = true;
+        if (process.env.NODE_ENV !== "production") {
+            console.warn("Firebase analytics disabled after promise failure.", error);
+        }
+        return null;
+    });
 
     return analyticsInstancePromise;
 };
@@ -59,11 +75,18 @@ export const logAnalyticsEvent = async (
     eventName: string,
     params?: AnalyticsParams
 ): Promise<void> => {
-    const analytics = await getClientAnalytics();
-    if (!analytics) return;
+    try {
+        const analytics = await getClientAnalytics();
+        if (!analytics) return;
 
-    const { logEvent } = await import("firebase/analytics");
-    logEvent(analytics as never, eventName as never, sanitizeParams(params) as never);
+        const { logEvent } = await import("firebase/analytics");
+        logEvent(analytics as never, eventName as never, sanitizeParams(params) as never);
+    } catch (error) {
+        analyticsDisabled = true;
+        if (process.env.NODE_ENV !== "production") {
+            console.warn(`Firebase analytics disabled after "${eventName}" failed.`, error);
+        }
+    }
 };
 
 const getPrice = (item: ProductLike | CartLike): number => item.sale_price ?? item.price;

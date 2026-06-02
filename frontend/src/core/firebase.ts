@@ -7,6 +7,9 @@ import {
 } from "firebase/app";
 
 const normalize = (value?: string): string => (value || "").trim();
+const isAnalyticsFlagEnabled = normalize(
+  process.env.NEXT_PUBLIC_FIREBASE_ANALYTICS_ENABLED
+).toLowerCase() !== "false";
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: normalize(process.env.NEXT_PUBLIC_FIREBASE_API_KEY),
@@ -41,6 +44,7 @@ export const getFirebaseApp = (): FirebaseApp | null => {
 
 export const shouldLoadFirebaseAnalyticsOnClient = (): boolean => {
   if (typeof window === "undefined") return false;
+  if (!isAnalyticsFlagEnabled) return false;
   if (!isFirebaseConfigured) return false;
   if (!firebaseConfig.measurementId) return false;
   return !LOCAL_HOSTS.has(window.location.hostname);
