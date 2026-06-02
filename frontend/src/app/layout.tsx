@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Rubik, Nunito_Sans } from "next/font/google";
 import AdSenseScript from "@/component/common/AdSenseScript";
-import FirebaseBootstrap from "@/component/common/FirebaseBootstrap";
+import GoogleAnalyticsScript from "@/component/common/GoogleAnalyticsScript";
 import { ADSENSE_CLIENT, hasAdsenseClient } from "@/core/adsense";
 import {
   SITE_DESCRIPTION,
@@ -62,9 +62,9 @@ export default function RootLayout({
           <meta name="google-adsense-account" content={ADSENSE_CLIENT} />
         )}
         <AdSenseScript />
+        <GoogleAnalyticsScript />
       </head>
       <body className={`${rubik.variable} ${nunitoSans.variable} ${nunitoSans.className} antialiased`} suppressHydrationWarning>
-        <FirebaseBootstrap />
         {children}
       </body>
     </html>

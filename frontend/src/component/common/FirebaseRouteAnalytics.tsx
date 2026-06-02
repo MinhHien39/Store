@@ -6,15 +6,13 @@ import { trackPageView } from "@/core/firebaseAnalytics";
 
 const FirebaseRouteAnalytics: React.FC = () => {
     const location = useLocation();
-    const hasMounted = useRef(false);
+    const lastTrackedPath = useRef("");
 
     useEffect(() => {
-        if (!hasMounted.current) {
-            hasMounted.current = true;
-            return;
-        }
-
         if (location.pathname.startsWith("/admin")) return;
+        const nextPath = `${location.pathname}${location.search}`;
+        if (lastTrackedPath.current === nextPath) return;
+        lastTrackedPath.current = nextPath;
 
         void trackPageView(location.pathname, location.search);
     }, [location.pathname, location.search]);

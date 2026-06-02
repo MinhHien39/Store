@@ -1,8 +1,18 @@
 import type { Product } from "@/data/models/Product";
 import type { CartItem } from "@/provider/CartProvider";
-import { getFirebaseApp, shouldLoadFirebaseAnalyticsOnClient } from "@/core/firebase";
 
 const CURRENCY = "VND";
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1"]);
+const MEASUREMENT_ID = (
+    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ||
+    process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID ||
+    ""
+).trim();
+const GA_ENABLED = (
+    process.env.NEXT_PUBLIC_GA_ENABLED ||
+    process.env.NEXT_PUBLIC_FIREBASE_ANALYTICS_ENABLED ||
+    "true"
+).trim().toLowerCase() !== "false";
 
 type AnalyticsItem = {
     item_id: string;
@@ -31,62 +41,35 @@ type CartLike = Pick<
     "id" | "name" | "price" | "sale_price" | "quantity" | "category_name"
 >;
 
-let analyticsInstancePromise: Promise<unknown | null> | null = null;
-let analyticsDisabled = false;
+declare global {
+    interface Window {
+        dataLayer?: unknown[];
+        gtag?: (...args: unknown[]) => void;
+    }
+}
 
 const sanitizeParams = (params: AnalyticsParams = {}): Record<string, unknown> =>
     Object.fromEntries(
         Object.entries(params).filter(([, value]) => value !== undefined && value !== null)
     );
 
-const getClientAnalytics = async (): Promise<unknown | null> => {
-    if (analyticsDisabled) return null;
-    if (!shouldLoadFirebaseAnalyticsOnClient()) return null;
-    if (analyticsInstancePromise) return analyticsInstancePromise;
-
-    analyticsInstancePromise = (async () => {
-        try {
-            const app = getFirebaseApp();
-            if (!app) return null;
-
-            const { getAnalytics, isSupported } = await import("firebase/analytics");
-            if (!(await isSupported())) return null;
-
-            return getAnalytics(app);
-        } catch (error) {
-            analyticsDisabled = true;
-            if (process.env.NODE_ENV !== "production") {
-                console.warn("Firebase analytics disabled after init failure.", error);
-            }
-            return null;
-        }
-    })().catch((error) => {
-        analyticsDisabled = true;
-        if (process.env.NODE_ENV !== "production") {
-            console.warn("Firebase analytics disabled after promise failure.", error);
-        }
-        return null;
-    });
-
-    return analyticsInstancePromise;
+export const isAnalyticsEnabled = (): boolean => {
+    if (typeof window === "undefined") return false;
+    if (!GA_ENABLED || !MEASUREMENT_ID) return false;
+    return !LOCAL_HOSTS.has(window.location.hostname);
 };
+
+const canTrack = (): boolean =>
+    isAnalyticsEnabled() && typeof window.gtag === "function";
+
+export const getAnalyticsMeasurementId = (): string => MEASUREMENT_ID;
 
 export const logAnalyticsEvent = async (
     eventName: string,
     params?: AnalyticsParams
 ): Promise<void> => {
-    try {
-        const analytics = await getClientAnalytics();
-        if (!analytics) return;
-
-        const { logEvent } = await import("firebase/analytics");
-        logEvent(analytics as never, eventName as never, sanitizeParams(params) as never);
-    } catch (error) {
-        analyticsDisabled = true;
-        if (process.env.NODE_ENV !== "production") {
-            console.warn(`Firebase analytics disabled after "${eventName}" failed.`, error);
-        }
-    }
+    if (!canTrack()) return;
+    window.gtag?.("event", eventName, sanitizeParams(params));
 };
 
 const getPrice = (item: ProductLike | CartLike): number => item.sale_price ?? item.price;
@@ -114,6 +97,7 @@ export const trackPageView = async (pathname: string, search = ""): Promise<void
     if (typeof window === "undefined") return;
 
     await logAnalyticsEvent("page_view", {
+        send_to: MEASUREMENT_ID,
         page_path: `${pathname}${search}`,
         page_location: window.location.href,
         page_title: document.title,
