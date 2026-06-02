@@ -4,6 +4,61 @@
 
 const VERSION_KEY = "app_version";
 const VERSION_URL = "/version.json";
+const RELOAD_MARK_KEY = "app_last_hard_reload_at";
+const RELOAD_COOLDOWN_MS = 60_000;
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+
+let initialized = false;
+let versionCheckInFlight = false;
+
+const isBrowser = () => typeof window !== "undefined";
+
+const shouldRunVersionCheck = () => {
+  if (!isBrowser()) return false;
+  if (LOCAL_HOSTS.has(window.location.hostname)) return false;
+  return true;
+};
+
+const markReloadAttempt = () => {
+  window.sessionStorage.setItem(RELOAD_MARK_KEY, Date.now().toString());
+};
+
+const canReloadNow = () => {
+  const lastReload = Number(window.sessionStorage.getItem(RELOAD_MARK_KEY) || "0");
+  return !lastReload || Date.now() - lastReload > RELOAD_COOLDOWN_MS;
+};
+
+const isNextStaticAsset = (target: EventTarget | null) => {
+  if (!(target instanceof HTMLElement)) return false;
+
+  const url =
+    target instanceof HTMLScriptElement
+      ? target.src
+      : target instanceof HTMLLinkElement
+        ? target.href
+        : "";
+
+  if (!url) return false;
+
+  try {
+    const parsed = new URL(url, window.location.origin);
+    return parsed.origin === window.location.origin && parsed.pathname.startsWith("/_next/static/");
+  } catch {
+    return false;
+  }
+};
+
+const requestHardReload = async (reason: string) => {
+  if (!shouldRunVersionCheck()) return;
+  if (!canReloadNow()) {
+    console.warn(`Skip hard reload during cooldown: ${reason}`);
+    return;
+  }
+
+  console.warn(`Hard reload requested: ${reason}`);
+  markReloadAttempt();
+  await hardReload();
+};
 
 /**
  * Perform a hard reload of the application.
@@ -26,7 +81,7 @@ export async function hardReload(): Promise<void> {
       await Promise.all(keys.map((k) => caches.delete(k)));
     }
 
-    // Append a cache-busting parameter to the current URL and reload
+    // Append a cache-busting parameter to the current URL and reload.
     const url = new URL(window.location.href);
     url.searchParams.set("v", Date.now().toString());
     window.location.replace(url.toString());
@@ -47,6 +102,11 @@ export async function hardReload(): Promise<void> {
  *  - If up-to-date, no action is taken.
  */
 export async function checkAppVersion(): Promise<void> {
+  if (!shouldRunVersionCheck()) return;
+  if (versionCheckInFlight) return;
+
+  versionCheckInFlight = true;
+
   try {
     // Fetch version.json with no caching
     const res = await fetch(VERSION_URL, { cache: "no-cache" });
@@ -70,12 +130,14 @@ export async function checkAppVersion(): Promise<void> {
     if (current !== data.version) {
       console.log("New version detected:", current, "→", data.version);
       localStorage.setItem(VERSION_KEY, data.version);
-      await hardReload();
+      await requestHardReload("new app version");
     } else {
       console.log("App is up-to-date:", current);
     }
   } catch (err) {
     console.warn("Version check failed:", err);
+  } finally {
+    versionCheckInFlight = false;
   }
 }
 
@@ -87,6 +149,14 @@ export async function checkAppVersion(): Promise<void> {
  *  - Lazy-loaded chunk failures (auto reload on ChunkLoadError).
  */
 export function initVersionCheck(): void {
+  if (initialized) return;
+  initialized = true;
+
+  if (!shouldRunVersionCheck()) {
+    console.log("Version check disabled for this host");
+    return;
+  }
+
   // Perform an initial version check
   checkAppVersion();
 
@@ -98,9 +168,8 @@ export function initVersionCheck(): void {
     "error",
     (ev) => {
       const target = ev.target as HTMLElement;
-      if (target && (target.tagName === "SCRIPT" || target.tagName === "LINK")) {
-        console.warn("Missing static file → reloading...");
-        hardReload();
+      if (isNextStaticAsset(target)) {
+        requestHardReload("missing Next static asset");
       }
     },
     true
@@ -112,19 +181,16 @@ export function initVersionCheck(): void {
     if (
       message.includes("ChunkLoadError") ||
       message.includes("Loading chunk") ||
-      message.includes("Failed to fetch dynamically imported module") ||
-      message.includes("Failed to find Server Action")
+      message.includes("Failed to fetch dynamically imported module")
     ) {
-      console.warn("Chunk load failed → reloading...");
-      hardReload();
+      requestHardReload("chunk load failure");
     }
   });
 
   window.addEventListener("error", (event) => {
     const message = (event as ErrorEvent).message || "";
     if (message.includes("Failed to find Server Action")) {
-      console.warn("Server action mismatch detected → reloading...");
-      hardReload();
+      requestHardReload("server action mismatch");
     }
   });
 
