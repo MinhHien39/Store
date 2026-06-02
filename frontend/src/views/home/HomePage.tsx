@@ -32,25 +32,14 @@ const HomePage: React.FC = () => {
     useLanguage();
     const { config } = HomeVM();
     const { categories, brands, products, isLoading } = config;
-
-    if (isLoading) {
-        return (
-            <StoreLayout>
-                <div className="home-loading">
-                    <Loader2 size={34} className="animate-spin text-primary" />
-                </div>
-            </StoreLayout>
-        );
-    }
-
+    const trackedSignature = useRef("");
     const featuredProducts = products.filter((product) => product.sale_price != null).slice(0, 4);
     const latestProducts = products.slice(0, 8);
     const heroProduct = latestProducts[0];
     const heroSideProducts = latestProducts.slice(1, 3);
-    const trackedSignature = useRef("");
 
     useEffect(() => {
-        if (products.length === 0) return;
+        if (isLoading || products.length === 0) return;
 
         const signature = JSON.stringify({
             featured: featuredProducts.map((product) => product.id),
@@ -65,7 +54,17 @@ const HomePage: React.FC = () => {
         if (latestProducts.length > 0) {
             void trackViewItemList(latestProducts, "home_latest", "Home Latest");
         }
-    }, [products, featuredProducts, latestProducts]);
+    }, [isLoading, products, featuredProducts, latestProducts]);
+
+    if (isLoading) {
+        return (
+            <StoreLayout>
+                <div className="home-loading">
+                    <Loader2 size={34} className="animate-spin text-primary" />
+                </div>
+            </StoreLayout>
+        );
+    }
 
     return (
         <StoreLayout>
