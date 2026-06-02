@@ -4,6 +4,7 @@
 
 const VERSION_KEY = "app_version";
 const VERSION_URL = "/version.json";
+const CACHE_BUST_PARAM = "v";
 const RELOAD_MARK_KEY = "app_last_hard_reload_at";
 const RELOAD_COOLDOWN_MS = 60_000;
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
@@ -28,6 +29,18 @@ const canReloadNow = () => {
   return !lastReload || Date.now() - lastReload > RELOAD_COOLDOWN_MS;
 };
 
+const getCurrentUrl = () => new URL(window.location.href);
+
+const hasCacheBustParam = () => getCurrentUrl().searchParams.has(CACHE_BUST_PARAM);
+
+const removeCacheBustParam = () => {
+  const url = getCurrentUrl();
+  if (!url.searchParams.has(CACHE_BUST_PARAM)) return;
+
+  url.searchParams.delete(CACHE_BUST_PARAM);
+  window.history.replaceState(window.history.state, "", url.toString());
+};
+
 const isNextStaticAsset = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) return false;
 
@@ -50,6 +63,12 @@ const isNextStaticAsset = (target: EventTarget | null) => {
 
 const requestHardReload = async (reason: string) => {
   if (!shouldRunVersionCheck()) return;
+  if (hasCacheBustParam()) {
+    console.warn(`Skip hard reload because cache-bust URL is already active: ${reason}`);
+    removeCacheBustParam();
+    return;
+  }
+
   if (!canReloadNow()) {
     console.warn(`Skip hard reload during cooldown: ${reason}`);
     return;
@@ -82,15 +101,16 @@ export async function hardReload(): Promise<void> {
     }
 
     // Append a cache-busting parameter to the current URL and reload.
-    const url = new URL(window.location.href);
-    url.searchParams.set("v", Date.now().toString());
+    const url = getCurrentUrl();
+    url.searchParams.set(CACHE_BUST_PARAM, Date.now().toString());
     window.location.replace(url.toString());
   } catch (e) {
     console.error("Hard reload failed:", e);
 
     // Fallback reload if an error occurs
-    const sep = window.location.href.includes("?") ? "&" : "?";
-    window.location.href = window.location.href + `${sep}v=${Date.now()}`;
+    const url = getCurrentUrl();
+    url.searchParams.set(CACHE_BUST_PARAM, Date.now().toString());
+    window.location.href = url.toString();
   }
 }
 
@@ -123,6 +143,7 @@ export async function checkAppVersion(): Promise<void> {
     const current = localStorage.getItem(VERSION_KEY);
     if (!current) {
       localStorage.setItem(VERSION_KEY, data.version);
+      removeCacheBustParam();
       console.log("First run — stored version:", data.version);
       return;
     }
@@ -130,8 +151,14 @@ export async function checkAppVersion(): Promise<void> {
     if (current !== data.version) {
       console.log("New version detected:", current, "→", data.version);
       localStorage.setItem(VERSION_KEY, data.version);
+      if (hasCacheBustParam()) {
+        removeCacheBustParam();
+        return;
+      }
+
       await requestHardReload("new app version");
     } else {
+      removeCacheBustParam();
       console.log("App is up-to-date:", current);
     }
   } catch (err) {
@@ -153,6 +180,7 @@ export function initVersionCheck(): void {
   initialized = true;
 
   if (!shouldRunVersionCheck()) {
+    removeCacheBustParam();
     console.log("Version check disabled for this host");
     return;
   }

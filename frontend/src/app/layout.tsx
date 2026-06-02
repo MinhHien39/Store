@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Rubik, Nunito_Sans } from "next/font/google";
 import AdSenseScript from "@/component/common/AdSenseScript";
 import GoogleAnalyticsScript from "@/component/common/GoogleAnalyticsScript";
+import VersionCheckScript from "@/component/common/VersionCheckScript";
 import { ADSENSE_CLIENT, hasAdsenseClient } from "@/core/adsense";
 import {
   SITE_DESCRIPTION,
@@ -65,6 +66,7 @@ export default function RootLayout({
         <GoogleAnalyticsScript />
       </head>
       <body className={`${rubik.variable} ${nunitoSans.variable} ${nunitoSans.className} antialiased`} suppressHydrationWarning>
+        <VersionCheckScript />
         {children}
       </body>
     </html>
