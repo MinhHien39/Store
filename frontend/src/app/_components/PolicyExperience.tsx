@@ -736,28 +736,27 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
         ? "Chat with the store directly"
         : "Open the official page";
 
-  const shellX = "px-4 sm:px-6 lg:px-10 xl:px-14";
-  const shellY = "py-12 sm:py-16 lg:py-20 xl:py-24";
-  const cardPadding = "p-6 sm:p-8 lg:p-10 xl:p-12";
-  const compactCardPadding = "p-6";
+  const shellX = "px-5 sm:px-7 lg:px-10 xl:px-12";
+  const shellY = "py-10 sm:py-14 lg:py-16 xl:py-20";
+  const cardPadding = "p-6 sm:p-8 lg:p-10 xl:p-11";
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_right,rgba(226,232,240,0.85)_0%,rgba(255,255,255,0.94)_34%,#f8fafc_100%)] text-slate-900 transition-all duration-500 selection:bg-slate-950 selection:text-white">
+    <main className="relative min-h-screen overflow-hidden bg-[#f7f9fc] text-slate-900 transition-all duration-500 selection:bg-slate-950 selection:text-white">
       {/* Dynamic Background Mesh Grid */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-x-0 top-0 h-[520px] bg-[linear-gradient(180deg,rgba(255,255,255,0.45)_0%,rgba(255,255,255,0)_100%)]" />
-        <div className="absolute top-0 right-0 h-[600px] w-[600px] rounded-full bg-radial from-slate-200/50 to-transparent blur-[120px]" />
-        <div className="absolute top-1/4 left-10 h-[500px] w-[500px] rounded-full bg-radial from-slate-100/60 to-transparent blur-[100px]" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.06)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:linear-gradient(180deg,white,transparent_88%)]" />
+        <div className="absolute inset-x-0 top-0 h-[520px] bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(247,249,252,0)_100%)]" />
+        <div className="absolute top-[-160px] right-[-120px] h-[520px] w-[520px] rounded-full bg-cyan-100/45 blur-[120px]" />
+        <div className="absolute top-[220px] left-[-160px] h-[460px] w-[460px] rounded-full bg-amber-100/35 blur-[120px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.045)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:linear-gradient(180deg,white,transparent_80%)]" />
       </div>
 
       {/* Header Area */}
-      <div className="sticky top-0 z-50 border-b border-slate-200/50 bg-white/70 backdrop-blur-xl transition-all duration-300">
-        <div className={`mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6 ${shellX} py-4`}>
+      <div className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 shadow-[0_1px_0_rgba(15,23,42,0.03)] backdrop-blur-xl transition-all duration-300">
+        <div className={`mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 ${shellX} py-3.5`}>
           <div className="flex items-center gap-4">
             <Link
               href={SITE_PATHS.home}
-              className="group flex h-12 w-12 items-center justify-center rounded-xl bg-slate-950 text-white shadow-xl hover:scale-105 active:scale-95 transition-all duration-300"
+              className="group flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-[0_14px_28px_rgba(15,23,42,0.18)] transition-all duration-300 hover:-translate-y-0.5 active:scale-95"
             >
               <Store size={20} className="group-hover:rotate-6 transition-transform duration-300" />
             </Link>
@@ -765,15 +764,15 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
               <p className="text-xl font-black tracking-tight text-slate-950">
                 {SITE_NAME}
               </p>
-              <p className="text-xs font-medium text-slate-500 tracking-wide">{localeCopy.brandTag}</p>
+              <p className="text-xs font-semibold tracking-wide text-slate-500">{localeCopy.brandTag}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-slate-100/80 border border-slate-200/60 rounded-xl p-1 shadow-sm backdrop-blur">
+          <div className="flex items-center gap-1 rounded-2xl border border-slate-200/80 bg-slate-100/80 p-1 shadow-sm backdrop-blur">
             <button
               type="button"
               onClick={() => setLanguage("vi")}
-              className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all duration-300 ${
+              className={`min-h-8 rounded-xl px-3.5 text-xs font-black transition-all duration-300 ${
                 language === "vi"
                   ? "bg-white text-slate-950 shadow-sm"
                   : "text-slate-600 hover:text-slate-900"
@@ -784,7 +783,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
             <button
               type="button"
               onClick={() => setLanguage("en")}
-              className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all duration-300 ${
+              className={`min-h-8 rounded-xl px-3.5 text-xs font-black transition-all duration-300 ${
                 language === "en"
                   ? "bg-white text-slate-950 shadow-sm"
                   : "text-slate-600 hover:text-slate-900"
@@ -798,38 +797,40 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
 
       {/* Hero Banner Grid Section */}
       <section className="relative overflow-hidden">
-        <div className={`mx-auto grid max-w-7xl gap-8 lg:gap-10 ${shellX} ${shellY} lg:grid-cols-[minmax(0,1.34fr)_392px]`}>
+        <div className={`mx-auto grid max-w-7xl gap-7 lg:gap-8 ${shellX} ${shellY} lg:grid-cols-[minmax(0,1.42fr)_360px]`}>
           
           {/* Main Hero Card */}
-          <div className={`relative overflow-hidden rounded-[32px] border ${theme.heroBorder} ${theme.heroSurface} ${cardPadding} shadow-[0_30px_80px_rgba(15,23,42,0.08)] ring-1 ring-white/60 transition-all duration-500`}>
+          <div className={`relative overflow-hidden rounded-[28px] border ${theme.heroBorder} ${theme.heroSurface} ${cardPadding} shadow-[0_26px_70px_rgba(15,23,42,0.075)] ring-1 ring-white/70 transition-all duration-500`}>
             {/* Mesh accent */}
-            <div className={`pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full blur-3xl ${theme.heroAccent}`} />
+            <div className={`pointer-events-none absolute -top-20 -right-20 h-80 w-80 rounded-full blur-3xl ${theme.heroAccent}`} />
+            <div className="pointer-events-none absolute right-8 top-8 hidden h-28 w-28 rounded-[2rem] border border-white/70 bg-white/35 shadow-inner backdrop-blur md:block" />
+            <div className="pointer-events-none absolute right-24 top-28 hidden h-12 w-12 rounded-2xl border border-white/80 bg-white/55 shadow-sm backdrop-blur md:block" />
             <div className="pointer-events-none absolute inset-x-6 bottom-0 h-px bg-gradient-to-r from-transparent via-slate-300/70 to-transparent" />
             
             <div className="relative z-10 flex flex-col h-full justify-between">
               <div>
                 <div className="flex flex-wrap items-center gap-3">
                   <span
-                    className={`inline-flex min-h-11 items-center gap-2 rounded-2xl px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] shadow-sm ${theme.badgeSurface}`}
+                    className={`inline-flex min-h-10 items-center gap-2 rounded-2xl px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] shadow-sm ${theme.badgeSurface}`}
                   >
-                    <Sparkles size={12} className="animate-pulse" />
+                    <Sparkles size={12} />
                     {pageCopy.eyebrow}
                   </span>
-                  <span className="inline-flex min-h-11 items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900 px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-white shadow-sm">
+                  <span className="inline-flex min-h-10 items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900 px-4 py-2 text-[11px] font-black uppercase tracking-[0.18em] text-white shadow-sm">
                     <PageIcon size={12} />
                     {SITE_NAME}
                   </span>
-                  <span className="inline-flex min-h-11 items-center gap-2 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 shadow-sm">
+                  <span className="inline-flex min-h-10 items-center gap-2 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 shadow-sm">
                     <Clock3 size={12} />
                     {localeCopy.updatedLabel}: {localeCopy.updatedValue}
                   </span>
                 </div>
 
-                <div className="mt-8 max-w-4xl">
-                  <h1 className="max-w-[14ch] text-3xl font-black leading-[1.04] tracking-tight text-slate-950 sm:text-4xl md:text-5xl lg:text-[3.32rem]">
+                <div className="mt-8 max-w-5xl">
+                  <h1 className="text-[2rem] font-black leading-[1.07] tracking-tight text-slate-950 sm:text-5xl lg:max-w-[13.5ch] lg:text-[3.18rem] xl:max-w-[16ch]">
                     {pageCopy.title}
                   </h1>
-                  <p className="mt-6 max-w-3xl text-[15px] leading-8 text-slate-600 md:text-lg md:leading-9">
+                  <p className="mt-6 max-w-3xl text-[15px] font-medium leading-8 text-slate-600 md:text-lg md:leading-9">
                     {pageCopy.description}
                   </p>
                 </div>
@@ -838,7 +839,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
                   {pageCopy.badges.map((badge) => (
                     <div
                       key={badge}
-                      className="group/badge inline-flex min-h-12 items-center gap-2.5 rounded-2xl border border-slate-200/80 bg-white/95 px-5 py-3 text-sm font-bold text-slate-700 shadow-sm backdrop-blur transition-all duration-300 hover:scale-[1.02] hover:shadow-md hover:border-slate-300"
+                      className="group/badge inline-flex min-h-11 items-center gap-2.5 rounded-2xl border border-slate-200/80 bg-white/95 px-4 py-2.5 text-sm font-black text-slate-700 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
                     >
                       <div className={`h-2 w-2 rounded-full ${theme.sectionLine}`} />
                       <span>{badge}</span>
@@ -849,17 +850,17 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
 
               <div className="mt-12">
                 {/* Stats Container with sleek glass layouts */}
-                <div className="grid gap-4 border-t border-slate-200/70 pt-8 sm:grid-cols-3">
-                  {pageCopy.stats.map((stat, sIdx) => (
+                <div className="grid gap-4 border-t border-slate-200/70 pt-7 sm:grid-cols-3">
+                  {pageCopy.stats.map((stat) => (
                     <div
                       key={`${stat.value}-${stat.label}`}
-                      className={`group relative overflow-hidden rounded-[26px] ${theme.statSurface} p-6 shadow-[0_18px_38px_rgba(15,23,42,0.06)] ring-1 ring-white/70 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(15,23,42,0.09)]`}
+                      className={`group relative overflow-hidden rounded-[22px] ${theme.statSurface} p-5 shadow-[0_14px_32px_rgba(15,23,42,0.055)] ring-1 ring-white/70 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_42px_rgba(15,23,42,0.085)]`}
                     >
-                      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-white/30 via-slate-300/80 to-white/30" />
+                      <div className={`absolute inset-y-5 left-0 w-1 rounded-r-full ${theme.sectionLine}`} />
                       <p className="text-3xl font-black tracking-tight text-slate-950 transition-transform duration-300 origin-left group-hover:scale-105">
                         {stat.value}
                       </p>
-                      <p className="mt-3 text-[11px] font-extrabold uppercase tracking-[0.2em] text-slate-700">
+                      <p className="mt-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-700">
                         {stat.label}
                       </p>
                       <p className="mt-2 text-sm leading-6 text-slate-500">
@@ -872,7 +873,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
                 <div className="mt-8 flex flex-wrap gap-4">
                   <Link
                     href={SITE_PATHS.home}
-                    className={`inline-flex min-h-12 items-center gap-3 rounded-2xl px-5 py-3 text-base font-bold transition-all duration-300 hover:-translate-y-0.5 ${theme.actionPrimary}`}
+                    className={`inline-flex min-h-12 items-center gap-3 rounded-2xl px-5 py-3 text-base font-black transition-all duration-300 hover:-translate-y-0.5 ${theme.actionPrimary}`}
                   >
                     <span>{localeCopy.homeLink}</span>
                     <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/15">
@@ -881,7 +882,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
                   </Link>
                   <Link
                     href={localeCopy.browseHref}
-                    className={`inline-flex min-h-12 items-center gap-3 rounded-2xl px-5 py-3 text-base font-bold transition-all duration-300 hover:-translate-y-0.5 ${theme.actionSecondary}`}
+                    className={`inline-flex min-h-12 items-center gap-3 rounded-2xl px-5 py-3 text-base font-black transition-all duration-300 hover:-translate-y-0.5 ${theme.actionSecondary}`}
                   >
                     <span>{localeCopy.browseLink}</span>
                     <span className="flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white">
@@ -895,26 +896,26 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
 
           {/* Sidebar Navigation Column */}
           <div className="space-y-6">
-            <div className="rounded-[30px] border border-slate-200/80 bg-white/90 p-7 shadow-[0_24px_60px_rgba(15,23,42,0.07)] ring-1 ring-white/70 backdrop-blur">
+            <div className="rounded-[26px] border border-slate-200/80 bg-white/95 p-6 shadow-[0_22px_54px_rgba(15,23,42,0.065)] ring-1 ring-white/80 backdrop-blur">
               <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.26em] text-slate-400">
                 <LayoutPanelLeft size={14} className="text-slate-400" />
                 {localeCopy.navLabel}
               </div>
-              <nav className="mt-6 space-y-3">
+              <nav className="mt-5 space-y-2.5">
                 {activeNav.map((item) => {
                   const NavIcon = pageIcons[item.key];
                   return (
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`group flex min-h-[62px] items-center justify-between rounded-[22px] px-4 py-3.5 text-[15px] font-semibold transition-all duration-300 ${
+                      className={`group flex min-h-[56px] items-center justify-between rounded-[18px] px-3.5 py-3 text-[15px] font-black transition-all duration-300 ${
                         item.active
                           ? "bg-slate-950 text-white shadow-lg shadow-slate-950/20"
-                          : "border border-slate-200/80 bg-slate-50/75 text-slate-600 hover:border-slate-300 hover:bg-white hover:text-slate-950 hover:shadow-sm"
+                          : "border border-slate-200/80 bg-slate-50/70 text-slate-600 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white hover:text-slate-950 hover:shadow-sm"
                       }`}
                     >
                       <div className="flex min-w-0 items-center gap-3">
-                        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${
+                        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${
                           item.active
                             ? "border-white/15 bg-white/10 text-white"
                             : "border-slate-200 bg-white text-slate-400 group-hover:border-slate-300 group-hover:bg-slate-50 group-hover:text-slate-600"
@@ -923,7 +924,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
                         </span>
                         <span>{item.label}</span>
                       </div>
-                      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
                         item.active ? "bg-white/10 text-white" : "text-slate-400 group-hover:bg-slate-100 group-hover:text-slate-700"
                       }`}>
                         <ArrowRight size={16} className={`transition-transform duration-300 ${item.active ? "translate-x-0" : "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"}`} />
@@ -935,15 +936,15 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
             </div>
 
             {/* Quick Facts Card */}
-            <div className={`rounded-[30px] border ${theme.summaryBorder} ${theme.summarySurface} p-7 shadow-[0_16px_36px_rgba(15,23,42,0.05)] ring-1 ring-white/50`}>
+            <div className={`rounded-[26px] border ${theme.summaryBorder} ${theme.summarySurface} p-6 shadow-[0_16px_36px_rgba(15,23,42,0.05)] ring-1 ring-white/60`}>
               <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.24em] text-slate-700">
                 <BadgeCheck size={14} />
                 {localeCopy.quickFactsTitle}
               </div>
-              <div className="mt-5 space-y-4 text-sm leading-7 text-slate-700">
+              <div className="mt-5 space-y-3.5 text-sm leading-7 text-slate-700">
                 {localeCopy.quickFacts.map((fact, idx) => (
-                  <div key={fact} className="flex gap-3">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-slate-950/5 text-[11px] font-black">
+                  <div key={fact} className="flex gap-3 rounded-2xl bg-white/45 p-3">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-slate-950/10 text-[11px] font-black">
                       {idx + 1}
                     </span>
                     <p className="pt-0.5">{fact}</p>
@@ -956,14 +957,14 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
       </section>
 
       {/* Main Content Layout */}
-      <section className={`mx-auto grid max-w-7xl gap-8 border-t border-slate-200/60 ${shellX} py-12 lg:grid-cols-[minmax(0,1fr)_352px] lg:gap-12 lg:py-20`}>
+      <section className={`mx-auto grid max-w-7xl gap-8 border-t border-slate-200/70 ${shellX} py-10 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-10 lg:py-16`}>
         <div>
           <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
             <div>
               <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-400">
                 {localeCopy.sectionLabel}
               </p>
-              <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
+              <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-[2rem]">
                 {pageCopy.summaryTitle}
               </h2>
             </div>
@@ -973,36 +974,42 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
             {pageCopy.summaryPoints.map((point, index) => (
               <div
                 key={point}
-                className="group relative overflow-hidden rounded-[24px] border border-slate-200/80 bg-white p-6 shadow-[0_16px_36px_rgba(15,23,42,0.05)] ring-1 ring-white/70 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_44px_rgba(15,23,42,0.08)]"
+                className="group relative overflow-hidden rounded-[22px] border border-slate-200/80 bg-white p-5 shadow-[0_14px_34px_rgba(15,23,42,0.045)] ring-1 ring-white/80 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_42px_rgba(15,23,42,0.075)]"
               >
-                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-slate-200 via-slate-950/20 to-slate-200" />
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-950 text-xs font-black text-white">
+                <div className={`absolute inset-y-5 left-0 w-1 rounded-r-full ${theme.sectionLine}`} />
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-xs font-black text-white shadow-[0_10px_22px_rgba(15,23,42,0.18)]">
                   {index + 1}
                 </div>
-                <p className="mt-5 text-[15px] font-semibold leading-7 text-slate-600">
+                <p className="mt-5 text-[15px] font-bold leading-7 text-slate-600">
                   {point}
                 </p>
               </div>
             ))}
           </div>
 
-          <div className="space-y-5">
+          <div className="relative space-y-5">
+            <div className="absolute bottom-8 left-6 top-8 hidden w-px bg-gradient-to-b from-transparent via-slate-200 to-transparent sm:block" />
             {pageCopy.sections.map((section, index) => (
               <article
                 key={section.title}
-                className="rounded-[30px] border border-slate-200/80 bg-white p-7 shadow-[0_18px_38px_rgba(15,23,42,0.05)] ring-1 ring-white/80 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_48px_rgba(15,23,42,0.08)] sm:p-8"
+                className="group relative rounded-[24px] border border-slate-200/80 bg-white p-6 shadow-[0_16px_36px_rgba(15,23,42,0.045)] ring-1 ring-white/80 transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_22px_48px_rgba(15,23,42,0.075)] sm:p-7"
               >
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4 sm:gap-5">
                   <div
-                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border font-black shadow-sm ${theme.sectionNumber} ${theme.sectionNumberText}`}
+                    className={`relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border font-black shadow-sm ring-4 ring-white ${theme.sectionNumber} ${theme.sectionNumberText}`}
                   >
                     {index + 1}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-xl font-black tracking-tight text-slate-950 sm:text-[1.35rem]">
-                      {section.title}
-                    </h3>
-                    <div className="mt-5 space-y-4 border-t border-slate-100 pt-5 text-[15px] leading-8 text-slate-600 sm:text-base">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <h3 className="text-xl font-black tracking-tight text-slate-950 sm:text-[1.35rem]">
+                        {section.title}
+                      </h3>
+                      <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+                        {localeCopy.sectionLabel}
+                      </span>
+                    </div>
+                    <div className="mt-5 space-y-4 border-t border-slate-100 pt-5 text-[15px] font-medium leading-8 text-slate-600 sm:text-base">
                       {section.paragraphs.map((paragraph, pIdx) => (
                         <p key={pIdx}>{paragraph}</p>
                       ))}
@@ -1015,82 +1022,90 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
         </div>
 
         {/* Sidebar Support widgets */}
-        <aside className="space-y-6 lg:sticky lg:top-28 lg:self-start">
-          <div className="overflow-hidden rounded-[30px] border border-slate-200/80 bg-white shadow-[0_22px_52px_rgba(15,23,42,0.07)] ring-1 ring-white/80">
-            <div className="relative border-b border-slate-800 bg-[linear-gradient(145deg,#020617_0%,#0f172a_56%,#172554_100%)] px-6 py-8 text-white sm:px-7 sm:py-9">
-              <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
-              <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.22em] text-emerald-200">
-                <MessageCircle size={14} className="text-emerald-300" />
+        <aside className="space-y-5 lg:sticky lg:top-28 lg:self-start">
+          <div className="relative overflow-hidden rounded-[28px] border border-slate-200/80 bg-white p-4 shadow-[0_22px_56px_rgba(15,23,42,0.075)] ring-1 ring-white/80 sm:p-5">
+            <div className={`absolute inset-x-8 top-0 h-1.5 rounded-b-full ${theme.sectionLine}`} />
+            <div className={`relative overflow-hidden rounded-[24px] ${theme.supportSurface} p-6 text-white shadow-[0_18px_40px_rgba(15,23,42,0.18)]`}>
+              <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-white/10 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-16 left-1/2 h-32 w-32 rounded-full bg-white/5 blur-3xl" />
+              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-emerald-200 shadow-inner">
+                <MessageCircle size={20} />
+              </div>
+              <div className="relative mt-5 text-[11px] font-black uppercase tracking-[0.22em] text-emerald-200">
                 {localeCopy.supportEyebrow}
               </div>
-              <h3 className="mt-3 text-xl font-black tracking-tight text-white sm:text-[1.7rem]">
+              <h3 className="relative mt-2 text-2xl font-black leading-tight tracking-tight text-white">
                 {pageCopy.supportTitle}
               </h3>
-              <p className="mt-4 max-w-lg text-[15px] leading-8 text-slate-200">
+              <p className="relative mt-4 text-[15px] font-medium leading-8 text-slate-200">
                 {pageCopy.supportBody}
               </p>
             </div>
 
-            <div className="p-6 sm:p-7">
-              <div className="space-y-3">
-                {pageCopy.supportChecklist.map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-start gap-3 rounded-[22px] border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-7 text-slate-700 shadow-sm shadow-slate-100/70"
+            <div className="mt-4 space-y-3">
+              {pageCopy.supportChecklist.map((item) => (
+                <div
+                  key={item}
+                  className="group flex items-start gap-3 rounded-[20px] border border-slate-200/80 bg-slate-50/90 px-4 py-4 text-sm leading-7 text-slate-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white hover:shadow-md"
+                >
+                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-700 transition-transform duration-300 group-hover:scale-105">
+                    <BadgeCheck size={16} />
+                  </span>
+                  <span className="font-bold">{item}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              {localeCopy.supportLinks.map((item) => {
+                const isMessenger = item.label.toLowerCase().includes("messenger");
+
+                return (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`group flex min-h-20 items-center justify-between rounded-[22px] border px-4 py-4 text-sm font-black transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
+                      isMessenger
+                        ? "border-sky-200 bg-[linear-gradient(135deg,#eff6ff_0%,#f8fbff_100%)] text-sky-950 hover:border-sky-300 hover:shadow-sky-500/10"
+                        : "border-indigo-200 bg-[linear-gradient(135deg,#eef2ff_0%,#fbfbff_100%)] text-indigo-950 hover:border-indigo-300 hover:shadow-indigo-500/10"
+                    }`}
                   >
-                    <BadgeCheck size={16} className="mt-1 shrink-0 text-emerald-600" />
-                    <span className="font-semibold">{item}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                {localeCopy.supportLinks.map((item) => {
-                  const isMessenger = item.label.toLowerCase().includes("messenger");
-
-                  return (
-                    <a
-                      key={item.href}
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`group flex items-center justify-between rounded-[22px] border px-4 py-4 text-sm font-bold transition-all duration-300 hover:-translate-y-1 hover:shadow-md ${
-                        isMessenger
-                          ? "border-sky-200 bg-sky-50/80 text-sky-900 hover:border-sky-300"
-                          : "border-indigo-200 bg-indigo-50/70 text-indigo-900 hover:border-indigo-300"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span
-                          className={`flex h-9 w-9 items-center justify-center rounded-xl text-xs font-black ${
-                            isMessenger
-                              ? "bg-white text-sky-700 shadow-sm"
-                              : "bg-white text-indigo-700 shadow-sm"
-                          }`}
-                        >
-                          {item.label.slice(0, 1)}
-                        </span>
-                        <div>
-                          <p>{item.label}</p>
-                          <p className="text-xs font-semibold text-slate-500">
-                            {supportLinkHint(isMessenger)}
-                          </p>
-                        </div>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span
+                        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border bg-white text-sm font-black shadow-sm ${
+                          isMessenger
+                            ? "border-sky-100 text-sky-700"
+                            : "border-indigo-100 text-indigo-700"
+                        }`}
+                      >
+                        {item.label.slice(0, 1)}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate">{item.label}</p>
+                        <p className="mt-0.5 text-xs font-bold text-slate-500">
+                          {supportLinkHint(isMessenger)}
+                        </p>
                       </div>
-                      <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-0.5" />
-                    </a>
-                  );
-                })}
-              </div>
+                    </div>
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-white/80 text-slate-800 shadow-sm transition-transform duration-300 group-hover:translate-x-1">
+                      <ArrowRight size={16} />
+                    </span>
+                  </a>
+                );
+              })}
             </div>
           </div>
 
-          <div className="rounded-[30px] border border-slate-200/80 bg-slate-50/95 p-6 shadow-[0_16px_36px_rgba(15,23,42,0.05)] ring-1 ring-white/70">
-            <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">
-              <Globe size={14} />
+          <div className="rounded-[28px] border border-slate-200/80 bg-white/90 p-6 shadow-[0_16px_38px_rgba(15,23,42,0.05)] ring-1 ring-white/80 backdrop-blur">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500">
+              <Globe size={17} />
+            </div>
+            <div className="mt-4 text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">
               {localeCopy.footerNoteTitle}
             </div>
-            <p className="mt-4 text-[15px] leading-8 text-slate-600">
+            <p className="mt-3 text-[15px] font-medium leading-8 text-slate-600">
               {localeCopy.footerNote}
             </p>
             <div className="mt-5 grid grid-cols-2 gap-3">
@@ -1098,7 +1113,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
                 href={FACEBOOK_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-xs font-black uppercase tracking-[0.18em] text-slate-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-100 hover:shadow-md"
+                className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-slate-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-100 hover:shadow-md"
               >
                 <Globe size={14} />
                 Facebook
@@ -1107,7 +1122,7 @@ export default function PolicyExperience({ page }: { page: PolicyPageKey }) {
                 href={MESSENGER_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-xs font-black uppercase tracking-[0.18em] text-slate-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-100 hover:shadow-md"
+                className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-black uppercase tracking-[0.14em] text-slate-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-100 hover:shadow-md"
               >
                 <Mail size={14} />
                 Messenger

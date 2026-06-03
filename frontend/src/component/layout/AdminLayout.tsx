@@ -46,6 +46,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         navigate(AppRoutePath.ADMIN_LOGIN);
     };
 
+    const closeSidebarOnSmallScreens = () => {
+        if (typeof window === "undefined") return;
+        if (window.matchMedia("(max-width: 1023px)").matches) {
+            setIsSidebarOpen(false);
+        }
+    };
+
     return (
         <div className={`admin-layout${isSidebarOpen ? " admin-layout--open" : ""}`}>
             <div className="admin-sidebar-overlay" onClick={() => setIsSidebarOpen(false)} />
@@ -74,7 +81,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                             <Link
                                 key={item.path}
                                 to={item.path}
-                                onClick={() => setIsSidebarOpen(false)}
+                                onClick={closeSidebarOnSmallScreens}
                                 className={`admin-sidebar__link${isActive ? " admin-sidebar__link--active" : ""}`}
                             >
                                 <Icon size={19} />
