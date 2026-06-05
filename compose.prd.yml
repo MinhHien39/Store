@@ -92,6 +92,38 @@ services:
       retries: 5
       start_period: 30s
 
+  db-backup:
+    image: ${APP_NAME}-db-backup-${ENV}
+    container_name: ${APP_NAME}-db-backup-${ENV}
+    build:
+      context: ./backup
+      dockerfile: Dockerfile
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+      - BACKUP_ENABLED=${DB_BACKUP_ENABLED:-false}
+      - BACKUP_CRON=${DB_BACKUP_CRON:-0 0 * * *}
+      - BACKUP_RUN_ON_STARTUP=${DB_BACKUP_RUN_ON_STARTUP:-false}
+      - BACKUP_KEEP_COUNT=${DB_BACKUP_KEEP_COUNT:-14}
+      - BACKUP_FILE_PREFIX=${DB_BACKUP_FILE_PREFIX:-store-mysql-backup}
+      - DB_HOST=db
+      - DB_PORT=${DATABASE_PORT}
+      - DB_NAME=${DATABASE_NAME}
+      - DB_USER=${DATABASE_USER}
+      - DB_PASSWORD=${DATABASE_PASSWORD}
+      - GOOGLE_DRIVE_FOLDER_ID=${GOOGLE_DRIVE_FOLDER_ID:-}
+      - GOOGLE_DRIVE_OAUTH_CLIENT_ID=${GOOGLE_DRIVE_OAUTH_CLIENT_ID:-}
+      - GOOGLE_DRIVE_OAUTH_CLIENT_SECRET=${GOOGLE_DRIVE_OAUTH_CLIENT_SECRET:-}
+      - GOOGLE_DRIVE_OAUTH_REFRESH_TOKEN=${GOOGLE_DRIVE_OAUTH_REFRESH_TOKEN:-}
+      - GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON=${GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON:-}
+      - GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON_BASE64=${GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON_BASE64:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - db-backup-cache:/backups
+    mem_limit: 384m
+    restart: unless-stopped
+
   frontend:
     image: ${APP_NAME}-frontend-${ENV}
     container_name: ${APP_NAME}-frontend-${ENV}
@@ -168,3 +200,4 @@ volumes:
   mysql-data:
   redis-data:
   backend-uploads:
+  db-backup-cache:
